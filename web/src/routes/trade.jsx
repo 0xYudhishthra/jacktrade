@@ -43,7 +43,7 @@ function tradeItems(activity) {
   });
 }
 const FEED_LABELS = {
-  live: ["LIVE", "Live Pyth price from the JACKTRADE price service"],
+  live: ["LIVE", "Live Pyth price from the JackTrade price service"],
   stale: ["STALE", "No new price for over 5 seconds. Trading is paused for this market"],
   wide: ["WIDE", "Pyth confidence is above 10 bps. Opening positions is paused"],
   offline: ["OFFLINE", "Price service unreachable. Reconnecting"],
@@ -126,7 +126,7 @@ export default function Trade({ preview = false }) {
       <dl
         className="pm-floating-market-stats"
         aria-label="Live protocol market statistics"
-        title="Market data from the JACKTRADE indexer"
+        title="Market data from the JackTrade indexer"
       >
         <div>
           <dt>Vol 24h</dt>
@@ -224,7 +224,7 @@ export default function Trade({ preview = false }) {
         <legend>Below the chart</legend>
         <ToolOption
           label="Trades feed"
-          description="Latest opens, closes and liquidations across JACKTRADE"
+          description="Latest opens, closes and liquidations across JackTrade"
           checked={showFeed}
           onChange={setShowFeed}
         />

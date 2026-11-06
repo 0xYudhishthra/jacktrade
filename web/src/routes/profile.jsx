@@ -104,7 +104,7 @@ export default function Profile() {
 
   if (username && resolved.name === username && resolved.status === "notfound")
     return (
-      <Shell title="Profile not found." subtitle={`No JACKTRADE profile uses the name “${username}”.`}>
+      <Shell title="Profile not found." subtitle={`No JackTrade profile uses the name “${username}”.`}>
         <Link className="luna-btn pm-back" to="/leaderboard">Back to leaderboard</Link>
       </Shell>
     );

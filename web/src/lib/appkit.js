@@ -33,7 +33,7 @@ async function load() {
     allowUnsupportedChain: true,
     projectId: APPKIT_PROJECT_ID,
     metadata: {
-      name: "JACKTRADE",
+      name: "JackTrade",
       description: "Leveraged trading on Robinhood Chain.",
       url: window.location.origin,
       icons: [`${window.location.origin}/favicon.svg`],

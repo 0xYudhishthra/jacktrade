@@ -125,7 +125,7 @@ export default function ChartControls({
               {onVolume && (
                 <ToolOption
                   label="Volume"
-                  description="JACKTRADE volume per candle: USDG notional opened"
+                  description="JackTrade volume per candle: USDG notional opened"
                   checked={volume}
                   onChange={onVolume}
                 />

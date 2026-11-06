@@ -184,7 +184,7 @@ export function Header() {
   const { setModal, language } = useProductUI();
   return (
     <header className="pd-header">
-      <Link to="/" className="pd-header-brand" aria-label="JACKTRADE home">
+      <Link to="/" className="pd-header-brand" aria-label="JackTrade home">
         <JacktradeWordmark />
         <JacktradeSparkle className="dream-brand-sparkle" />
       </Link>
@@ -789,7 +789,7 @@ function Modal({ value, close }) {
     close: "Close position",
     session: "Session & limits",
     username: "Claim your identity",
-    share: "Your JACKTRADE card",
+    share: "Your JackTrade card",
   }[value.type];
   const share = value.data || {};
   const shareColor = share.tone === "up" ? "#2d9562" : share.tone === "down" ? "#c85c67" : "#c9b6df";
@@ -797,7 +797,7 @@ function Modal({ value, close }) {
   const shareTitle = share.title || ownUsername || (walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : "jacktrade");
   const shareValue = share.value || "$" + money(account.history.reduce((s, p) => s + p.pnl, 0));
   const shareDetail = share.detail || "YOUR TRADES. YOUR HOUSE.";
-  const shareText = `JACKTRADE · ${shareTitle} · ${shareValue} · ${shareDetail}`;
+  const shareText = `JackTrade · ${shareTitle} · ${shareValue} · ${shareDetail}`;
   async function copy() {
     try {
       await navigator.clipboard.writeText(shareText);
@@ -909,7 +909,7 @@ function Modal({ value, close }) {
                   </button>
                 );
               })}
-              <p className="pm-wallet-note">JACKTRADE never sees your keys. Trades are signed in your wallet, on Robinhood Chain.</p>
+              <p className="pm-wallet-note">JackTrade never sees your keys. Trades are signed in your wallet, on Robinhood Chain.</p>
             </> : walletsScanned ? <div className="pm-wallet-empty"><Wallet size={25}/><strong>No browser wallet found</strong><small>Install an EVM wallet such as Rabby or MetaMask, then reload this page.</small></div> : null}
           </div>
         )}
@@ -942,7 +942,7 @@ function Modal({ value, close }) {
               <p className="pm-sheet-note">
                 {activationFee > 0
                   ? `First deposit: minimum ${money(minDeposit, 0)} USDG, including a one-time ${money(activationFee, 0)} USDG activation fee. One signature, no gas.`
-                  : "One signature, no gas: JACKTRADE pays it."}
+                  : "One signature, no gas: JackTrade pays it."}
               </p>
             </>}
           </div>

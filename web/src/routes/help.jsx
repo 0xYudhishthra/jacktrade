@@ -121,7 +121,7 @@ export default function Help() {
         <article className="hm-docs-body">
           <header className="hm-docs-hero">
             <span>Documentation</span>
-            <h1>JACKTRADE</h1>
+            <h1>JackTrade</h1>
             <p>
               Leveraged perpetuals on crypto and US equities, traded against the house on Robinhood Chain. Up to{" "}
               {money(first.maxLeverage, 0)}× leverage, no order book, no funding, no gas.
@@ -130,7 +130,7 @@ export default function Help() {
 
           <Section id="overview" title="Overview">
             <p>
-              JACKTRADE is a perpetual futures exchange where every trade is taken by a single counterparty: the{" "}
+              JackTrade is a perpetual futures exchange where every trade is taken by a single counterparty: the{" "}
               <strong>house pool</strong>. You go long or short at the live Pyth oracle price, with margin in USDG, and
               settle against the pool when you close.
             </p>
@@ -372,7 +372,7 @@ export default function Help() {
           <Section id="wallets" title="Wallets and sign-in">
             <p>
               Connect any EVM wallet, directly or through WalletConnect, or sign in with email, Google, X or Apple (a
-              wallet is created for you). On a phone you can open JACKTRADE in your wallet&apos;s browser or connect from
+              wallet is created for you). On a phone you can open JackTrade in your wallet&apos;s browser or connect from
               your regular browser.
             </p>
             <p>The app switches your wallet to Robinhood Chain (chain id 4663) when a signature needs it.</p>

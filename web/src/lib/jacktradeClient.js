@@ -105,7 +105,7 @@ export function assertTrustedConfig(config, trusted = TRUSTED) {
     domain(config?.eip712Actions?.sessionKeys?.domain, "JackTrade SessionKeyManager", trusted.SessionKeyManager) || "session key domain",
     domain(config?.eip712Actions?.staking?.domain, "JackTrade Staking", trusted.JackTradeStaking) || "staking domain",
   ].filter((p) => p !== true);
-  if (problems.length) throw new Error(`The relayer config does not match the JACKTRADE contracts (${problems.join(", ")}). Trading is disabled; please reload later.`);
+  if (problems.length) throw new Error(`The relayer config does not match the JackTrade contracts (${problems.join(", ")}). Trading is disabled; please reload later.`);
   return config;
 }
 
