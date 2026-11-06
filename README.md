@@ -155,7 +155,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Conditional bets (`set_trigger`) | **Built** · arming, validation and the fire path tested | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
 | Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
 | Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified through the hosted proxy | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
-| JackTradePoints contract | **Built** · 19 tests including a fuzz test | [`contracts`](contracts) |
+| JackTradePoints contract | **Live on Robinhood Chain** · 19 tests including a fuzz test | [`contracts`](contracts) |
 | Points sync job | **Built** | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
 | Trading UI with Grok pages | **Built** · build, 22 unit tests and the Docker image pass | [`web`](web) |
 | Fresh exchange deployment on Robinhood Chain | In progress | see Deployments |
@@ -171,7 +171,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Exchange | pending deploy |
 | SessionKeyManager | pending deploy |
 | BatchExecutor | pending deploy |
-| JackTradePoints (JTP) | pending deploy |
+| JackTradePoints (JTP) | `0xdc4d5b817C3Df2fB19cE5856b3967FbFA1199Ed7` (deploy tx `0xe189f8a5b2baec3f66b357ee45f88b0427e07fc7ec01865c8e329a4f581fa852`) |
 | Collateral: USDG | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
 
 **Tokens used by Make it real (Robinhood Chain):** TSLA `0x322F0929c4625eD5bAd873c95208D54E1c003b2d` · NVDA `0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC` · WETH `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
