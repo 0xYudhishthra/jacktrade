@@ -18,7 +18,7 @@ VITE_API_URL=https://hmindexer-production.up.railway.app
 
 > `VITE_*` se hornea en el build: si cambia, hay que redeployar el front. La URL tiene que llevar `https://`.
 
-Documentación detallada en el repo `jacktradeexchange/backend`: `docs/precios-front.md`, `docs/intents-front.md`, `docs/api-front.md`, y el cliente de ejemplo `docs/examples/jacktrade-client.js`.
+Documentación detallada en el repo del backend (privado): `docs/precios-front.md`, `docs/intents-front.md`, `docs/api-front.md`, y el cliente de ejemplo en `docs/examples/`.
 
 **Principio:** el usuario **firma** y el relayer **manda y paga el gas**. El backend no puede mover plata de nadie sin su firma.
 
@@ -57,10 +57,10 @@ Al arrancar, pedir `GET {RELAYER}/config`. Trae:
 ## 4. Abrir y cerrar
 
 ```js
-import * as hm from "./jacktrade-client.js"; // docs/examples del repo backend
+import * as jt from "./client.js"; // docs/examples del repo backend
 
-const config = await hm.loadConfig(import.meta.env.VITE_RELAYER_URL);
-const r = await hm.openPosition(config, {
+const config = await jt.loadConfig(import.meta.env.VITE_RELAYER_URL);
+const r = await jt.openPosition(config, {
   user, signer,            // wallet del usuario + session key
   instrumentId: 0,         // 0 BTC, 1 ETH
   isLong: true,
@@ -71,7 +71,7 @@ const r = await hm.openPosition(config, {
 });
 // r = { status: "executed", positionId, price (WAD, 18 decimales), txHash }
 
-await hm.closePosition(config, { user, signer, positionId: r.positionId, isLong: true, quote });
+await jt.closePosition(config, { user, signer, positionId: r.positionId, isLong: true, quote });
 ```
 
 | Regla | Por qué |
@@ -91,10 +91,10 @@ El usuario firma con su **wallet** (popup de firma, no de transacción) y el rel
 | `depositPermit` | Deposita USDG con un permit, sin `approve` previo. Mínimo 10 USDG (+1 USDG de activación la primera vez) | `nonces(user)` del contrato **USDG** |
 | `withdraw` | Retira del Exchange. Mínimo 10 USDG, salvo que retire todo | El mismo de abrir y cerrar |
 | `registerSessionKey` | Registra una session key con una firma | Del SessionKeyManager |
-| `stake` / `unstake` / `claim` | Staking de JACKTRADE (stake sin `approve`) | Del staking |
+| `stake` / `unstake` / `claim` | Staking de HOUSE (stake sin `approve`) | Del staking |
 
 ```js
-import { actionTypedData, actionToJson } from "@hm/shared"; // o copiar shared/src/actions.ts del backend
+import { actionTypedData, actionToJson } from "@jt/shared"; // o copiar shared/src/actions.ts del backend
 
 const deadline = BigInt(config.chainTime + 600); // al menos 60 s de margen
 const action = { kind: "withdraw", action: { user, to: user, amount: 10_000_000n, nonce, deadline } };
@@ -118,10 +118,10 @@ await fetch(`${RELAYER}/action`, { method: "POST", body: JSON.stringify({ ...act
 | `GET /api/markets` | OI, límites y volumen por mercado |
 | `GET /api/stats` | Totales de la casa |
 | `GET /api/leaderboard?by=pnl\|volume` | Ranking |
-| `GET /api/rate` | JACKTRADE por cada USDG perdido |
+| `GET /api/rate` | HOUSE por cada USDG perdido |
 
 - Montos y precios vienen como **texto decimal** (`"20.5"`): no sumarlos con `Number`, usar `parseUnits`.
-- Decimales: USDG 6, JACKTRADE 18.
+- Decimales: USDG 6, HOUSE 18.
 - Las direcciones vienen en minúscula.
 - Los tiempos vienen en segundos unix.
 

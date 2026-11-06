@@ -68,11 +68,11 @@ export default function TradingChart({
   const [hover, setHover] = useState(null); // {x, y, candle}
   const [view, setView] = useState({ offset: 0, bars: 120 }); // visible window
   // Every non-tick view is a candle chart; line stays available under Tools.
-  const [chartType, setChartType] = usePersistentState("hm.chart.type", "line");
+  const [chartType, setChartType] = usePersistentState("jt.chart.type", "line");
   const dragRef = useRef(null);
-  const [volume, setVolume] = usePersistentState("hm.chart.volume", false);
-  const [rsi, setRsi] = usePersistentState("hm.chart.rsi", false);
-  const [details, setDetails] = usePersistentState("hm.chart.details", false);
+  const [volume, setVolume] = usePersistentState("jt.chart.volume", false);
+  const [rsi, setRsi] = usePersistentState("jt.chart.rsi", false);
+  const [details, setDetails] = usePersistentState("jt.chart.details", false);
   const [announcement, setAnnouncement] = useState("");
   // Backend candles have no volume, so the volume pane stays off for those markets.
   const volumeOn = volume && !noVolume;
@@ -535,7 +535,7 @@ export default function TradingChart({
   }
 
   return (
-    <div className="hm-panel pm-integrated-chart flex flex-col" style={{ height: "100%" }}>
+    <div className="jt-panel pm-integrated-chart flex flex-col" style={{ height: "100%" }}>
       <div className="pm-chart-overlay" ref={overlayRef}>
         <div className="pm-chart-overlay-main">
           {header}

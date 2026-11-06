@@ -66,7 +66,7 @@ export function usePolledData(key, load, interval = 15_000) {
   return { data: fresh ? state.data : null, error: fresh ? state.error : "", loading: key != null && !fresh, retry };
 }
 
-const PREFS_KEY = "hm.production.preferences.v1";
+const PREFS_KEY = "jt.production.preferences.v1";
 const EMPTY = {
   balance: 0, positions: [], history: [], queue: [], queueHistory: [], events: [], equity: [], analytics: [],
   token: 0, minted: 0, staked: 0, claimable: 0, claimed: 0, credited: 0, lp: 0,

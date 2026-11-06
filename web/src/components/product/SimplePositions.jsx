@@ -35,7 +35,7 @@ export default function SimplePositions({
     event.currentTarget.querySelectorAll('[role="tab"]')[next].focus();
   };
   return (
-    <div className="hm-panel hm-positions-panel">
+    <div className="jt-panel jt-positions-panel">
       <div
         className="px-4 py-2.5 flex items-center justify-between flex-wrap gap-2"
         style={{ borderBottom: "1px solid #EAF4FF" }}
@@ -63,7 +63,7 @@ export default function SimplePositions({
           </span>
         </div>
       </div>
-      <div className="overflow-auto hm-scroll" style={{ maxHeight: 250 }}
+      <div className="overflow-auto jt-scroll" style={{ maxHeight: 250 }}
         role="tabpanel" id={`${id}-content`} aria-labelledby={`${id}-${tab}`} tabIndex={0}>
         {tab === "Positions" && (detailedPositions || (
           <PositionsTable positions={positions} onClose={onClose} />

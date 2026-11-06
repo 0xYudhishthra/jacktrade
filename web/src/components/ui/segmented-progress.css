@@ -1,4 +1,4 @@
-.hm-segmented-progress {
+.jt-segmented-progress {
   display: grid;
   grid-template-columns: repeat(26, minmax(0, 1fr));
   gap: 3px;
@@ -10,25 +10,25 @@
   background: #0e0b13;
   box-shadow: inset 1px 1px #060409, 0 0 0 1px #302438;
 }
-.hm-segmented-progress > span {
+.jt-segmented-progress > span {
   min-width: 0;
   background: transparent;
 }
-.hm-segmented-progress > span[data-filled="true"],
-.hm-segmented-progress.is-indeterminate > span {
+.jt-segmented-progress > span[data-filled="true"],
+.jt-segmented-progress.is-indeterminate > span {
   background: linear-gradient(#b395ce, #956fb2 48%, #825ca1 49%, #986fb5);
   box-shadow: inset 0 1px #d5bbe94d, inset 1px 0 #c8a5de33, inset 0 -1px #67447d;
 }
-.hm-segmented-progress.is-indeterminate > span {
-  animation: hm-segment-sweep 1.8s linear infinite;
+.jt-segmented-progress.is-indeterminate > span {
+  animation: jt-segment-sweep 1.8s linear infinite;
   animation-delay: calc(var(--segment-index) * 55ms);
   opacity: .12;
 }
-@keyframes hm-segment-sweep {
+@keyframes jt-segment-sweep {
   0%, 55%, 100% { opacity: .12; }
   15%, 35% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hm-segmented-progress.is-indeterminate > span { animation: none; opacity: .3; }
-  .hm-segmented-progress.is-indeterminate > span:nth-child(-n + 7) { opacity: 1; }
+  .jt-segmented-progress.is-indeterminate > span { animation: none; opacity: .3; }
+  .jt-segmented-progress.is-indeterminate > span:nth-child(-n + 7) { opacity: 1; }
 }

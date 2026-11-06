@@ -37,71 +37,71 @@ html[data-theme="dark"] {
   --theme-negative:#f49aa6;
 }
 .dream-theme-control {position:absolute;top:24px;right:30px;z-index:20;}
-body.dream-exe.pd-base.hm-nocturne :is(.dream-theme-control,.pd-header-actions) .dream-theme-toggle {display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;min-height:30px;flex-shrink:0;padding:0;border:1px solid var(--theme-control-border)!important;border-radius:var(--dream-corner)!important;background:var(--dream-glass)!important;color:var(--theme-muted)!important;box-shadow:var(--dream-glass-shadow)!important;cursor:pointer;}
+body.dream-exe.pd-base.jt-nocturne :is(.dream-theme-control,.pd-header-actions) .dream-theme-toggle {display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;min-height:30px;flex-shrink:0;padding:0;border:1px solid var(--theme-control-border)!important;border-radius:var(--dream-corner)!important;background:var(--dream-glass)!important;color:var(--theme-muted)!important;box-shadow:var(--dream-glass-shadow)!important;cursor:pointer;}
 .dream-preview-content .dream-theme-toggle {display:none!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne {
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne {
  color-scheme:dark;
  --dream-glass:linear-gradient(165deg,#34445be8,#253249d9 45%,#242c46eb);
  --dream-glass-edge:#52627d;--dream-glass-shadow:inset 0 1px #ffffff24,0 3px 12px #0003;
  --background:220 30% 6%;--foreground:215 40% 94%;--card:220 27% 10%;--card-foreground:215 40% 94%;--muted:220 25% 16%;--muted-foreground:215 20% 65%;--border:217 25% 22%;--input:217 25% 22%;--primary:215 100% 80%;--primary-foreground:220 30% 10%;
 }
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pd-header,.dream-preview-content .pd-header) {background:linear-gradient(115deg,#192333,#20263b 70%,#172232)!important;box-shadow:inset 0 1px #ffffff0c!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pm-original-ticket,.pm-modal-bar) {background:linear-gradient(145deg,#182130,#161c29)!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.hm-focus-submit,.dream-enter) {background:linear-gradient(170deg,#344f77,#253c5f 55%,#303d63)!important;color:#dbeaff!important;border-color:#617ca3!important;box-shadow:inset 0 1px #ffffff38,0 4px 15px #0003!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction {background:#18232e!important;color:#98acbf!important;border-color:#344458!important;box-shadow:inset 0 1px #ffffff12!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction[aria-pressed="true"] {background:linear-gradient(160deg,#25483e,#1d3430)!important;color:#91e3bc!important;border-color:#4c806c!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction.hm-focus-short[aria-pressed="true"] {background:linear-gradient(160deg,#50313b,#35232d)!important;color:#ffb1bb!important;border-color:#935b6b!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pd-activity-pill {background:var(--dream-glass)!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pd-header,.dream-preview-content .pd-header) {background:linear-gradient(115deg,#192333,#20263b 70%,#172232)!important;box-shadow:inset 0 1px #ffffff0c!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pm-original-ticket,.pm-modal-bar) {background:linear-gradient(145deg,#182130,#161c29)!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.jt-focus-submit,.dream-enter) {background:linear-gradient(170deg,#344f77,#253c5f 55%,#303d63)!important;color:#dbeaff!important;border-color:#617ca3!important;box-shadow:inset 0 1px #ffffff38,0 4px 15px #0003!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction {background:#18232e!important;color:#98acbf!important;border-color:#344458!important;box-shadow:inset 0 1px #ffffff12!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction[aria-pressed="true"] {background:linear-gradient(160deg,#25483e,#1d3430)!important;color:#91e3bc!important;border-color:#4c806c!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction.jt-focus-short[aria-pressed="true"] {background:linear-gradient(160deg,#50313b,#35232d)!important;color:#ffb1bb!important;border-color:#935b6b!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pd-activity-pill {background:var(--dream-glass)!important;}
 html[data-theme="dark"] .dream-landing-white {background:radial-gradient(ellipse at 50% 15%,#202b43 0%,#111722 47%,#0b1019 90%);color:#c5d6ed;}
 html[data-theme="dark"] .dream-landing-white :is(.dream-tagline,.dream-subline,.dream-multiplier) {color:#a5b8d3;}
 html[data-theme="dark"] .dream-preview-frame {background:#34405770;border-color:#65789970;box-shadow:inset 0 1px #ffffff30,0 35px 80px #0007;}
 html[data-theme="dark"] .dream-market-glass {background:linear-gradient(155deg,#6984a163,#334b6961 36%,#253b5d91 53%,#60547970 77%,#7186a65e);border-color:#728baa;}
 html[data-theme="dark"] .dream-market-depth .dream-market-glass {box-shadow:inset 0 2px 3px #c5dcff65,inset 0 -2px 3px #45658c,0 0 0 1px #526681,1px 1px #3e4e65,2px 2px #38485f,3px 3px #334259,4px 4px #2e3c52,5px 5px #29364b,6px 6px #243044,0 13px 24px #0005;}
 html[data-theme="dark"] .dream-landing-white .dream-hero-copy h1 {-webkit-text-fill-color:#dceafd;color:#dceafd;-webkit-text-stroke-color:#7e99c2;text-shadow:0 2px 1px #263348,0 10px 35px #6786bf22;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-brand-wordmark {-webkit-text-fill-color:#d9e8fb!important;color:#d9e8fb!important;-webkit-text-stroke-color:#7e99c2!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-leverage-range {background:linear-gradient(90deg,#789ac5,var(--lev-color)) 0 0/calc(var(--fill) + .1%) 100% no-repeat,#2b374a!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-brand-wordmark {-webkit-text-fill-color:#d9e8fb!important;color:#d9e8fb!important;-webkit-text-stroke-color:#7e99c2!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-leverage-range {background:linear-gradient(90deg,#789ac5,var(--lev-color)) 0 0/calc(var(--fill) + .1%) 100% no-repeat,#2b374a!important;}
 @media(max-width:600px){.dream-theme-control{right:18px;top:18px;}}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.hm-positions-panel>div:first-child,.pm-dashboard-content .hm-panel-bar,.pm-modal,.pm-modal-heading) {background:linear-gradient(115deg,#1c283a,#222b40)!important;border-color:#34445b!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.luna-btn,.pm-chart-control-toggle,.hm-focus-quick button,.hm-focus-leverage-value button,.hm-focus-leverage-stops button,.pm-floating-market-toggle,.pm-deposit-chain) {color:#bbd0ed!important;border-color:#435772!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pm-tools-menu,.pm-chart-timeframe-menu,.hm-focus-market-popover,.ds-chart-tooltip,.pm-session-duration) {background:#182232!important;color:#c6d2e3!important;border-color:#41536d!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.hm-focus-picker-market[aria-selected=true],.luna-btn:hover,.luna-btn[aria-pressed=true]) {background:#2a3b55!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction {background:none!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction button {background:linear-gradient(165deg,#293547,#1b2636)!important;color:#b8c8dd!important;border-color:#4c607a!important;box-shadow:inset 0 1px #ffffff24!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction .sky-direction-long[aria-pressed=true] {background:linear-gradient(165deg,#355f51,#213e35)!important;color:#9be9c5!important;border-color:#61967c!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-direction .sky-direction-short[aria-pressed=true] {background:linear-gradient(165deg,#65404b,#422b35)!important;color:#ffc3ca!important;border-color:#9a6875!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pm-callout,.pm-minimum-callout) {background:#232d3d!important;color:#b5c5da!important;border-color:#40526c!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .dream-enter.dream-glass {background:linear-gradient(170deg,#47638a,#293f61 55%,#3c496e)!important;color:#e0edff!important;border-color:#829dc0!important;box-shadow:inset 0 1px #ffffff60,inset 0 -1px #9fc5ff40,0 8px 25px #0004!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .ds-ranking-table :is(tr.ds-rank-1,tr.ds-rank-2,tr.ds-rank-3) td {background:#1b2533;border-color:#3b4b62!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.jt-positions-panel>div:first-child,.pm-dashboard-content .jt-panel-bar,.pm-modal,.pm-modal-heading) {background:linear-gradient(115deg,#1c283a,#222b40)!important;border-color:#34445b!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.luna-btn,.pm-chart-control-toggle,.jt-focus-quick button,.jt-focus-leverage-value button,.jt-focus-leverage-stops button,.pm-floating-market-toggle,.pm-deposit-chain) {color:#bbd0ed!important;border-color:#435772!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pm-tools-menu,.pm-chart-timeframe-menu,.jt-focus-market-popover,.ds-chart-tooltip,.pm-session-duration) {background:#182232!important;color:#c6d2e3!important;border-color:#41536d!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.jt-focus-picker-market[aria-selected=true],.luna-btn:hover,.luna-btn[aria-pressed=true]) {background:#2a3b55!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction {background:none!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction button {background:linear-gradient(165deg,#293547,#1b2636)!important;color:#b8c8dd!important;border-color:#4c607a!important;box-shadow:inset 0 1px #ffffff24!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction .sky-direction-long[aria-pressed=true] {background:linear-gradient(165deg,#355f51,#213e35)!important;color:#9be9c5!important;border-color:#61967c!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-direction .sky-direction-short[aria-pressed=true] {background:linear-gradient(165deg,#65404b,#422b35)!important;color:#ffc3ca!important;border-color:#9a6875!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pm-callout,.pm-minimum-callout) {background:#232d3d!important;color:#b5c5da!important;border-color:#40526c!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .dream-enter.dream-glass {background:linear-gradient(170deg,#47638a,#293f61 55%,#3c496e)!important;color:#e0edff!important;border-color:#829dc0!important;box-shadow:inset 0 1px #ffffff60,inset 0 -1px #9fc5ff40,0 8px 25px #0004!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .ds-ranking-table :is(tr.ds-rank-1,tr.ds-rank-2,tr.ds-rank-3) td {background:#1b2533;border-color:#3b4b62!important;}
 /* Light-only surfaces that still showed up white or washed out in dark mode. */
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-market-row {background:transparent!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-market-row:hover {background:#1d283a!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-market-row.is-selected {background:#24324a!important;border-color:#3a4a60!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-chart-overlay .pm-floating-market-toggle {background:var(--dream-glass)!important;box-shadow:var(--dream-glass-shadow)!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.hm-workstation,.pm-modal) :is(.luna-btn-active,.luna-btn[aria-pressed=true]),
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-focus-leverage-stops button[aria-pressed=true] {background:linear-gradient(170deg,#3d5a84,#2a4266 55%,#35426a)!important;color:#e0edff!important;border-color:#6f8bb2!important;box-shadow:inset 0 1px #ffffff40,0 4px 14px #0003!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-workstation :is(.luna-btn,.pm-chart-control-toggle,.pm-filter-select :is(select,.pm-select-trigger),.hm-focus-quick button):hover:not(:disabled) {background:#2a3b55!important;border-color:#56708f!important;box-shadow:inset 0 1px #ffffff1c!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-filter-select :is(select,.pm-select-trigger) {background:var(--dream-glass)!important;color:#bbd0ed!important;border-color:#435772!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-filter-select :is(select,.pm-select-trigger) option {background:#182232;color:#c6d2e3;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-filter-select > svg {color:#9aaabe;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pm-workstation input:not([type="range"]):not([type="checkbox"]),.pm-modal input:not([type="checkbox"])) {background:#0d121a;border-color:#3a4a60;color:var(--theme-text);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne :is(.pm-workstation,.pm-modal) input:focus {background:#141c28;border-color:#617ca3;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-modal-heading button {background:#ffffff0d;border-color:#41536d;color:#9aaabe;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-wallet-fallback {background:linear-gradient(145deg,#2b3d58,#30305a);color:#bbd0ed;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-wallet-empty {border-color:#34445b;color:#9aaabe;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-wallet-empty strong {color:var(--theme-text);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-share-card {background:linear-gradient(135deg,#1b2533,#121821);border-color:#34445b;color:#9aaabe;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-share-card > span {color:var(--theme-text);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-share-card strong {color:var(--theme-positive);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-share-card em {color:var(--theme-muted);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .ds-pagination button {color:#9aaabe;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pd-trade-tabs button {color:var(--theme-muted);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pd-trade-tabs button:is([aria-selected="true"],:hover) {color:var(--theme-text);border-bottom-color:var(--theme-line-strong);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pd-trade-tabs button:hover {background:var(--theme-raised);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-dashboard-content :is(.pm-two-columns,.ds-simulator-row) {background:var(--theme-surface);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-dashboard-content .pm-two-columns > * + * {border-left-color:var(--theme-line);}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .pm-flow > span {background:var(--theme-raised);border-color:var(--theme-line-strong);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-market-row {background:transparent!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-market-row:hover {background:#1d283a!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-market-row.is-selected {background:#24324a!important;border-color:#3a4a60!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-chart-overlay .pm-floating-market-toggle {background:var(--dream-glass)!important;box-shadow:var(--dream-glass-shadow)!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.jt-workstation,.pm-modal) :is(.luna-btn-active,.luna-btn[aria-pressed=true]),
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-focus-leverage-stops button[aria-pressed=true] {background:linear-gradient(170deg,#3d5a84,#2a4266 55%,#35426a)!important;color:#e0edff!important;border-color:#6f8bb2!important;box-shadow:inset 0 1px #ffffff40,0 4px 14px #0003!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-workstation :is(.luna-btn,.pm-chart-control-toggle,.pm-filter-select :is(select,.pm-select-trigger),.jt-focus-quick button):hover:not(:disabled) {background:#2a3b55!important;border-color:#56708f!important;box-shadow:inset 0 1px #ffffff1c!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-filter-select :is(select,.pm-select-trigger) {background:var(--dream-glass)!important;color:#bbd0ed!important;border-color:#435772!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-filter-select :is(select,.pm-select-trigger) option {background:#182232;color:#c6d2e3;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-filter-select > svg {color:#9aaabe;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pm-workstation input:not([type="range"]):not([type="checkbox"]),.pm-modal input:not([type="checkbox"])) {background:#0d121a;border-color:#3a4a60;color:var(--theme-text);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne :is(.pm-workstation,.pm-modal) input:focus {background:#141c28;border-color:#617ca3;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-modal-heading button {background:#ffffff0d;border-color:#41536d;color:#9aaabe;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-wallet-fallback {background:linear-gradient(145deg,#2b3d58,#30305a);color:#bbd0ed;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-wallet-empty {border-color:#34445b;color:#9aaabe;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-wallet-empty strong {color:var(--theme-text);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-share-card {background:linear-gradient(135deg,#1b2533,#121821);border-color:#34445b;color:#9aaabe;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-share-card > span {color:var(--theme-text);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-share-card strong {color:var(--theme-positive);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-share-card em {color:var(--theme-muted);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .ds-pagination button {color:#9aaabe;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pd-trade-tabs button {color:var(--theme-muted);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pd-trade-tabs button:is([aria-selected="true"],:hover) {color:var(--theme-text);border-bottom-color:var(--theme-line-strong);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pd-trade-tabs button:hover {background:var(--theme-raised);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-dashboard-content :is(.pm-two-columns,.ds-simulator-row) {background:var(--theme-surface);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-dashboard-content .pm-two-columns > * + * {border-left-color:var(--theme-line);}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .pm-flow > span {background:var(--theme-raised);border-color:var(--theme-line-strong);}
 /* Dark theme, chart and ticket controls (Tick, Tools, 25% / Half / Max, − / +, leverage stops). The light theme's
-   ".hm-workstation :is(…)" text colour is more specific than the dark rule above, so these were dark blue on dark. */
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-workstation :is(.pm-chart-control-toggle,.hm-focus-quick button,.hm-focus-leverage-value button,.hm-focus-leverage-stops button):not([aria-pressed="true"]) {color:#c9d6e8!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-workstation :is(.pm-chart-control-toggle,.hm-focus-quick button,.hm-focus-leverage-value button,.hm-focus-leverage-stops button):not([aria-pressed="true"]):disabled {color:#5f708a!important;}
-html[data-theme="dark"] body.dream-exe.pd-base.hm-nocturne .hm-workstation .pm-chart-control-toggle:hover:not(:disabled) {color:#ffffff!important;}
+   ".jt-workstation :is(…)" text colour is more specific than the dark rule above, so these were dark blue on dark. */
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-workstation :is(.pm-chart-control-toggle,.jt-focus-quick button,.jt-focus-leverage-value button,.jt-focus-leverage-stops button):not([aria-pressed="true"]) {color:#c9d6e8!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-workstation :is(.pm-chart-control-toggle,.jt-focus-quick button,.jt-focus-leverage-value button,.jt-focus-leverage-stops button):not([aria-pressed="true"]):disabled {color:#5f708a!important;}
+html[data-theme="dark"] body.dream-exe.pd-base.jt-nocturne .jt-workstation .pm-chart-control-toggle:hover:not(:disabled) {color:#ffffff!important;}

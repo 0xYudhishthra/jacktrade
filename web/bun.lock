@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "jacktrade-frontend",
+      "name": "jacktrade-web",
       "dependencies": {
         "@reown/appkit": "1.8.24",
         "@reown/appkit-adapter-wagmi": "1.8.24",

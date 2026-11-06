@@ -1,5 +1,5 @@
 /* Sign-in as a members' club card: black stock, gold foil rules, serif type. */
-.hm-club {
+.jt-club {
   --club-paper: #141319;
   --club-paper-edge: #0a0a0d;
   --club-ink: #ece2cc;
@@ -12,12 +12,12 @@
   padding: 48px 16px 64px;
 }
 /* The terminal theme forces a mono font on every control; the card keeps its serif. */
-.hm-signin.hm-club button,
-.hm-signin.hm-club input {
+.jt-signin.jt-club button,
+.jt-signin.jt-club input {
   font-family: var(--club-serif) !important;
 }
 
-.hm-club-card {
+.jt-club-card {
   position: relative;
   z-index: 1;
   width: min(410px, 100%);
@@ -32,9 +32,9 @@
     0 1px 0 #ffffff14 inset,
     0 30px 60px #000000a6,
     0 8px 18px #00000066;
-  animation: hm-club-arrive 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: jt-club-arrive 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-.hm-club-frame {
+.jt-club-frame {
   padding: 30px 32px 22px;
   border: 1px solid var(--club-gold);
   outline: 1px solid var(--club-gold-soft);
@@ -42,7 +42,7 @@
   text-align: center;
 }
 
-.hm-club-crest {
+.jt-club-crest {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -59,40 +59,40 @@
   font-weight: 600;
   letter-spacing: -0.04em;
 }
-.hm-club-crest span:last-child {
+.jt-club-crest span:last-child {
   margin-left: -2px;
   transform: translateY(4px);
 }
-.hm-club-eyebrow,
-.hm-club-sub,
-.hm-club-choice,
-.hm-club-member dt,
-.hm-club-field > span,
-.hm-club-submit,
-.hm-club-motto {
+.jt-club-eyebrow,
+.jt-club-sub,
+.jt-club-choice,
+.jt-club-member dt,
+.jt-club-field > span,
+.jt-club-submit,
+.jt-club-motto {
   font-variant: small-caps;
   letter-spacing: 0.16em;
 }
-.hm-club-eyebrow {
+.jt-club-eyebrow {
   margin: 0;
   color: var(--club-muted);
   font-size: 13px;
 }
-.hm-club-header h1 {
+.jt-club-header h1 {
   margin: 2px 0 0;
   font-size: 46px;
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0.02em;
 }
-.hm-club-sub {
+.jt-club-sub {
   margin: 8px 0 0;
   color: var(--club-gold);
   font-size: 13px;
   font-weight: 600;
 }
 
-.hm-club-rule {
+.jt-club-rule {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -100,23 +100,23 @@
   color: var(--club-gold);
   font-size: 10px;
 }
-.hm-club-rule::before,
-.hm-club-rule::after {
+.jt-club-rule::before,
+.jt-club-rule::after {
   content: "";
   flex: 1;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--club-gold));
 }
-.hm-club-rule::after {
+.jt-club-rule::after {
   background: linear-gradient(90deg, var(--club-gold), transparent);
 }
 
-.hm-club-choices {
+.jt-club-choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 1px solid var(--club-gold-soft);
 }
-.hm-club-choice {
+.jt-club-choice {
   padding: 9px 6px 10px;
   border: 0;
   background: transparent;
@@ -127,78 +127,78 @@
     background 200ms,
     color 200ms;
 }
-.hm-club-choice + .hm-club-choice {
+.jt-club-choice + .jt-club-choice {
   border-left: 1px solid var(--club-gold-soft);
 }
-.hm-club-choice:hover {
+.jt-club-choice:hover {
   color: var(--club-ink);
 }
-.hm-club-choice[aria-pressed="true"] {
+.jt-club-choice[aria-pressed="true"] {
   background: var(--club-gold);
   color: var(--club-paper-edge);
 }
 
-.hm-club-panel {
+.jt-club-panel {
   display: grid;
   gap: 14px;
   margin-top: 18px;
-  animation: hm-club-fade 400ms ease both;
+  animation: jt-club-fade 400ms ease both;
 }
-.hm-club-lede {
+.jt-club-lede {
   margin: 0;
   font-size: 19px;
   font-style: italic;
   line-height: 1.3;
 }
-.hm-club-lede em {
+.jt-club-lede em {
   color: var(--club-gold);
 }
-.hm-club-note {
+.jt-club-note {
   margin: -4px 0 2px;
   color: var(--club-muted);
   font-size: 15px;
   line-height: 1.35;
 }
 
-.hm-club-member {
+.jt-club-member {
   display: grid;
   gap: 6px;
   margin: 0;
   text-align: left;
 }
-.hm-club-member > div {
+.jt-club-member > div {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
-.hm-club-member > div::after {
+.jt-club-member > div::after {
   content: "";
   order: 1;
   flex: 1;
   border-bottom: 1px dotted var(--club-gold);
   transform: translateY(-4px);
 }
-.hm-club-member dt {
+.jt-club-member dt {
   color: var(--club-muted);
   font-size: 13px;
 }
-.hm-club-member dd {
+.jt-club-member dd {
   order: 2;
   margin: 0;
   font-size: 16px;
   font-weight: 600;
 }
 
-.hm-club-field {
+.jt-club-field {
   display: grid;
   gap: 4px;
   text-align: left;
 }
-.hm-club-field > span {
+.jt-club-field > span {
   color: var(--club-muted);
   font-size: 13px;
 }
-.hm-club-field input {
+.jt-club-field input {
   width: 100%;
   padding: 4px 2px 6px;
   border: 0;
@@ -208,20 +208,20 @@
   color: var(--club-ink);
   font: italic 20px var(--club-serif);
 }
-.hm-club-field input::placeholder {
+.jt-club-field input::placeholder {
   color: #6f685c;
   font-size: 16px;
 }
-.hm-signin.hm-club .hm-club-field input:focus-visible {
+.jt-signin.jt-club .jt-club-field input:focus-visible {
   outline: none;
 }
-.hm-club-field input:focus {
+.jt-club-field input:focus {
   outline: none;
   border-bottom-color: var(--club-ink);
   box-shadow: 0 1px 0 var(--club-ink);
 }
 
-.hm-club-submit {
+.jt-club-submit {
   margin-top: 4px;
   padding: 12px 16px 13px;
   border: 1px solid var(--club-gold);
@@ -233,37 +233,37 @@
   cursor: pointer;
   transition: background 200ms;
 }
-.hm-club-submit:hover:not(:disabled) {
+.jt-club-submit:hover:not(:disabled) {
   background: #74242f;
 }
-.hm-club-submit:disabled {
+.jt-club-submit:disabled {
   cursor: progress;
   opacity: 0.85;
 }
-.hm-signin.hm-club .hm-club-choice:focus-visible,
-.hm-signin.hm-club .hm-club-submit:focus-visible {
+.jt-signin.jt-club .jt-club-choice:focus-visible,
+.jt-signin.jt-club .jt-club-submit:focus-visible {
   outline: 2px solid var(--club-gold);
   outline-offset: 2px;
 }
 
-.hm-club-footer {
+.jt-club-footer {
   margin-top: 20px;
   padding-top: 12px;
   border-top: 1px solid var(--club-gold-soft);
 }
-.hm-club-footer p {
+.jt-club-footer p {
   margin: 0;
   color: var(--club-muted);
   font-size: 13px;
   font-style: italic;
 }
-.hm-club-footer .hm-club-signature {
+.jt-club-footer .jt-club-signature {
   margin-top: 4px;
   color: var(--club-gold);
   font: 26px/1.1 var(--club-script);
 }
 
-.hm-club-motto {
+.jt-club-motto {
   position: absolute;
   bottom: 22px;
   left: 0;
@@ -276,33 +276,33 @@
   text-shadow: 0 1px 6px #000;
 }
 
-@keyframes hm-club-arrive {
+@keyframes jt-club-arrive {
   from {
     opacity: 0;
     transform: translateY(14px) rotate(-0.6deg);
   }
 }
-@keyframes hm-club-fade {
+@keyframes jt-club-fade {
   from {
     opacity: 0;
   }
 }
 
 @media (max-width: 540px) {
-  .hm-club-frame {
+  .jt-club-frame {
     padding: 24px 18px 18px;
   }
-  .hm-club-header h1 {
+  .jt-club-header h1 {
     font-size: 40px;
   }
-  .hm-club-choice {
+  .jt-club-choice {
     font-size: 13px;
     letter-spacing: 0.08em;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hm-club-card,
-  .hm-club-panel {
+  .jt-club-card,
+  .jt-club-panel {
     animation: none;
   }
 }

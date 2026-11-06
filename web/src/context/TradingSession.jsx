@@ -19,12 +19,12 @@ const TIMEFRAMES = ["tick", "1m", "5m", "15m", "1h", "4h", "1d"];
 
 export function TradingSessionProvider({ children }) {
   // Market, view and favorites are remembered between visits (same keys as the DREAM.EXE design).
-  const [savedSymbol, setSymbol] = usePersistentState("hm.dream.market", "BTC-PERP");
+  const [savedSymbol, setSymbol] = usePersistentState("jt.dream.market", "BTC-PERP");
   const symbol = SYMBOLS.includes(savedSymbol) ? savedSymbol : "BTC-PERP";
-  const [savedTimeframe, setTimeframe] = usePersistentState("hm.dream.timeframe", "tick");
+  const [savedTimeframe, setTimeframe] = usePersistentState("jt.dream.timeframe", "tick");
   // Ignore views the backend doesn't serve (an older design offered 30m).
   const timeframe = TIMEFRAMES.includes(savedTimeframe) ? savedTimeframe : "tick";
-  const [favorites, setFavorites] = usePersistentState("hm.dream.favorites", ["BTC-PERP", "ETH-PERP"]);
+  const [favorites, setFavorites] = usePersistentState("jt.dream.favorites", ["BTC-PERP", "ETH-PERP"]);
   const live = useLivePrices();
   // Protocol state per market (OI, caps, limits, 24h volume) from the indexer.
   const { protocolMarkets, fees, limits, marketsError } = useMarketData();

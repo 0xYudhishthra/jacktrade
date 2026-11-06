@@ -1,5 +1,5 @@
 /* Original landing typography, shared with the header wordmark. */
-.pd-base.hm-nocturne .pd-header-brand .hm-brand-wordmark {
+.pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
   font:500 20px/1 Inter,
     ui-sans-serif,
     system-ui,
@@ -43,7 +43,7 @@
   }
 }
 @media (max-width:800px) {
-  .pd-base.hm-nocturne .pd-header-brand .hm-brand-wordmark {
+  .pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
     font-size:19px !important;
   }
 }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mapActivity,mapActivityPage,describeActivity} from '../src/lib/accountActivity.js';
-const item=(over)=>({id:'0xa-1',kind:'stake',user:'0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc',username:null,market:null,side:null,amount:'600',unit:'JACKTRADE',at:1793072000,tx:'0xa',...over});
+const item=(over)=>({id:'0xa-1',kind:'stake',user:'0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc',username:null,market:null,side:null,amount:'600',unit:'HOUSE',at:1793072000,tx:'0xa',...over});
 test('backend activity maps to dashboard rows with real units and times',()=>{
   const row=mapActivity(item());
   assert.deepEqual([row.type,row.unit,row.amount,row.time],['STAKE','HOUSE',600,1793072000000]);

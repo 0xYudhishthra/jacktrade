@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { chainNow, normalizeConfig, priceLimit, RelayerError } from "../src/lib/jacktradeClient.js";
 import { orderMinimumIssue } from "../src/lib/orderMinimums.js";
 
-describe("Jacktrade protocol client", () => {
+describe("JackTrade protocol client", () => {
   const quote = { price: "8191581", expo: -2 };
 
   it("builds conservative 18 decimal limits from raw Pyth quotes", () => {

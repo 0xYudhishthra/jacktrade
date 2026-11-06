@@ -1,17 +1,17 @@
 /* Market and collateral logos (fetched from the logo APIs) with their text-glyph fallback. */
-.hm-market-logo {
+.jt-market-logo {
   display:block;
   flex-shrink:0;
   object-fit:contain;
 }
-.hm-market-glyph {
+.jt-market-glyph {
   display:inline-grid;
   flex-shrink:0;
   place-items:center;
   font-weight:700;
   line-height:1;
 }
-.hm-collateral-logo {
+.jt-collateral-logo {
   display:block;
   flex-shrink:0;
   border-radius:50%;
@@ -59,51 +59,51 @@
 }
 
 /* Prices keep their normal color and only flash a slight green/red tint on a move. */
-.hm-flash-up {
-  animation:hm-flash-up 450ms ease-out;
+.jt-flash-up {
+  animation:jt-flash-up 450ms ease-out;
 }
-.hm-flash-down {
-  animation:hm-flash-down 450ms ease-out;
+.jt-flash-down {
+  animation:jt-flash-down 450ms ease-out;
 }
-@keyframes hm-flash-up {
+@keyframes jt-flash-up {
   from {
     color:#2d9562;
   }
 }
-@keyframes hm-flash-down {
+@keyframes jt-flash-down {
   from {
     color:#c85c67;
   }
 }
 @media (prefers-reduced-motion:reduce) {
-  .hm-flash-up,
-  .hm-flash-down {
+  .jt-flash-up,
+  .jt-flash-down {
     animation:none;
   }
 }
 
 /* Leverage warms up subtly as it rises. --heat runs from 0 (10×) to 1 (1000×). */
-.hm-lev {
+.jt-lev {
   --lev-hue:calc(270 + var(--heat) * 55);
   --lev-color:hsl(var(--lev-hue) 70% 76%);
 }
-.hm-nocturne .hm-lev .hm-focus-leverage-value output {
+.jt-nocturne .jt-lev .jt-focus-leverage-value output {
   color:var(--lev-color);
   text-shadow:0 0 calc(6px + var(--heat) * 12px) hsl(var(--lev-hue) 80% 65% / 0.45);
   transform:scale(calc(1 + var(--heat) * 0.16));
   transition:color 200ms,
     transform 200ms;
 }
-.hm-nocturne .hm-lev .hm-focus-leverage-value output > span {
+.jt-nocturne .jt-lev .jt-focus-leverage-value output > span {
   color:var(--lev-color);
   opacity:0.6;
 }
-.hm-lev-number {
+.jt-lev-number {
   display:inline-block;
   font-weight:inherit;
-  animation:hm-lev-pop 180ms ease-out;
+  animation:jt-lev-pop 180ms ease-out;
 }
-.hm-lev-tier {
+.jt-lev-tier {
   margin:12px 0 4px;
   color:#687080;
   font-size:11px;
@@ -112,25 +112,25 @@
   text-align:center;
   text-transform:uppercase;
 }
-.hm-nocturne .hm-lev .hm-range {
+.jt-nocturne .jt-lev .jt-range {
   background:linear-gradient(90deg, #f4f7fc, var(--lev-color)) 0 0 / calc(var(--fill, 0%) + 0.1%) 100%
       no-repeat,
     #f4f7fc;
   box-shadow:0 0 calc(var(--heat) * 8px) hsl(var(--lev-hue) 80% 65% / 0.35);
 }
-.hm-nocturne .hm-lev .hm-range::-webkit-slider-thumb {
+.jt-nocturne .jt-lev .jt-range::-webkit-slider-thumb {
   border-color:var(--lev-color);
 }
-.hm-nocturne .hm-lev .hm-range::-moz-range-thumb {
+.jt-nocturne .jt-lev .jt-range::-moz-range-thumb {
   border-color:var(--lev-color);
 }
-@keyframes hm-lev-pop {
+@keyframes jt-lev-pop {
   from {
     transform:scale(1.06);
   }
 }
 @media (prefers-reduced-motion:reduce) {
-  .hm-lev-number {
+  .jt-lev-number {
     animation:none;
   }
 }
@@ -163,34 +163,34 @@
 }
 
 /* Tools menu:wider, readable, comfortable targets, clear focus. */
-.hm-nocturne .pm-tools-menu {
+.jt-nocturne .pm-tools-menu {
   width:320px;
   max-width:calc(100vw - 32px);
   max-height:min(70vh, 560px);
   padding:14px 16px;
   color:#171923;
 }
-.hm-nocturne .pm-tools-menu fieldset + fieldset {
+.jt-nocturne .pm-tools-menu fieldset + fieldset {
   margin-top:16px;
   padding-top:14px;
   border-top:1px solid #dce3ee;
 }
-.hm-nocturne .pm-tools-menu legend {
+.jt-nocturne .pm-tools-menu legend {
   margin-bottom:8px;
   color:#687080;
   font-size:11px;
   font-weight:600;
   letter-spacing:0.08em;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-type-options {
+.jt-nocturne .pm-tools-menu .pm-chart-type-options {
   margin-bottom:6px;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-type-options .luna-btn {
+.jt-nocturne .pm-tools-menu .pm-chart-type-options .luna-btn {
   flex:1;
   min-height:34px;
   font-size:12px;
 }
-.hm-nocturne .pm-chart-tool-option {
+.jt-nocturne .pm-chart-tool-option {
   align-items:flex-start;
   gap:10px;
   min-height:40px;
@@ -198,17 +198,17 @@
   border-radius:3px;
   font-size:12px;
 }
-.hm-nocturne .pm-chart-tool-option:hover {
+.jt-nocturne .pm-chart-tool-option:hover {
   background:#ffffff08;
 }
-.hm-nocturne .pm-chart-tool-option input {
+.jt-nocturne .pm-chart-tool-option input {
   flex-shrink:0;
   width:16px;
   height:16px;
   margin-top:1px;
   accent-color:#254a87;
 }
-.hm-nocturne .pm-chart-tool-option input:focus-visible {
+.jt-nocturne .pm-chart-tool-option input:focus-visible {
   outline:2px solid #dce3ee;
   outline-offset:2px;
 }
@@ -225,16 +225,16 @@
   font-size:11px;
   line-height:1.35;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-market-stats {
+.jt-nocturne .pm-tools-menu .pm-chart-market-stats {
   font-size:12px;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-market-stats > div {
+.jt-nocturne .pm-tools-menu .pm-chart-market-stats > div {
   padding:6px 4px;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-market-stats dt {
+.jt-nocturne .pm-tools-menu .pm-chart-market-stats dt {
   color:#687080;
 }
-.hm-nocturne .pm-tools-menu .pm-chart-market-stats dd {
+.jt-nocturne .pm-tools-menu .pm-chart-market-stats dd {
   color:#171923;
   font-variant-numeric:tabular-nums;
 }
@@ -324,93 +324,93 @@
 }
 
 /* ===== Readability floor for the trade screen:nothing under 11px, labels at AA contrast. ===== */
-.hm-nocturne .pd-header-demo {
+.jt-nocturne .pd-header-demo {
   font-size:11px !important;
 }
 /* Chart header */
-.hm-nocturne .pm-floating-market-toggle > span:not(.pm-floating-market-coin):not(.pm-floating-market-symbol) {
+.jt-nocturne .pm-floating-market-toggle > span:not(.pm-floating-market-coin):not(.pm-floating-market-symbol) {
   font-size:12px !important;
 }
-.hm-nocturne .pm-floating-market-symbol {
+.jt-nocturne .pm-floating-market-symbol {
   font-size:12px !important;
 }
-.hm-nocturne .pm-feed-badge {
+.jt-nocturne .pm-feed-badge {
   font-size:11px;
 }
-.hm-nocturne .pm-feed-conf {
+.jt-nocturne .pm-feed-conf {
   color:#687080;
   font-size:12px;
 }
-.hm-nocturne .pm-floating-market-stats dt {
+.jt-nocturne .pm-floating-market-stats dt {
   color:#687080 !important;
   font-size:11px !important;
   letter-spacing:0.04em;
 }
-.hm-nocturne .pm-floating-market-stats dd {
+.jt-nocturne .pm-floating-market-stats dd {
   font-size:13px !important;
 }
-.hm-nocturne .pm-chart-control-toggle {
+.jt-nocturne .pm-chart-control-toggle {
   min-height:36px;
   font-size:12px !important;
 }
 /* Order ticket */
-.hm-nocturne .pm-ticket:is(.hm-focus-amount-top > label, .hm-focus-field-label) {
+.jt-nocturne .pm-ticket:is(.jt-focus-amount-top > label, .jt-focus-field-label) {
   color:#687080 !important;
   font-size:12px !important;
 }
-.hm-nocturne .pm-ticket .hm-focus-quick button {
+.jt-nocturne .pm-ticket .jt-focus-quick button {
   min-height:28px;
   padding:4px 8px !important;
   font-size:12px !important;
 }
-.hm-nocturne .pm-ticket .hm-focus-available {
+.jt-nocturne .pm-ticket .jt-focus-available {
   color:#687080 !important;
   font-size:12px !important;
 }
-.hm-nocturne .pm-ticket .hm-focus-leverage-stops button {
+.jt-nocturne .pm-ticket .jt-focus-leverage-stops button {
   min-height:28px;
   font-size:12px !important;
 }
-.hm-nocturne .pm-ticket:is(.sky-direction-long, .sky-direction-short) {
+.jt-nocturne .pm-ticket:is(.sky-direction-long, .sky-direction-short) {
   font-size:13px !important;
 }
-.hm-nocturne .pm-ticket .hm-focus-order-summary > div {
+.jt-nocturne .pm-ticket .jt-focus-order-summary > div {
   font-size:13px !important;
 }
-.hm-nocturne .pm-ticket .hm-focus-order-summary dt {
+.jt-nocturne .pm-ticket .jt-focus-order-summary dt {
   color:#687080 !important;
 }
 /* Demo trades tape and feed */
-.hm-nocturne .pd-activity-pill {
+.jt-nocturne .pd-activity-pill {
   font-size:12px !important;
 }
-.hm-nocturne .pd-activity-pill b {
+.jt-nocturne .pd-activity-pill b {
   font-size:12px !important;
 }
-.hm-nocturne .pd-activity-pause {
+.jt-nocturne .pd-activity-pause {
   min-width:28px;
   min-height:28px;
   font-size:12px !important;
 }
-.hm-nocturne .pm-feed {
+.jt-nocturne .pm-feed {
   font-size:13px !important;
 }
-.hm-nocturne .pm-feed > div > span {
+.jt-nocturne .pm-feed > div > span {
   color:#687080 !important;
   font-size:11px !important;
   letter-spacing:0.06em;
 }
-.hm-nocturne .pm-feed select {
+.jt-nocturne .pm-feed select {
   min-height:32px;
   font-size:12px !important;
 }
-.hm-nocturne .pm-feed a {
+.jt-nocturne .pm-feed a {
   font-size:14px !important;
 }
-.hm-nocturne .pm-feed a > span {
+.jt-nocturne .pm-feed a > span {
   font-size:12px !important;
 }
-.hm-nocturne .pm-feed small {
+.jt-nocturne .pm-feed small {
   color:#687080 !important;
   font-size:12px !important;
 }

@@ -2,7 +2,7 @@ import { getAddress } from "viem";
 
 import { API_URL, requestJson } from "./backend.js";
 
-// Read-only JackTrade API (indexer). Every amount is a decimal string (USDG with 6 decimals applied, JACKTRADE with
+// Read-only JackTrade API (indexer). Every amount is a decimal string (USDG with 6 decimals applied, the HOUSE token with
 // 18), prices are decimal strings, times are Unix seconds, addresses are lowercase.
 // Full reference: https://hmindexer-production.up.railway.app/docs
 
@@ -20,7 +20,7 @@ export const fetchMarkets = () => get("/api/markets");
 // Protocol totals now (trades, volume, fees, house PnL, queue, bankroll).
 export const fetchStats = () => get("/api/stats");
 
-// JACKTRADE minted per 1 USDG lost, and the tracked LP size that sets it.
+// HOUSE minted per 1 USDG lost, and the tracked LP size that sets it.
 export const fetchRate = () => get("/api/rate");
 
 // Global feed, newest first. kind: comma list of open, close, liquidation, deposit, withdraw, queued, queuePaid, stake,
@@ -39,7 +39,7 @@ export const fetchHouse = () => get("/api/house");
 // Protocol totals over time (house PnL, fees, queue, deposits, OI, per-market OI). window: 24h, 7d, 30d, all.
 export const fetchStatsHistory = (window = "7d", interval) => get("/api/stats/history", { window, interval });
 
-// JACKTRADE supply, staking totals and rewards distributed.
+// HOUSE supply, staking totals and rewards distributed.
 export const fetchToken = () => get("/api/token");
 
 // Rewards distributed, tokens minted and total staked per bucket.

@@ -19,7 +19,7 @@ export default function LoginVideoBackdrop() {
   }, []);
 
   return (
-    <div className="hm-signin-wallpaper hm-signin-video" aria-hidden="true">
+    <div className="jt-signin-wallpaper jt-signin-video" aria-hidden="true">
       <video ref={videoRef} src={nightVideo} autoPlay muted loop playsInline preload="auto" />
     </div>
   );

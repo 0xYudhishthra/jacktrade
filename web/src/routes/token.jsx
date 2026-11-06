@@ -14,6 +14,7 @@ import { ChartTools, SnapshotChart, ActivityTable, DataError } from "@/component
 import { mapActivityPage } from "@/lib/accountActivity";
 import { cumulativeSeries, pointSeries, rewardEstimate, stakeShare } from "@/lib/dashboardNetwork";
 import { fetchActivity, fetchToken, fetchTokenHistory } from "@/lib/jacktradeApi";
+import { stakingAddress } from "@/lib/jacktradeClient";
 import { API_URL, requestJson } from "@/lib/backend";
 import { money, compact, rewardUsd } from "@/lib/protocolModel";
 const REVENUE_INTERVAL = { "24h": "1h", "7d": "4h", "30d": "1d" };
@@ -71,7 +72,7 @@ export default function Token() {
         <aside className="ds-summary-grid">
         <div className="ds-summary-column">
           {" "}
-          <section className="hm-panel pm-claim">
+          <section className="jt-panel pm-claim">
             <span className="pm-eyebrow">CLAIMABLE USDG</span>
             <strong>{rewardUsd(account.claimable)}</strong>
             <button
@@ -104,7 +105,7 @@ export default function Token() {
         </div>
         <div className="ds-summary-column">
           <Panel title="HOUSE">
-            <StatRows rows={[["Wallet balance",compact(account.token)],["Your staked HOUSE",compact(account.staked)],["Minted by your account",compact(account.minted)],["Total supply",info?compact(Number(info.token.totalSupply)):"—"],["Minted from losses",info?compact(Number(info.token.minted)):"—"],["Staked supply",info?compact(totalStaked):"—"],["Stakers",info?info.staking.stakers:"—"],["Stake ratio",info?.staking.stakedShare==null?"—":info.staking.stakedShare.toFixed(2)+"%"],["Transfers",info?(info.token.transfersEnabled?"Enabled":"Disabled"):"—"],["Token",short(info?.token.address??account.protocol?.config?.token?.address)],["Staking contract",short(account.protocol?.config?.contracts?.JackTradeStaking)]]}/>
+            <StatRows rows={[["Wallet balance",compact(account.token)],["Your staked HOUSE",compact(account.staked)],["Minted by your account",compact(account.minted)],["Total supply",info?compact(Number(info.token.totalSupply)):"—"],["Minted from losses",info?compact(Number(info.token.minted)):"—"],["Staked supply",info?compact(totalStaked):"—"],["Stakers",info?info.staking.stakers:"—"],["Stake ratio",info?.staking.stakedShare==null?"—":info.staking.stakedShare.toFixed(2)+"%"],["Transfers",info?(info.token.transfersEnabled?"Enabled":"Disabled"):"—"],["Token",short(info?.token.address??account.protocol?.config?.token?.address)],["Staking contract",short(stakingAddress(account.protocol?.config))]]}/>
           </Panel>
           <Panel title="Staking" aside={
             <FilterSelect

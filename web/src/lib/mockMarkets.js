@@ -1,4 +1,4 @@
-// Display metadata for the JACKTRADE markets (ticker, name, logo, colors, decimals). Prices, open interest, limits
+// Display metadata for the JackTrade markets (ticker, name, logo, colors, decimals). Prices, open interest, limits
 // and volume come from the backend; nothing here is market data.
 import { MARKET_IDS } from "./pricesApi.js";
 

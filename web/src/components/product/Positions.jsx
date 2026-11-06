@@ -34,7 +34,7 @@ export default function Positions({ historyOnly = false, hideTabs = false, contr
   const currentPage=Math.min(page,pages-1);
   const visibleRows=embedded?rows.slice(currentPage*25,currentPage*25+25):rows;
   return (
-    <section className="hm-panel pm-positions">
+    <section className="jt-panel pm-positions">
       {(!embedded || tab === "history") && <div className="pm-position-toolbar">
         {hideTabs ? (
           control || <span>{tab === "open" ? "Open positions" : "Trade history"}</span>

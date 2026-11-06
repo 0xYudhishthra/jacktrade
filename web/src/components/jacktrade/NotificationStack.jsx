@@ -1,13 +1,13 @@
 import { CharacterAvatar } from '@/components/jacktrade/TheHouseCharacter';
 
-// Custom JACKTRADE notifications. Soft blue, but selected ones carry the darker character presence.
+// Custom JackTrade notifications. Soft blue, but selected ones carry the darker character presence.
 export default function NotificationStack({ items, onDismiss }) {
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 w-[300px]">
       {items.map((n) => (
         <div
           key={n.id}
-          className={`hm-toast-in hm-panel px-3.5 py-3 flex items-start gap-3 ${n.withCharacter ? 'hm-scanlines' : ''}`}
+          className={`jt-toast-in jt-panel px-3.5 py-3 flex items-start gap-3 ${n.withCharacter ? 'jt-scanlines' : ''}`}
           style={
             n.withCharacter
               ? { background: 'linear-gradient(150deg, #2a2440 0%, #171722 100%)', border: '1px solid #494064' }

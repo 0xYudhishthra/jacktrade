@@ -24,7 +24,7 @@ export default function PortfolioDetails(){
   const feed=usePolledData(kind&&user?`${view}:${user}:${cursor??''}`:null,()=>fetchActivity({user,kind,limit:PAGE,cursor}).then(mapActivityPage),15_000);
   const rows=feed.data?.rows??[];
   const open=(id)=>{setView(id);setCursors([undefined]);};
-  return <section className="hm-panel ds-portfolio-details">
+  return <section className="jt-panel ds-portfolio-details">
     <div className="ds-detail-tabs" role="tablist" aria-label="Portfolio views">{VIEWS.map(([id,label])=><button key={id} id={`portfolio-${id}`} role="tab" aria-selected={view===id} aria-controls="portfolio-detail-content" onClick={()=>open(id)}>{label}</button>)}<button className="ds-close-all" disabled={!account.positions.length} onClick={()=>account.positions.forEach(p=>account.closePosition(p.id))}>Close all</button></div>
     <div id="portfolio-detail-content" role="tabpanel" aria-labelledby={`portfolio-${view}`}>
       {(view==='positions'||view==='history')&&<Positions key={view} hideTabs embedded historyOnly={view==='history'}/>}

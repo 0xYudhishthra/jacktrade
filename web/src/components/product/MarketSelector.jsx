@@ -47,7 +47,7 @@ export default function MarketSelector() {
     };
   }, [open]);
   return (
-    <div className="hm-focus-market-strip pm-floating-market" ref={root}>
+    <div className="jt-focus-market-strip pm-floating-market" ref={root}>
       <button
         ref={toggle}
         type="button"
@@ -66,7 +66,7 @@ export default function MarketSelector() {
         <span className="pm-floating-market-symbol">{symbol}</span>
         <strong
           key={livePrice}
-          className={move > 0 ? "hm-flash-up" : move < 0 ? "hm-flash-down" : ""}
+          className={move > 0 ? "jt-flash-up" : move < 0 ? "jt-flash-down" : ""}
         >
           {Number.isFinite(livePrice)
             ? livePrice.toLocaleString("en-US", {
@@ -91,11 +91,11 @@ export default function MarketSelector() {
       {open && (
         <div
           id="product-market-list"
-          className="hm-focus-market-popover"
+          className="jt-focus-market-popover"
           role="region"
           aria-label="Choose a market"
         >
-          <div className="hm-focus-picker-top">
+          <div className="jt-focus-picker-top">
             <label>
               <Search size={14} />
               <input

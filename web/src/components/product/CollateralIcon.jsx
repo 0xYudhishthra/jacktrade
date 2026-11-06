@@ -11,7 +11,7 @@ export default function CollateralIcon({ size = 16 }) {
   }
   return (
     <img
-      className="hm-collateral-logo"
+      className="jt-collateral-logo"
       src={src}
       alt=""
       width={size}

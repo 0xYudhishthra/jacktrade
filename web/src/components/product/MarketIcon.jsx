@@ -8,7 +8,7 @@ export default function MarketIcon({ market, size = 16 }) {
   if (!src || src === failedSrc) {
     return (
       <span
-        className="hm-market-glyph"
+        className="jt-market-glyph"
         style={{ width: size, height: size, fontSize: Math.round(size * 0.7), color: market.color }}
         aria-hidden="true"
       >
@@ -18,7 +18,7 @@ export default function MarketIcon({ market, size = 16 }) {
   }
   return (
     <img
-      className="hm-market-logo"
+      className="jt-market-logo"
       src={src}
       alt=""
       width={size}

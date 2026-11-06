@@ -92,7 +92,7 @@ export default function Ranking() {
   const emptyText=status==='loading'?'Loading leaderboard…':needle?'No matching traders.':trades?(type==='liquidated'?'No liquidated positions in this period.':'No closed positions in this period.'):category.empty||'No trades in this period yet.';
   const columns=trades?11:type==='stakers'?8:10;
 
-  return <Shell dashboard="leaderboard" title="Leaderboard"><section className="hm-panel pm-ranking-board ds-ranking" aria-label="Leaderboard standings">
+  return <Shell dashboard="leaderboard" title="Leaderboard"><section className="jt-panel pm-ranking-board ds-ranking" aria-label="Leaderboard standings">
     <div className="ds-ranking-toolbar">
       <div className="ds-view-switch" role="group" aria-label="Leaderboard view"><button aria-pressed={view==='accounts'} onClick={()=>{setView('accounts');reset();}}>Accounts</button><button aria-pressed={view==='positions'} disabled={type==='stakers'} onClick={()=>{setView('positions');reset();}}>Positions</button></div>
       <FilterSelect label="Ranking category" value={type} onChange={chooseType} items={[["winners","Top traders"],["liquidated","Liquidated"],["stakers","House owners"]]}/>

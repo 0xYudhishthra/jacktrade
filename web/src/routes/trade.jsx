@@ -88,10 +88,10 @@ export default function Trade({ preview = false }) {
   const [feed, setFeed] = useState("all");
   function closeWithPreview(id){setModal({type:"close",id});}
   // Tool choices are remembered between visits.
-  const [showRisk, setShowRisk] = usePersistentState("hm.tools.risk", true);
-  const [showOI, setShowOI] = usePersistentState("hm.tools.oi", false);
-  const [showFeed, setShowFeed] = usePersistentState("hm.tools.feed", false);
-  const [expandedPositions, setExpandedPositions] = usePersistentState("hm.tools.positions", false);
+  const [showRisk, setShowRisk] = usePersistentState("jt.tools.risk", true);
+  const [showOI, setShowOI] = usePersistentState("jt.tools.oi", false);
+  const [showFeed, setShowFeed] = usePersistentState("jt.tools.feed", false);
+  const [expandedPositions, setExpandedPositions] = usePersistentState("jt.tools.positions", false);
   // Global trades from the indexer for the tape and the feed, polled every 4 s.
   const activity = usePolledData("trades", () => fetchActivity({ kind: "trades", limit: 30 }), 4_000);
   const trades = useMemo(() => tradeItems(activity.data?.items), [activity.data]);
@@ -292,9 +292,9 @@ export default function Trade({ preview = false }) {
         : null;
   return (
     <Shell trade>
-      <div className="hm-focus-layout pm-simple-trade">
-        <section aria-label="Price chart" className="hm-focus-chart-column">
-          <div className="hm-focus-chart">
+      <div className="jt-focus-layout pm-simple-trade">
+        <section aria-label="Price chart" className="jt-focus-chart-column">
+          <div className="jt-focus-chart">
             {chartView === "tick" ? (
               <TickChart
                 motionPreference={preview ? "app" : "system"}
@@ -325,8 +325,8 @@ export default function Trade({ preview = false }) {
             )}
           </div>
         </section>
-        <aside className="hm-focus-order" aria-label="Order controls">
-          <div className="hm-focus-order-entry">
+        <aside className="jt-focus-order" aria-label="Order controls">
+          <div className="jt-focus-order-entry">
             <Ticket onDraft={setDraft} />
           </div>
         </aside>

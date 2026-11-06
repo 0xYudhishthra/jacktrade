@@ -14,7 +14,7 @@ import { CopyButton, ErrorBox, Note, Step, TxHash, fmtUsd, short } from "@/compo
 const MIN_BALANCE = 10; // market minMargin is 10 USDG
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const storeKey = (wallet) => `hm-grok-agent:${wallet.toLowerCase()}`;
+const storeKey = (wallet) => `jt-grok-agent:${wallet.toLowerCase()}`;
 function loadAgent(wallet) {
   try {
     return JSON.parse(localStorage.getItem(storeKey(wallet)) || "null");

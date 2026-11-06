@@ -8,7 +8,7 @@ export default function SegmentedProgress({ value, label = "Loading", className 
   const filled = determinate ? Math.round((progress / 100) * SEGMENTS) : 0;
   return (
     <div
-      className={`hm-segmented-progress ${determinate ? "" : "is-indeterminate"} ${className}`}
+      className={`jt-segmented-progress ${determinate ? "" : "is-indeterminate"} ${className}`}
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}

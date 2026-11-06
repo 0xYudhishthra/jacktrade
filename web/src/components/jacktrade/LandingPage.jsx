@@ -45,7 +45,7 @@ export default function LandingPage() {
     <section className="dream-hero" aria-label="JackTrade trading">
       <div className="dream-hero-copy">
         <h1><RippleText>JACKTRADE</RippleText><JacktradeSparkle className="dream-brand-sparkle" /></h1>
-        <p className="dream-tagline"><RippleText>play with JackTrade.</RippleText></p>
+        <p className="dream-tagline"><RippleText>bet against the house.</RippleText></p>
         <p className="dream-subline"><RippleText>Trade against the house.</RippleText></p>
         <p className="dream-multiplier"><span><RippleText>Up to</RippleText></span> <em><RippleText>1000x</RippleText></em> <span><RippleText>leverage</RippleText></span></p>
         <div className="dream-ripple-action" data-ripple-surface>

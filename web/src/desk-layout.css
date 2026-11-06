@@ -12,25 +12,25 @@
 }
 
 /* 8012 remains the source of components and finishes. Only the desk geometry changes. */
-.pd-base.hm-nocturne .hm-workstation.hm-focus .hm-stage {
+.pd-base.jt-nocturne .jt-workstation.jt-focus .jt-stage {
   width:100%;
   max-width:none;
   margin:0;
   padding:0;
 }
-.pd-base .hm-focus .hm-app-window {
+.pd-base .jt-focus .jt-app-window {
   gap:3px;
 }
-.pd-base.hm-nocturne .hm-workstation .pm-header {
+.pd-base.jt-nocturne .jt-workstation .pm-header {
   border-radius:0;
   box-shadow:inset 0 1px #ffffffb0;
   border-left:0;
   border-right:0;
 }
-.pd-base .hm-eastern-caption {
+.pd-base .jt-eastern-caption {
   display:none;
 }
-.pd-base .pd-trade .hm-focus-layout {
+.pd-base .pd-trade .jt-focus-layout {
   grid-template-columns:minmax(0, 1fr) 336px;
   gap:3px;
   padding:0 3px;
@@ -38,42 +38,42 @@
   height:calc(100dvh - 280px);
   min-height:600px;
 }
-.pd-base .pd-trade .hm-focus-chart {
+.pd-base .pd-trade .jt-focus-chart {
   height:100%;
   min-height:0;
 }
-.pd-base .pd-trade .hm-focus-chart-column,
-.pd-base .pd-trade .hm-focus-order {
+.pd-base .pd-trade .jt-focus-chart-column,
+.pd-base .pd-trade .jt-focus-order {
   min-height:0;
 }
-.pd-base .pd-trade .hm-focus-order-entry {
+.pd-base .pd-trade .jt-focus-order-entry {
   height:100%;
   display:flex;
   min-height:0;
 }
-.pd-base .pd-trade .hm-focus-order-entry > .hm-panel {
+.pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
   height:100%;
   min-height:0;
   overflow:auto;
   box-shadow:inset 0 1px #ffffffb0;
 }
-.pd-base .pd-trade .pm-original-ticket .hm-focus-order-summary {
+.pd-base .pd-trade .pm-original-ticket .jt-focus-order-summary {
   margin-top:auto;
   padding-bottom:14px;
 }
-.pd-base .pd-trade .hm-positions-panel {
+.pd-base .pd-trade .jt-positions-panel {
   min-height:200px;
   border-radius:0;
   box-shadow:none;
   margin:0 3px;
 }
-.pd-base .pd-trade .hm-positions-panel > div:first-child {
+.pd-base .pd-trade .jt-positions-panel > div:first-child {
   min-height:44px;
   padding:6px 14px;
   border-bottom-color:#dce3ee !important;
   flex-wrap:nowrap;
 }
-.pd-base .pd-trade .hm-positions-panel > div:last-child {
+.pd-base .pd-trade .jt-positions-panel > div:last-child {
   min-height:150px;
 }
 .pd-base .pd-trade .pm-integrated-chart {
@@ -178,18 +178,18 @@
 }
 
 /* The original sign-in window beside a scaled view of the original terminal. */
-.pd-base .hm-signin.pd-landing {
+.pd-base .jt-signin.pd-landing {
   display:grid;
   grid-template-columns:minmax(350px, 440px) minmax(0, 1fr);
   gap:clamp(32px, 5vw, 88px);
   padding:56px clamp(28px, 4.5vw, 80px);
   align-items:center;
 }
-.pd-landing .hm-login-window {
+.pd-landing .jt-login-window {
   width:100%;
   justify-self:center;
 }
-.pd-landing .hm-login-body {
+.pd-landing .jt-login-body {
   padding:24px;
 }
 .pd-terminal-preview {
@@ -213,15 +213,15 @@
   transform-origin:top left;
   pointer-events:none;
 }
-.pd-terminal-preview-inner .hm-wallpaper {
+.pd-terminal-preview-inner .jt-wallpaper {
   position:absolute;
 }
-.pd-terminal-preview-inner .hm-stage {
+.pd-terminal-preview-inner .jt-stage {
   width:1400px !important;
   max-width:none !important;
   padding:0 !important;
 }
-.pd-base .pd-terminal-preview-inner .hm-focus-layout {
+.pd-base .pd-terminal-preview-inner .jt-focus-layout {
   height:610px;
   min-height:0;
   grid-template-columns:minmax(0, 1fr) 336px;
@@ -231,13 +231,13 @@
   height:56px;
   min-height:56px;
 }
-.pd-terminal-preview-inner .pm-header .hm-main-nav {
+.pd-terminal-preview-inner .pm-header .jt-main-nav {
   order:0 !important;
   width:auto !important;
   margin-left:10px !important;
   flex-wrap:nowrap !important;
 }
-.pd-terminal-preview-inner .hm-focus-chart {
+.pd-terminal-preview-inner .jt-focus-chart {
   height:100% !important;
   min-height:0 !important;
 }
@@ -251,42 +251,42 @@
   outline-offset:-3px;
 }
 @media (max-width:1100px) {
-  .pd-base .pd-trade .hm-focus-layout {
+  .pd-base .pd-trade .jt-focus-layout {
     grid-template-columns:minmax(0, 1fr) 310px;
   }
-  .pd-base .hm-signin.pd-landing {
+  .pd-base .jt-signin.pd-landing {
     grid-template-columns:minmax(0, 1fr);
     max-width:780px;
     margin:auto;
     gap:40px;
     padding:48px 24px;
   }
-  .pd-landing .hm-login-window {
+  .pd-landing .jt-login-window {
     max-width:478px;
   }
 }
 @media (max-width:800px) {
-  .pd-base .pd-trade .hm-focus-layout {
+  .pd-base .pd-trade .jt-focus-layout {
     height:auto;
     min-height:0;
     grid-template-columns:minmax(0, 1fr);
   }
-  .pd-base .pd-trade .hm-focus-chart {
+  .pd-base .pd-trade .jt-focus-chart {
     height:440px;
     min-height:0;
   }
-  .pd-base .pd-trade .hm-focus-order-entry,
-  .pd-base .pd-trade .hm-focus-order-entry > .hm-panel {
+  .pd-base .pd-trade .jt-focus-order-entry,
+  .pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
     height:auto;
     overflow:visible;
   }
-  .pd-base .pd-trade .pm-original-ticket .hm-focus-order-summary {
+  .pd-base .pd-trade .pm-original-ticket .jt-focus-order-summary {
     margin-top:0;
   }
   .pd-base .pm-overview-grid {
     grid-template-columns:minmax(0, 1fr);
   }
-  .pd-base .pd-trade .hm-positions-panel > div:first-child {
+  .pd-base .pd-trade .jt-positions-panel > div:first-child {
     flex-wrap:wrap;
   }
   .pd-activity {
@@ -294,18 +294,18 @@
     flex-basis:100%;
     margin:0;
   }
-  .pd-base .pd-terminal-preview-inner .hm-focus-layout {
+  .pd-base .pd-terminal-preview-inner .jt-focus-layout {
     grid-template-columns:minmax(0, 1fr) 336px;
     height:610px;
   }
-  .pd-base .pd-terminal-preview-inner .hm-focus-chart {
+  .pd-base .pd-terminal-preview-inner .jt-focus-chart {
     height:100%;
   }
-  .pd-base .pd-terminal-preview-inner .hm-focus-order-entry,
-  .pd-base .pd-terminal-preview-inner .hm-focus-order-entry > .hm-panel {
+  .pd-base .pd-terminal-preview-inner .jt-focus-order-entry,
+  .pd-base .pd-terminal-preview-inner .jt-focus-order-entry > .jt-panel {
     height:100%;
   }
-  .pd-terminal-preview-inner .hm-positions-panel > div:first-child {
+  .pd-terminal-preview-inner .jt-positions-panel > div:first-child {
     flex-wrap:nowrap !important;
   }
   .pd-terminal-preview-inner .pd-activity {
@@ -316,29 +316,29 @@
 }
 
 /* One continuous workspace:surfaces fill the viewport, separators belong to the grid. */
-.pd-base .hm-workstation {
+.pd-base .jt-workstation {
   background:#ffffff;
 }
-.pd-base .hm-focus .hm-app-window {
+.pd-base .jt-focus .jt-app-window {
   gap:0;
 }
-.pd-base.hm-nocturne
-  .pm-workstation:is(.hm-panel, .pm-profile-hero, .pm-metrics-grid, .pm-ranking-board) {
+.pd-base.jt-nocturne
+  .pm-workstation:is(.jt-panel, .pm-profile-hero, .pm-metrics-grid, .pm-ranking-board) {
   border:0;
   border-radius:0;
   box-shadow:none;
   background:#ffffff;
 }
-.pd-base .pd-trade .hm-focus-layout {
+.pd-base .pd-trade .jt-focus-layout {
   gap:1px;
   padding:0;
   background:#f4f7fc;
 }
-.pd-base .pd-trade .hm-focus-order-entry > .hm-panel {
+.pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
   border:0;
   box-shadow:none;
 }
-.pd-base .pd-trade .hm-positions-panel {
+.pd-base .pd-trade .jt-positions-panel {
   margin:0;
   border:0;
   border-top:1px solid #dce3ee;
@@ -359,7 +359,7 @@
 }
 .pd-base
   .pm-dashboard-content:is(.pm-summary-stack, .pm-main-stack)
-  > :is(.hm-panel, .pm-profile-hero, .pm-metrics-grid) {
+  > :is(.jt-panel, .pm-profile-hero, .pm-metrics-grid) {
   border:0;
   border-bottom:1px solid #dce3ee;
   border-radius:0;
@@ -374,7 +374,7 @@
   box-shadow:none;
   background:transparent;
 }
-.pd-base .pm-dashboard-content > :is(.hm-panel, .pm-two-columns) {
+.pd-base .pm-dashboard-content > :is(.jt-panel, .pm-two-columns) {
   border:0;
   border-top:1px solid #dce3ee;
 }
@@ -386,7 +386,7 @@
 .pd-base .pm-dashboard-content .pm-two-columns > * + * {
   border-left:1px solid #dce3ee;
 }
-.pd-base .pm-dashboard-content .pm-two-columns > .hm-panel {
+.pd-base .pm-dashboard-content .pm-two-columns > .jt-panel {
   border:0;
   border-radius:0;
   box-shadow:none;
@@ -428,11 +428,11 @@
   margin-right:22px;
   line-height:1;
 }
-.pd-base.hm-nocturne .pd-header-brand .hm-brand-wordmark {
+.pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
   font-size:20px !important;
   letter-spacing:-1px;
 }
-.pd-base .pd-header-brand .hm-brand-wordmark:after {
+.pd-base .pd-header-brand .jt-brand-wordmark:after {
   content:none;
 }
 .pd-header-nav {
@@ -462,7 +462,7 @@
   align-items:center;
   padding:0 12px;
 }
-.pd-base.hm-nocturne .pd-header:is(button, .hm-nav-en) {
+.pd-base.jt-nocturne .pd-header:is(button, .jt-nav-en) {
   font-family:Inter, ui-sans-serif, system-ui, sans-serif !important;
   text-transform:none;
   letter-spacing:0;
@@ -564,7 +564,7 @@
   .pd-header-brand {
     margin-right:0;
   }
-  .pd-base.hm-nocturne .pd-header-brand .hm-brand-wordmark {
+  .pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
     font-size:19px !important;
   }
   .pd-header-nav {
@@ -582,8 +582,8 @@
     padding:0 8px;
     flex:0 0 auto;
   }
-  .pd-base.hm-nocturne .pd-header button,
-  .pd-header .hm-nav-en {
+  .pd-base.jt-nocturne .pd-header button,
+  .pd-header .jt-nav-en {
     font-size:11px;
   }
   .pd-header-actions {

@@ -21,7 +21,7 @@ const CANDLES = [
 
 function MiniChart() {
   return (
-    <svg viewBox="0 0 200 96" fill="none" className="hm-bubble-chart-art">
+    <svg viewBox="0 0 200 96" fill="none" className="jt-bubble-chart-art">
       {[20, 44, 68, 92].map((y) => (
         <path
           key={y}
@@ -55,24 +55,24 @@ function MiniChart() {
 
 export default function LandingBubbles() {
   return (
-    <div className="hm-orbit" aria-hidden="true">
-      <div className="hm-bubble hm-bubble-chart">
-        <div className="hm-bubble-eyebrow">
-          <span className="hm-bubble-dot" /> BTC-PERP <span>15m</span>
+    <div className="jt-orbit" aria-hidden="true">
+      <div className="jt-bubble jt-bubble-chart">
+        <div className="jt-bubble-eyebrow">
+          <span className="jt-bubble-dot" /> BTC-PERP <span>15m</span>
         </div>
         <MiniChart />
-        <div className="hm-bubble-chart-bottom">
+        <div className="jt-bubble-chart-bottom">
           <span>price chart</span>
           <span>↗</span>
         </div>
       </div>
-      <div className="hm-bubble hm-bubble-logo">
-        <span className="hm-bubble-tiny-star">✧</span>
+      <div className="jt-bubble jt-bubble-logo">
+        <span className="jt-bubble-tiny-star">✧</span>
         <JacktradeLogo />
-        <span className="hm-bubble-logo-note">play with JackTrade.</span>
+        <span className="jt-bubble-logo-note">bet against the house.</span>
       </div>
-      <div className="hm-bubble hm-bubble-btc">
-        <span className="hm-bubble-coin hm-bubble-bitcoin">
+      <div className="jt-bubble jt-bubble-btc">
+        <span className="jt-bubble-coin jt-bubble-bitcoin">
           <svg viewBox="0 0 32 32" fill="none">
             <g
               transform="rotate(12 16 16)"
@@ -89,26 +89,26 @@ export default function LandingBubbles() {
           <strong>BTC</strong>
           <span>Bitcoin</span>
         </div>
-        <span className="hm-bubble-tiny-star">✦</span>
+        <span className="jt-bubble-tiny-star">✦</span>
       </div>
-      <div className="hm-bubble hm-bubble-portrait">
-        <div className="hm-bubble-photo">
+      <div className="jt-bubble jt-bubble-portrait">
+        <div className="jt-bubble-photo">
           <img src={portrait} alt="" />
         </div>
-        <div className="hm-bubble-photo-note">
-          <span className="hm-bubble-dot" /> THE HOUSE <span>♡</span>
+        <div className="jt-bubble-photo-note">
+          <span className="jt-bubble-dot" /> THE HOUSE <span>♡</span>
         </div>
       </div>
-      <div className="hm-bubble hm-bubble-leverage">
-        <span className="hm-bubble-leverage-label">turn it up</span>
+      <div className="jt-bubble jt-bubble-leverage">
+        <span className="jt-bubble-leverage-label">turn it up</span>
         <strong>
           1000<span>×</span>
         </strong>
-        <span className="hm-bubble-leverage-note">leverage</span>
-        <span className="hm-bubble-glint">✧</span>
+        <span className="jt-bubble-leverage-note">leverage</span>
+        <span className="jt-bubble-glint">✧</span>
       </div>
-      <div className="hm-bubble hm-bubble-eth">
-        <span className="hm-bubble-coin hm-bubble-ethereum">
+      <div className="jt-bubble jt-bubble-eth">
+        <span className="jt-bubble-coin jt-bubble-ethereum">
           <svg viewBox="0 0 28 44" fill="none">
             <path d="m14 1 13 22-13 8L1 23Z" fill="#8b8dc9" />
             <path d="m14 1 13 22-13-6Z" fill="#6469a8" />
@@ -120,7 +120,7 @@ export default function LandingBubbles() {
           <strong>ETH</strong>
           <span>Ethereum</span>
         </div>
-        <span className="hm-bubble-tiny-star">✧</span>
+        <span className="jt-bubble-tiny-star">✧</span>
       </div>
     </div>
   );

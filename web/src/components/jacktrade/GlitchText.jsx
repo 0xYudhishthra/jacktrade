@@ -17,6 +17,6 @@ export function useGlitchOn(trigger, duration = 130) {
 export default function GlitchText({ children, trigger, className = '', duration = 130 }) {
   const active = useGlitchOn(trigger, duration);
   return (
-    <span className={`${active ? 'hm-glitch-text' : ''} ${className}`}>{children}</span>
+    <span className={`${active ? 'jt-glitch-text' : ''} ${className}`}>{children}</span>
   );
 }

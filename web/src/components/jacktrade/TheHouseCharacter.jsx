@@ -16,7 +16,7 @@ export function CharacterAvatar({ size = 64, glitchKey, className = '' }) {
 
   return (
     <div
-      className={`relative overflow-hidden hm-scanlines ${glitch ? 'hm-glitch' : ''} ${className}`}
+      className={`relative overflow-hidden jt-scanlines ${glitch ? 'jt-glitch' : ''} ${className}`}
       style={{
         flexShrink: 0,
         width: size,
@@ -63,7 +63,7 @@ export function CharacterStatus({ glitchKey, message = 'waiting for your next mo
       </div>
       <div className="flex items-center gap-1.5">
         <span
-          className="inline-block w-1.5 h-1.5 rounded-full hm-pulse-dot"
+          className="inline-block w-1.5 h-1.5 rounded-full jt-pulse-dot"
           style={{ background: 'var(--terminal-up)' }}
         />
         <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: '#9aa0c0' }}>
@@ -81,7 +81,7 @@ export function CharacterStatus({ glitchKey, message = 'waiting for your next mo
 export default function TheHouseCharacter({ glitchKey, message }) {
   return (
     <div
-      className="hm-house-contact hm-scanlines flex items-center gap-3 p-3"
+      className="jt-house-contact jt-scanlines flex items-center gap-3 p-3"
       style={{
         borderRadius: 14,
         background: 'linear-gradient(150deg, #2a2440 0%, #171722 100%)',

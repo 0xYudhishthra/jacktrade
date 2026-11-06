@@ -4,7 +4,7 @@ export const activityLabel=kind=>LABELS[kind]||String(kind||'').toUpperCase();
 export function mapActivity(item){
   return {
     id:item.id,kind:item.kind,type:activityLabel(item.kind),time:Number(item.at)*1000,
-    amount:Number(item.amount??0),unit:item.unit==='JACKTRADE'?'HOUSE':item.unit,
+    amount:Number(item.amount??0),unit:/money$/i.test(item.unit??'')?'HOUSE':item.unit,
     market:item.market||undefined,side:item.side||undefined,user:item.user,username:item.username,tx:item.tx,
   };
 }

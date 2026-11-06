@@ -2,7 +2,7 @@
 
 This project is a **Continuity Track** submission. It is an add-on to JackTrade's
 bet-against-the-house exchange, which was already live on Robinhood Chain before the
-hackathon (deployed under its earlier name, JackTrade).
+hackathon.
 
 ## What existed before the hackathon (not in this repo)
 
@@ -19,7 +19,9 @@ The exchange's deployed contracts and services on **Robinhood Chain mainnet (cha
 | Indexer API | `https://hmindexer-production.up.railway.app` |
 
 The exchange's contracts and backend source are not in this repository. We only call the
-deployed contracts and the public APIs above.
+deployed contracts and the public APIs above. Contract addresses, the EIP-712 signing format
+and the market list are read at runtime from the relayer's public `GET /config`. (The EIP-712
+domain names keep the exchange's earlier name; they are part of the deployed contracts.)
 
 ### The exchange frontend (imported into `web/`)
 
@@ -30,9 +32,8 @@ shows exactly what changed during the hackathon. Only its `frontend/` folder was
 contracts or backend code. Pre-existing in `web/`: the landing page, Trade, Portfolio, House,
 Leaderboard, Docs, the wallet / deposit / one-click trading flows, and everything under
 `web/src/components/{jacktrade,product,trading,dream,ui}`, `web/src/hooks`, `web/src/context`
-and `web/src/lib` (except `web/src/lib/grok`). Contract addresses, the EIP-712 signing format and the market list
-are read at runtime from the relayer's public `GET /config`. (The EIP-712 domain names
-still read "JackTrade"; they are part of the deployed contracts.)
+and `web/src/lib` (except `web/src/lib/grok`). During the hackathon its UI, identifiers, file
+names, CSS classes and storage keys were renamed to JackTrade.
 
 ## What was built during the hackathon (everything in this repo)
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMarkets } from "@/lib/mockMarkets";
 
 const COINGECKO_MARKETS = "https://api.coingecko.com/api/v3/coins/markets";
-const CACHE_KEY = "hm-market-logos-v2";
+const CACHE_KEY = "jt-market-logos-v2";
 // Collateral on Robinhood Chain is USDG (Global Dollar), fetched alongside the market logos.
 export const COLLATERAL = { symbol: "USDG", coingeckoId: "global-dollar", glyph: "$" };
 const CACHE_TTL = 24 * 60 * 60 * 1000;

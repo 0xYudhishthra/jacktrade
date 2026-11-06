@@ -12,7 +12,7 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 8018,
     strictPort: true,
-    headers: { "X-Jacktrade-Front": "visual-exploration" },
+    headers: { "X-JackTrade-Front": "visual-exploration" },
   },
   preview: { host: "127.0.0.1", port: 8018, strictPort: true },
 });

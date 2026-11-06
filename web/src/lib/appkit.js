@@ -55,7 +55,7 @@ async function load() {
 }
 
 // A wallet that connected here stays connected across reloads until the user disconnects.
-const REMEMBER_KEY = "hm.wallet.remember";
+const REMEMBER_KEY = "jt.wallet.remember";
 export const rememberWallet = (on) => { try { if (on) localStorage.setItem(REMEMBER_KEY, "1"); else localStorage.removeItem(REMEMBER_KEY); } catch { /* optional */ } };
 const remembered = () => { try { return localStorage.getItem(REMEMBER_KEY) === "1"; } catch { return false; } };
 

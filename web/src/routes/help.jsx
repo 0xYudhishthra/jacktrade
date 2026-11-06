@@ -20,9 +20,9 @@ const CONTRACTS = [
   ["BatchExecutor", "0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4", "Executes signed orders submitted by the relayer, with the Pyth price update."],
   ["SessionKeyManager", "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29", "One-click trading keys: register, expire, revoke."],
   ["PriceOracle", "0xaed4385e882c823e202d8e34f08dd7cda55e73d9", "Pyth adapter: freshness and confidence checks."],
-  ["JackTradeToken", "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76", "HOUSE, the ERC-20 minted on trader losses."],
-  ["JackTradeTokenomics", "0xe7ac6846d9c5ffa92f3e45dd50335c4fe478633d", "The HOUSE emission curve."],
-  ["JackTradeStaking", "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd", "HOUSE staking and USDG rewards."],
+  ["Token", "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76", "HOUSE, the ERC-20 minted on trader losses."],
+  ["Tokenomics", "0xe7ac6846d9c5ffa92f3e45dd50335c4fe478633d", "The HOUSE emission curve."],
+  ["Staking", "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd", "HOUSE staking and USDG rewards."],
   ["USDG", "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168", "Collateral (Paxos Global Dollar, 6 decimals)."],
 ];
 const NAV = [
@@ -46,7 +46,7 @@ function keptShare(move, impact, deadbandDivisor) {
 
 function Section({ id, title, children }) {
   return (
-    <section id={id} className="hm-docs-section">
+    <section id={id} className="jt-docs-section">
       <h2>
         <a href={`#${id}`}>{title}</a>
       </h2>
@@ -56,7 +56,7 @@ function Section({ id, title, children }) {
 }
 
 function Note({ children }) {
-  return <aside className="hm-docs-note">{children}</aside>;
+  return <aside className="jt-docs-note">{children}</aside>;
 }
 
 export default function Help() {
@@ -79,7 +79,7 @@ export default function Help() {
   // Highlight the section being read in the sidebar.
   const [active, setActive] = useState("overview");
   useEffect(() => {
-    const sections = [...document.querySelectorAll(".hm-docs-section")];
+    const sections = [...document.querySelectorAll(".jt-docs-section")];
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
@@ -92,7 +92,7 @@ export default function Help() {
   }, []);
   // On phones the sections are a horizontal strip: keep the current one in view.
   useEffect(() => {
-    const nav = document.querySelector(".hm-docs-nav");
+    const nav = document.querySelector(".jt-docs-nav");
     const link = nav?.querySelector(`a[href="#${active}"]`);
     if (!nav || !link || nav.scrollWidth <= nav.clientWidth) return;
     nav.scrollTo({ left: link.offsetLeft - nav.clientWidth / 2 + link.clientWidth / 2, behavior: "smooth" });
@@ -105,8 +105,8 @@ export default function Help() {
 
   return (
     <Shell>
-      <div className="hm-docs">
-        <nav className="hm-docs-nav" aria-label="Documentation">
+      <div className="jt-docs">
+        <nav className="jt-docs-nav" aria-label="Documentation">
           {NAV.map(([group, items]) => (
             <div key={group}>
               <strong>{group}</strong>
@@ -118,8 +118,8 @@ export default function Help() {
             </div>
           ))}
         </nav>
-        <article className="hm-docs-body">
-          <header className="hm-docs-hero">
+        <article className="jt-docs-body">
+          <header className="jt-docs-hero">
             <span>Documentation</span>
             <h1>JackTrade</h1>
             <p>
@@ -134,7 +134,7 @@ export default function Help() {
               <strong>house pool</strong>. You go long or short at the live Pyth oracle price, with margin in USDG, and
               settle against the pool when you close.
             </p>
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li><strong>No order book.</strong> Orders fill at the oracle price; there is nobody to match.</li>
               <li><strong>No funding, no spread.</strong> Holding a position costs nothing. Fees apply only when you close.</li>
               <li><strong>No gas.</strong> You sign; the relayer submits and pays the gas.</li>
@@ -147,7 +147,7 @@ export default function Help() {
           </Section>
 
           <Section id="quick-start" title="Quick start">
-            <ol className="hm-docs-steps">
+            <ol className="jt-docs-steps">
               <li>
                 <strong>Connect.</strong> Use any wallet (MetaMask, Rabby, Coinbase Wallet, Phantom and hundreds more,
                 desktop or phone) or sign in with email, Google, X or Apple.
@@ -165,17 +165,17 @@ export default function Help() {
                 <strong>Trade.</strong> Pick a market, long or short, margin and leverage. Close whenever you want.
               </li>
             </ol>
-            <Link className="hm-docs-cta" to="/trade">Open the trading screen →</Link>
+            <Link className="jt-docs-cta" to="/trade">Open the trading screen →</Link>
           </Section>
 
           <Section id="markets" title="Markets">
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <thead><tr><th>Market</th><th>Status</th><th>Max leverage</th><th>Hours</th></tr></thead>
                 <tbody>
                   {markets.map((m) => (
                     <tr key={m.symbol}>
-                      <td><strong>{m.symbol.replace("-PERP", "")}</strong> <span className="hm-docs-muted">{m.name.replace(" · equity", "")}</span></td>
+                      <td><strong>{m.symbol.replace("-PERP", "")}</strong> <span className="jt-docs-muted">{m.name.replace(" · equity", "")}</span></td>
                       <td>{m.listed ? "Live" : m.closed ? "Preview" : "Not listed"}</td>
                       <td>{m.listed ? `${money(market(m).maxLeverage, 0)}×` : "—"}</td>
                       <td>{m.kind === "equity" ? "US market hours" : "24/7"}</td>
@@ -198,7 +198,7 @@ export default function Help() {
 
           <Section id="positions" title="Opening a position">
             <p>A position has four inputs: market, direction, margin and leverage.</p>
-            <dl className="hm-docs-terms">
+            <dl className="jt-docs-terms">
               <div><dt>Margin</dt><dd>The USDG you commit. It is the most the position can lose.</dd></div>
               <div><dt>Leverage</dt><dd>{LEVERAGE.min}× to {money(first.maxLeverage, 0)}×, in {LEVERAGE.step}× steps.</dd></div>
               <div><dt>Position size</dt><dd>Margin × leverage. Profit and loss are computed on this amount.</dd></div>
@@ -220,7 +220,7 @@ export default function Help() {
               is left of the margin comes back to your balance immediately.
             </p>
             <p><strong>Profits</strong> go through three steps, all computed by the contract:</p>
-            <ol className="hm-docs-steps is-compact">
+            <ol className="jt-docs-steps is-compact">
               <li>
                 <strong>Dead zone.</strong> The first {pct(10_000 / limits.deadbandDivisor)} of the move from your entry
                 doesn&apos;t count.
@@ -232,7 +232,7 @@ export default function Help() {
               <li><strong>Win fee.</strong> {pct(fees.winFeeBps)} of what remains.</li>
             </ol>
             <p>Share of the raw gain you receive, by how far the price moved in your favour:</p>
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <thead>
                   <tr>
@@ -252,7 +252,7 @@ export default function Help() {
                 </tbody>
               </table>
             </div>
-            <details className="hm-docs-formula">
+            <details className="jt-docs-formula">
               <summary>Exact formula</summary>
               <p>With <code>move</code> = (|exit − entry| − entry / {money(limits.deadbandDivisor, 0)}) / entry:</p>
               <pre>{"scale = (1 − baseRate) / (1 + 1 / (move × rateMultiplier) + referenceNotional / (10⁶ × move × positionMultiplier))\ngain  = size × move × scale × (1 − winFee)"}</pre>
@@ -268,7 +268,7 @@ export default function Help() {
               A position is liquidated when the price moves against it by 1 / leverage, minus a buffer of{" "}
               {pct(first.liqBufferBps)}. On liquidation the entire margin goes to the house.
             </p>
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <thead><tr><th>Leverage</th><th>Price move to liquidation</th></tr></thead>
                 <tbody>
@@ -288,7 +288,7 @@ export default function Help() {
           </Section>
 
           <Section id="fees" title="Fees">
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <thead><tr><th>Fee</th><th>Amount</th><th>Who pays</th></tr></thead>
                 <tbody>
@@ -308,7 +308,7 @@ export default function Help() {
           </Section>
 
           <Section id="limits" title="Limits">
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <tbody>
                   <tr><th scope="row">Margin per position</th><td>From {usd(MIN_MARGIN)}</td></tr>
@@ -338,7 +338,7 @@ export default function Help() {
               If the pool can&apos;t pay a winning close in full, the unpaid profit joins a first-in, first-out queue. Later
               trader losses pay the queue in order, and each payment lands in your balance automatically.
             </p>
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li>Only profit can be queued. Your margin always comes back immediately.</li>
               <li>The queue has no deadline: payment depends on future losses.</li>
               <li>While it has entries, every loss goes to queued winners, with no fee taken.</li>
@@ -350,7 +350,7 @@ export default function Help() {
               Every losing close and every liquidation mints HOUSE to the trader. While the pool is below $2M, the rate is{" "}
               <strong>100 HOUSE per $1 lost</strong>. Above that, it decays as the pool reaches new highs:
             </p>
-            <pre className="hm-docs-pre">{"rate = 100 × (S / (S + H))²\nS = $120M    H = pool growth above $2M (high-water mark)"}</pre>
+            <pre className="jt-docs-pre">{"rate = 100 × (S / (S + H))²\nS = $120M    H = pool growth above $2M (high-water mark)"}</pre>
             <p>
               HOUSE is a reward, not a refund, and has no guaranteed value. Transfers are disabled at launch: HOUSE can be
               held and staked.
@@ -359,7 +359,7 @@ export default function Help() {
 
           <Section id="staking" title="Staking">
             <p>Staked HOUSE earns USDG from two sources, shared pro rata by stake:</p>
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li><strong>Fees.</strong> Half of every win, loss and liquidation fee.</li>
               <li><strong>Pool surplus.</strong> Any pool growth above $5M.</li>
             </ul>
@@ -383,7 +383,7 @@ export default function Help() {
               Your trading balance lives in the Exchange contract, credited to your wallet address. Deposits and
               withdrawals take one signature; the relayer submits them and pays the gas.
             </p>
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li><strong>USDG on Robinhood Chain:</strong> deposit straight from your wallet.</li>
               <li><strong>Any token, any chain:</strong> the deposit routes through Trustware and lands in your trading balance.</li>
               <li><strong>Withdrawals</strong> arrive in your wallet as USDG on Robinhood Chain.</li>
@@ -395,7 +395,7 @@ export default function Help() {
               Signing every order in your wallet is slow. Instead, one signature registers a <strong>trading key</strong>{" "}
               that lives only in this browser, for up to 30 days.
             </p>
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li>It can open and close positions. It can&apos;t withdraw or move funds.</li>
               <li>Each order it signs is valid for one hour at most.</li>
               <li>Revoke it anytime in Settings → Session & limits. Revoking is an on-chain transaction and needs a little ETH.</li>
@@ -411,7 +411,7 @@ export default function Help() {
           </Section>
 
           <Section id="risks" title="Risks">
-            <ul className="hm-docs-points">
+            <ul className="jt-docs-points">
               <li><strong>Leverage.</strong> At high leverage a tiny move liquidates a position. Only trade what you can lose.</li>
               <li><strong>Gaps.</strong> Prices can jump past your liquidation price, and equities can gap at the open.</li>
               <li><strong>Queue.</strong> If the pool is short, a winning close is paid later, not immediately.</li>
@@ -423,7 +423,7 @@ export default function Help() {
 
           <Section id="contracts" title="Contracts">
             <p>Robinhood Chain mainnet, chain id 4663. Upgradeable proxies.</p>
-            <div className="hm-docs-table">
+            <div className="jt-docs-table">
               <table>
                 <thead><tr><th>Contract</th><th>Address</th><th>Role</th></tr></thead>
                 <tbody>
@@ -448,7 +448,7 @@ export default function Help() {
               ["When can I trade SPY or TSLA?", "Once they're listed, during US market hours. Until then they're in preview."],
               ["Where are my funds?", "In the Exchange contract, credited to your wallet address. Withdraw them anytime."],
             ].map(([q, a]) => (
-              <details key={q} className="hm-docs-faq">
+              <details key={q} className="jt-docs-faq">
                 <summary>{q}</summary>
                 <p>{a}</p>
               </details>

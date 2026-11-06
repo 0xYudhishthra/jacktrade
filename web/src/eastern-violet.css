@@ -1,11 +1,11 @@
 /* Local identity study. All terminal colors and controls remain inherited. */
 @media (min-width:901px) {
-  .hm-eastern-violet .hm-wallpaper > img:first-child {
+  .jt-eastern-violet .jt-wallpaper > img:first-child {
     left:calc(8vw - 455px);
   }
 }
 
-.hm-eastern-violet .hm-eastern-seal {
+.jt-eastern-violet .jt-eastern-seal {
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -24,8 +24,8 @@
     serif;
   transform:rotate(-2deg);
 }
-.hm-eastern-violet .hm-wallpaper > .hm-eastern-city,
-.hm-eastern-violet .hm-signin-wallpaper > .hm-eastern-city {
+.jt-eastern-violet .jt-wallpaper > .jt-eastern-city,
+.jt-eastern-violet .jt-signin-wallpaper > .jt-eastern-city {
   left:auto;
   right:-80px;
   top:-2%;
@@ -36,7 +36,7 @@
   mask-image:linear-gradient(90deg, transparent 65%, black 94%);
   pointer-events:none;
 }
-.hm-eastern-caption {
+.jt-eastern-caption {
   position:fixed;
   z-index:3;
   right:20px;
@@ -48,7 +48,7 @@
   color:var(--terminal-muted);
   pointer-events:none;
 }
-.hm-eastern-caption > [lang] {
+.jt-eastern-caption > [lang] {
   writing-mode:vertical-rl;
   font-family:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size:13px;
@@ -57,34 +57,34 @@
   padding-top:16px;
   border-top:1px solid var(--terminal-border);
 }
-.hm-eastern-caption > span:last-child {
+.jt-eastern-caption > span:last-child {
   writing-mode:vertical-rl;
   font-family:var(--font-mono);
   font-size:8px;
   letter-spacing:0.2em;
   opacity:0.6;
 }
-.hm-eastern-violet .hm-signin-brand .hm-eastern-seal {
+.jt-eastern-violet .jt-signin-brand .jt-eastern-seal {
   width:28px;
   height:28px;
   font-size:22px;
   margin-right:8px;
 }
 @media (max-width:1200px) {
-  .hm-eastern-caption {
+  .jt-eastern-caption {
     right:13px;
   }
 }
 @media (max-width:900px) {
-  .hm-eastern-caption {
+  .jt-eastern-caption {
     display:none;
   }
-  .hm-eastern-violet .hm-wallpaper > .hm-eastern-city {
+  .jt-eastern-violet .jt-wallpaper > .jt-eastern-city {
     opacity:0.2;
   }
 }
 @media (max-width:540px) {
-  .hm-eastern-violet .hm-eastern-seal {
+  .jt-eastern-violet .jt-eastern-seal {
     width:20px;
     height:20px;
     font-size:16px;
@@ -92,58 +92,58 @@
   }
 }
 
-.hm-eastern-violet [lang="zh-Hans"] {
+.jt-eastern-violet [lang="zh-Hans"] {
   font-family:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight:500;
   letter-spacing:0.08em;
 }
-.hm-eastern-violet .sky86 .hm-main-nav .hm-nav-tab {
+.jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
   min-width:71px;
   flex-direction:column;
   gap:3px;
   padding:6px 9px;
   line-height:1.1;
 }
-.hm-eastern-violet .hm-nav-cn {
+.jt-eastern-violet .jt-nav-cn {
   font-size:12px;
   color:var(--terminal-secondary);
 }
-.hm-eastern-violet .hm-nav-en {
+.jt-eastern-violet .jt-nav-en {
   font-size:8px;
   letter-spacing:0.06em;
 }
-.hm-eastern-violet .hm-main-nav .luna-btn-active .hm-nav-cn {
+.jt-eastern-violet .jt-main-nav .luna-btn-active .jt-nav-cn {
   color:var(--terminal-accent);
 }
-.hm-eastern-violet .hm-main-nav .hm-more-menu .hm-nav-tab {
+.jt-eastern-violet .jt-main-nav .jt-more-menu .jt-nav-tab {
   min-width:54px;
   flex-direction:row;
   padding:10px 8px;
 }
-.hm-eastern-violet .hm-bilingual-heading {
+.jt-eastern-violet .jt-bilingual-heading {
   display:inline-flex;
   align-items:baseline;
   gap:9px;
 }
-.hm-eastern-violet .hm-bilingual-heading > [lang] {
+.jt-eastern-violet .jt-bilingual-heading > [lang] {
   font-size:13px;
   color:var(--terminal-text);
 }
-.hm-eastern-violet .hm-bilingual-heading > span:last-child {
+.jt-eastern-violet .jt-bilingual-heading > span:last-child {
   font-size:10px;
   letter-spacing:0.08em;
   color:var(--terminal-secondary);
   font-weight:400;
 }
 @media (max-width:1200px) {
-  .hm-eastern-violet .sky86 .hm-main-nav .hm-nav-tab {
+  .jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
     min-width:62px;
     padding-left:7px;
     padding-right:7px;
   }
 }
 @media (max-width:540px) {
-  .hm-eastern-violet .sky86 .hm-main-nav .hm-nav-tab {
+  .jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
     min-width:0;
     padding:7px 5px;
   }

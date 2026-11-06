@@ -10,7 +10,7 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { API_URL, EXPLORER_URL, RELAYER_URL, RPC_URL, requestJson } from "./backend.js";
 
-const SESSION_STORAGE_KEY = "hm.session-key.v1";
+const SESSION_STORAGE_KEY = "jt.session-key.v1";
 const SESSION_KEY_ABI = [
   { type: "function", name: "isValidSessionKey", stateMutability: "view", inputs: [{ name: "user", type: "address" }, { name: "key", type: "address" }], outputs: [{ type: "bool" }] },
   { type: "function", name: "revokeSessionKey", stateMutability: "nonpayable", inputs: [{ name: "key", type: "address" }], outputs: [] },
@@ -82,28 +82,34 @@ export const TRUSTED = {
   chainId: Number(env.VITE_CHAIN_ID ?? 4663),
   Exchange: env.VITE_EXCHANGE ?? "0x698cf1a9220f89ccf6ee75269086288a623ede54",
   SessionKeyManager: env.VITE_SESSION_KEY_MANAGER ?? "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29",
-  JackTradeStaking: env.VITE_STAKING ?? "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd",
+  staking: env.VITE_STAKING ?? "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd",
   collateral: env.VITE_USDG ?? "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
-  token: env.VITE_JACKTRADE ?? "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
+  token: env.VITE_TOKEN ?? "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
 };
 
 const sameAddress = (a, b) => typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
 
+// The staking contract's entry in /config, found by role (its key ends in "Staking") rather than by the deployed name.
+export function stakingAddress(config) {
+  const entry = Object.entries(config?.contracts ?? {}).find(([key]) => /staking$/i.test(key));
+  return entry?.[1];
+}
+
 /** Throws unless /config points at the trusted chain and contracts, with the expected EIP-712 domains. */
 export function assertTrustedConfig(config, trusted = TRUSTED) {
-  const domain = (d, name, contract) => d?.name === name && d?.version === "1" && Number(d?.chainId) === trusted.chainId && sameAddress(d?.verifyingContract, contract);
+  const domain = (d, contract) => typeof d?.name === "string" && d?.version === "1" && Number(d?.chainId) === trusted.chainId && sameAddress(d?.verifyingContract, contract);
   const problems = [
     Number(config?.chainId) === trusted.chainId || "chainId",
     sameAddress(config?.contracts?.Exchange, trusted.Exchange) || "Exchange",
     sameAddress(config?.contracts?.SessionKeyManager, trusted.SessionKeyManager) || "SessionKeyManager",
-    sameAddress(config?.contracts?.JackTradeStaking, trusted.JackTradeStaking) || "JackTradeStaking",
+    sameAddress(stakingAddress(config), trusted.staking) || "staking",
     sameAddress(config?.collateral?.address, trusted.collateral) || "collateral",
     Number(config?.collateral?.decimals) === 6 || "collateral decimals",
     sameAddress(config?.token?.address, trusted.token) || "token",
     Number(config?.token?.decimals) === 18 || "token decimals",
-    domain(config?.eip712?.domain, "JackTrade Exchange", trusted.Exchange) || "Exchange domain",
-    domain(config?.eip712Actions?.sessionKeys?.domain, "JackTrade SessionKeyManager", trusted.SessionKeyManager) || "session key domain",
-    domain(config?.eip712Actions?.staking?.domain, "JackTrade Staking", trusted.JackTradeStaking) || "staking domain",
+    domain(config?.eip712?.domain, trusted.Exchange) || "Exchange domain",
+    domain(config?.eip712Actions?.sessionKeys?.domain, trusted.SessionKeyManager) || "session key domain",
+    domain(config?.eip712Actions?.staking?.domain, trusted.staking) || "staking domain",
   ].filter((p) => p !== true);
   if (problems.length) throw new Error(`The relayer config does not match the JackTrade contracts (${problems.join(", ")}). Trading is disabled; please reload later.`);
   return config;
@@ -282,8 +288,8 @@ export async function fetchProtocolData(config, user) {
   const [walletCollateral, token, staked, claimable, activated] = await Promise.all([
     client.readContract({ address: config.collateral.address, abi: ERC20_ABI, functionName: "balanceOf", args: [user] }),
     client.readContract({ address: config.token.address, abi: ERC20_ABI, functionName: "balanceOf", args: [user] }),
-    client.readContract({ address: config.contracts.JackTradeStaking, abi: STAKING_ABI, functionName: "stakeOf", args: [user] }),
-    client.readContract({ address: config.contracts.JackTradeStaking, abi: STAKING_ABI, functionName: "accrued", args: [user] }),
+    client.readContract({ address: stakingAddress(config), abi: STAKING_ABI, functionName: "stakeOf", args: [user] }),
+    client.readContract({ address: stakingAddress(config), abi: STAKING_ABI, functionName: "accrued", args: [user] }),
     // The first deposit also pays the one-time activation fee.
     client.readContract({ address: config.contracts.Exchange, abi: ACTIVATED_ABI, functionName: "activated", args: [user] }).catch(() => null),
   ]);

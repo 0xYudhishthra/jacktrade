@@ -3,12 +3,12 @@
  "contracts": {
   "Exchange": "0x698cf1a9220f89ccf6ee75269086288a623ede54",
   "SessionKeyManager": "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29",
-  "JackTradeStaking": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
+  "Staking": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
  },
  "token": {
   "address": "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
-  "name": "JackTrade",
-  "symbol": "JACKTRADE",
+  "name": "HOUSE",
+  "symbol": "HOUSE",
   "decimals": 18
  },
  "collateral": {

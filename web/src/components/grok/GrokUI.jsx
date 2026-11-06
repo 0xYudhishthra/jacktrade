@@ -69,8 +69,8 @@ export function Note({ children, tone = "warn" }) {
 export function Step({ n, title, state, children }) {
   // state: "todo" | "active" | "done" | "error"
   return (
-    <section className={`hm-panel pm-panel jt-step jt-step-${state}`}>
-      <div className="pm-panel-heading hm-panel-bar jt-step-head">
+    <section className={`jt-panel pm-panel jt-step jt-step-${state}`}>
+      <div className="pm-panel-heading jt-panel-bar jt-step-head">
         <span className="jt-step-n">{state === "done" ? "✓" : n}</span>
         <h2>{title}</h2>
       </div>

@@ -38,7 +38,7 @@ function BetCard({ bet, prices }) {
       : null
     : livePnl(bet, prices);
   return (
-    <section className="hm-panel pm-panel jt-bet">
+    <section className="jt-panel pm-panel jt-bet">
       <div className="pm-panel-body jt-bet">
         <div className="jt-bet-top">
           <GrokBadge className="jt-badge-lead" />

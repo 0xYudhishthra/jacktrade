@@ -27,7 +27,7 @@ export default function MarketWatch({
     .map((m) => ({ ...m, change24h: dayStats[m.symbol]?.change24h ?? null, price: livePrices[m.symbol] }));
 
   return (
-    <aside className="hm-panel flex flex-col flex-1 min-h-0">
+    <aside className="jt-panel flex flex-col flex-1 min-h-0">
       <div
         className="px-3 py-2.5 flex items-center justify-between shrink-0"
         style={{ borderBottom: "1px solid #EAF4FF" }}
@@ -51,16 +51,16 @@ export default function MarketWatch({
           24h
         </span>
       </div>
-      <div className="flex-1 overflow-auto hm-scroll p-1.5 flex flex-col gap-0.5">
+      <div className="flex-1 overflow-auto jt-scroll p-1.5 flex flex-col gap-0.5">
         {rows.map((m) => {
           const active = m.symbol === selected;
           const up = m.change24h >= 0;
           return (
-            <div key={m.symbol} className="hm-market-option">
+            <div key={m.symbol} className="jt-market-option">
               <button
                 onClick={() => onSelect(m.symbol)}
                 aria-label={`Select ${m.symbol}`}
-                className={`hm-market-row ${active ? "is-selected" : ""} flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors`}
+                className={`jt-market-row ${active ? "is-selected" : ""} flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors`}
                 style={{
                   background: active ? "#D9E9FF" : "transparent",
                   border: active ? "1px solid #9FC4EF" : "1px solid transparent",
@@ -109,7 +109,7 @@ export default function MarketWatch({
               {onFavorite && (
                 <button
                   type="button"
-                  className="hm-market-favorite"
+                  className="jt-market-favorite"
                   aria-label={`Favorite ${m.symbol}`}
                   aria-pressed={favorites.includes(m.symbol)}
                   onClick={() => onFavorite(m.symbol)}

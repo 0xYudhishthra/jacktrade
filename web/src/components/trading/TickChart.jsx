@@ -410,7 +410,7 @@ export default function TickChart({
   }
 
   return (
-    <div className="hm-panel pm-integrated-chart pm-tick-chart flex flex-col" style={{ height: "100%" }}>
+    <div className="jt-panel pm-integrated-chart pm-tick-chart flex flex-col" style={{ height: "100%" }}>
       <div className="pm-chart-overlay">
         <div className="pm-chart-overlay-main">
           {header}

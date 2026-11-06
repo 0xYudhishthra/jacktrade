@@ -1,6 +1,6 @@
 # JackTrade web app
 
-> **Continuity Track note.** This folder is the pre-existing JackTrade (formerly JackTrade) exchange
+> **Continuity Track note.** This folder is the pre-existing JackTrade exchange
 > frontend, imported unchanged in the commit "Import pre-existing JackTrade frontend (pre-hackathon code,
 > unchanged)". Hackathon additions: `/grok` (Connect Grok), `/grok/bets` (Grok bets feed), `/points`
 > (JackTrade Points, replacing the HOUSE token page), `/real/$id` (Make it real with Definitive Flash) and a
@@ -13,7 +13,7 @@
 
 ---
 
-# Jacktrade · Frontend V3 / DREAM.EXE
+# Exchange frontend (pre-existing) · DREAM.EXE
 
 Complete DREAM.EXE frontend from the 8018 iteration, on `main` and `frontend-v3`.
 
@@ -34,13 +34,13 @@ bun run check  # strict lint, model/history tests and production build
 
 ## Design and motion
 
-White glass terminal with Trade, Portfolio, House, Token and Leaderboard. The landing uses a mouse-steered point vortex, floating transparent landscape mirrors and bubbles, lowercase Figtree branding, textured 1000x lettering, a broad ripple field and an animated trading preview.
+White glass terminal with Grok, Trade, Portfolio, House, Points and Leaderboard. The landing uses a mouse-steered point vortex, floating transparent landscape mirrors and bubbles, lowercase Figtree branding, textured 1000x lettering, a broad ripple field and an animated trading preview.
 
 Motion runs by default. `?motion=system` follows the device preference, `?motion=reduced` pauses decorative motion, and `?motion=full` enables it explicitly. Touch input does not activate pointer gravity. Decorative animation pauses when hidden or outside the viewport.
 
 ## Protocol integration
 
-The terminal reads live prices, protocol configuration, indexed accounts, positions, history, markets, statistics and leaderboards from the production services. Wallet actions use Robinhood Chain (chain ID 4663). Orders are signed with a browser-generated session key and submitted through the relayer; deposits, withdrawals, staking and claims require wallet signatures.
+The terminal reads live prices, protocol configuration, indexed accounts, positions, history, markets, statistics and leaderboards from the production services. Wallet actions use Robinhood Chain (chain ID 4663). Orders are signed with a browser-generated session key and submitted through the relayer; deposits and withdrawals require wallet signatures.
 
 Copy `.env.example` to `.env.local` only when overriding the production defaults. The frontend never needs backend or contract source checkouts.
 
@@ -50,6 +50,4 @@ The order ticket requires at least 10 USDG margin and a 1,000 USDG position. Lev
 
 ## Deployment
 
-https://jacktrade-dream-8018.vercel.app/
-
-The existing Vercel project was published through the CLI. A Git push alone does not deploy it. SPA rewrites and build settings are in `vercel.json`. Font licenses are included under `public/fonts/`.
+Deployed with the Grok connector: the root `Dockerfile` builds this app and the connector serves it. SPA rewrites for static hosts are in `vercel.json`. Font licenses are included under `public/fonts/`.
