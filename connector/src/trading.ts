@@ -2,6 +2,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { config, txLink } from "./config.ts";
 import { randomUint256 } from "./crypto.ts";
 import type { Bet, Caps, Store, User } from "./db.ts";
+import { pointsFor } from "./points.ts";
 import * as up from "./upstream.ts";
 
 const USD = 1_000_000n; // USDG has 6 decimals
@@ -27,6 +28,7 @@ export type Quote = {
   liquidationMovePct: number;
   marketOpen: boolean;
   houseBankrollUsd: number;
+  pointsEarned: number;
   notes: string[];
 };
 
@@ -110,6 +112,7 @@ export async function quote(input: QuoteInput, caps: Caps, store: Store, wallet:
     marginUsd,
     leverage,
     notionalUsd,
+    pointsEarned: pointsFor(notionalUsd),
     entryPrice,
     liquidationPrice: liq,
     liquidationMovePct: (Math.abs(entryPrice - liq) / entryPrice) * 100,

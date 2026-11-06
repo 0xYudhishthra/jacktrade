@@ -3,6 +3,7 @@ import { createPublicClient, http, parseAbi } from "viem";
 import { z } from "zod";
 import { config } from "./config.ts";
 import type { Store, User } from "./db.ts";
+import { pointsLeaderboard, pointsOf } from "./points.ts";
 import * as trading from "./trading.ts";
 import * as up from "./upstream.ts";
 
@@ -57,7 +58,25 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
         "JackTrade lets the user bet against the house with leverage on stocks and crypto. " +
         "Before placing a bet, call quote_bet and show the user the entry, liquidation price and house bankroll, " +
         "then ask them to confirm. Never place a bet the user did not explicitly ask for. " +
-        "Grok's key can open and close bets but can never withdraw funds.",
+        "Grok's key can open and close bets but can never withdraw funds. " +
+        "Every bet earns JackTrade Points: 10 points per $100 of notional, win or lose.",
+    },
+  );
+
+  server.registerTool(
+    "my_points",
+    {
+      title: "My JackTrade Points",
+      description: "The user's JackTrade Points (10 per $100 of notional traded, win or lose) and the top of the leaderboard.",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        const [mine, top] = await Promise.all([pointsOf(user.wallet), pointsLeaderboard(5)]);
+        return ok({ ...mine, leaderboard: top });
+      } catch (e) {
+        return fail(e);
+      }
     },
   );
 
@@ -235,7 +254,7 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
     async (a) => {
       const bet = store.bet(a.bet_id);
       if (!bet) return fail(new trading.BetError("Unknown bet id."));
-      return ok({ link: `${config.webUrl}/real/${bet.id}`, note: "Opens JackTrade for Grok to sign a Flash order in your wallet." });
+      return ok({ link: `${config.webUrl}/real/${bet.id}`, note: "Opens JackTrade to sign a Flash order in your wallet." });
     },
   );
 

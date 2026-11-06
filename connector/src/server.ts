@@ -8,6 +8,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { assertConfig, config } from "./config.ts";
 import { decrypt, encrypt, hashToken, newSecret } from "./crypto.ts";
 import { Store, type Caps } from "./db.ts";
+import { pointsLeaderboard, pointsOf } from "./points.ts";
 import { buildServer, readAttestation } from "./tools.ts";
 import { syncBets } from "./trading.ts";
 import * as up from "./upstream.ts";
@@ -102,6 +103,23 @@ app.get("/api/bets", async (req, res) => {
   res.json(store.recentBets(limit));
 });
 
+app.get("/api/points", async (_req, res) => {
+  try {
+    res.json(await pointsLeaderboard(25));
+  } catch (e) {
+    res.status(502).json({ message: String(e) });
+  }
+});
+
+app.get("/api/points/:wallet", async (req, res) => {
+  if (!isAddress(req.params.wallet)) return void res.status(400).json({ message: "wallet must be an address" });
+  try {
+    res.json(await pointsOf(req.params.wallet));
+  } catch (e) {
+    res.status(502).json({ message: String(e) });
+  }
+});
+
 app.get("/api/bets/:id", async (req, res) => {
   const bet = store.bet(req.params.id);
   if (!bet) return void res.status(404).json({ message: "Bet not found" });
@@ -175,5 +193,5 @@ if (existsSync(join(webDist, "index.html"))) {
 }
 
 app.listen(config.port, () => {
-  console.log(`JackTrade for Grok connector on :${config.port}`);
+  console.log(`JackTrade connector on :${config.port}`);
 });

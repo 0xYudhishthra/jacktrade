@@ -3,6 +3,7 @@ import { WalletProvider, WalletButton } from "./components/Wallet.jsx";
 import ConnectPage from "./pages/Connect.jsx";
 import BetsPage from "./pages/Bets.jsx";
 import RealPage from "./pages/Real.jsx";
+import PointsPage from "./pages/Points.jsx";
 
 export default function App() {
   return (
@@ -10,7 +11,7 @@ export default function App() {
       <header className="topbar">
         <div className="topbar-inner">
           <Link to="/" className="brand">
-            <span className="brand-mark">H</span>
+            <span className="brand-mark">J</span>
             <span className="brand-name">
               JackTrade <span className="muted">for Grok</span>
             </span>
@@ -20,6 +21,7 @@ export default function App() {
               Connect
             </NavLink>
             <NavLink to="/bets">Grok bets</NavLink>
+            <NavLink to="/points">Points</NavLink>
           </nav>
           <WalletButton />
         </div>
@@ -28,6 +30,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ConnectPage />} />
           <Route path="/bets" element={<BetsPage />} />
+          <Route path="/points" element={<PointsPage />} />
           <Route path="/real/:id" element={<RealPage />} />
           <Route
             path="*"

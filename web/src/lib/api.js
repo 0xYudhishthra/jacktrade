@@ -71,6 +71,9 @@ export const connectStart = (wallet) =>
 export const connectFinish = (pendingId, caps) =>
   request(`${CONNECTOR_URL}/api/connect/finish`, { method: "POST", body: { pendingId, caps } });
 
+export const getPoints = (wallet) => request(`${CONNECTOR_URL}/api/points/${wallet}`);
+export const getPointsLeaderboard = () => request(`${CONNECTOR_URL}/api/points`);
+
 export async function getBets(limit = 50) {
   const data = await request(`${CONNECTOR_URL}/api/bets?limit=${limit}`);
   if (Array.isArray(data)) return data;
