@@ -105,6 +105,7 @@ export function ProductUIProvider({ children }) {
   );
 }
 const NAV = [
+  ["Grok", "/grok"],
   ["Trade", "/trade"],
   ["Portfolio", "/portfolio"],
   ["House", "/house"],
@@ -112,10 +113,10 @@ const NAV = [
   ["Leaderboard", "/leaderboard"],
 ];
 const LABELS = {
-  en: ["Trade", "Portfolio", "House", "Points", "Leaderboard"],
-  es: ["Operar", "Portfolio", "Casa", "Puntos", "Leaderboard"],
-  pt: ["Operar", "Portfolio", "Casa", "Pontos", "Leaderboard"],
-  zh: ["交易", "资产", "庄家", "积分", "排行"],
+  en: ["Grok", "Trade", "Portfolio", "House", "Points", "Leaderboard"],
+  es: ["Grok", "Operar", "Portfolio", "Casa", "Puntos", "Leaderboard"],
+  pt: ["Grok", "Operar", "Portfolio", "Casa", "Pontos", "Leaderboard"],
+  zh: ["Grok", "交易", "资产", "庄家", "积分", "排行"],
 };
 function MoreMenu() {
   const [open, setOpen] = useState(false);
