@@ -1,40 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createPublicClient, http, parseAbi } from "viem";
 import { z } from "zod";
 import { config } from "./config.ts";
 import type { Store, User } from "./db.ts";
 import { pointsLeaderboard, pointsOf } from "./points.ts";
 import * as trading from "./trading.ts";
 import * as up from "./upstream.ts";
-
-const attestationAbi = parseAbi([
-  "function latest() view returns (uint256 bankroll, uint256 queued, uint256 openInterest, uint256 positions, uint64 observedAt)",
-]);
-
-/** Latest Chainlink CRE "Proof of House" attestation, if the consumer contract is configured. */
-export async function readAttestation() {
-  if (!config.attestationAddress) return null;
-  try {
-    const client = createPublicClient({ transport: http(config.attestationRpcUrl) });
-    const [bankroll, queued, openInterest, positions, observedAt] = await client.readContract({
-      address: config.attestationAddress as `0x${string}`,
-      abi: attestationAbi,
-      functionName: "latest",
-    });
-    if (observedAt === 0n) return null;
-    return {
-      bankrollUsd: Number(bankroll) / 1e6,
-      queuedUsd: Number(queued) / 1e6,
-      openInterestUsd: Number(openInterest) / 1e6,
-      positions: Number(positions),
-      observedAt: new Date(Number(observedAt) * 1000).toISOString(),
-      contract: `${config.attestationExplorerUrl}/address/${config.attestationAddress}`,
-      attestedBy: "Chainlink CRE workflow (Proof of House)",
-    };
-  } catch {
-    return null;
-  }
-}
 
 function ok(data: unknown) {
   return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
@@ -115,13 +85,13 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
     {
       title: "House status",
       description:
-        "How much the house can pay out right now, its payout queue and open interest, plus the latest " +
-        "Chainlink-attested Proof of House. Check this before big bets.",
+        "How much the house can pay out right now, its payout queue and open interest. " +
+        "Check this before big bets.",
       inputSchema: {},
     },
     async () => {
       try {
-        const [health, h, attestation] = await Promise.all([up.relayerHealth(), up.house(), readAttestation()]);
+        const [health, h] = await Promise.all([up.relayerHealth(), up.house()]);
         const openInterestUsd = h.markets.reduce((s, m) => s + Number(m.longOi) + Number(m.shortOi), 0);
         return ok({
           bankrollUsd: Number(health.lpBankrollAvailable),
@@ -130,7 +100,6 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
           openPositions: h.positions,
           houseLifetimePnlUsd: Number(h.housePnl),
           tradingPaused: health.tradingPaused,
-          proofOfHouse: attestation ?? "No Chainlink attestation published yet.",
         });
       } catch (e) {
         return fail(e);

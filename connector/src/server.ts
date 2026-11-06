@@ -9,7 +9,7 @@ import { assertConfig, config } from "./config.ts";
 import { decrypt, encrypt, hashToken, newSecret } from "./crypto.ts";
 import { Store, type Caps } from "./db.ts";
 import { pointsLeaderboard, pointsOf } from "./points.ts";
-import { buildServer, readAttestation } from "./tools.ts";
+import { buildServer } from "./tools.ts";
 import { syncBets } from "./trading.ts";
 import * as up from "./upstream.ts";
 
@@ -23,8 +23,8 @@ app.disable("x-powered-by");
 app.use(cors({ exposedHeaders: ["mcp-session-id"] }));
 app.use(express.json({ limit: "256kb" }));
 
-app.get("/health", async (_req, res) => {
-  res.json({ ok: true, attestation: await readAttestation() });
+app.get("/health", (_req, res) => {
+  res.json({ ok: true });
 });
 
 // ---------------------------------------------------------------- connect flow

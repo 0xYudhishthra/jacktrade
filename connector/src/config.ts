@@ -22,9 +22,6 @@ export const config = {
   explorerUrl: trim(env.EXPLORER_URL ?? ""),
   flashApiKey: env.FLASH_API_KEY ?? "",
   flashUrl: trim(env.FLASH_URL ?? "https://flash.definitive.fi/v1"),
-  attestationRpcUrl: env.ATTESTATION_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com",
-  attestationAddress: env.ATTESTATION_ADDRESS ?? "",
-  attestationExplorerUrl: trim(env.ATTESTATION_EXPLORER_URL ?? "https://sepolia.etherscan.io"),
 };
 
 export function txLink(hash: string | null | undefined): string | null {
