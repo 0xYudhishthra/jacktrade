@@ -133,3 +133,41 @@ flowchart LR
 ```
 
 The Flash API key never reaches the browser: the connector proxies `/v1/quote`, `/v1/order` and `/v1/orders`. If Flash doesn't return a bracket payload, the app refuses to place an unprotected order.
+
+## JackTrade Points
+
+Every bet earns points, **win or lose**: **10 points per $100 of notional** (margin × leverage). A $20 bet at 50x is $1,000 of notional and earns 100 points.
+
+Points are computed from the exchange's onchain trade history (via the indexer), so anyone can recompute them. Grok reports them with `my_points`, every quote shows the points a bet will earn, and the web app has a leaderboard at `/points`. They're designed to carry into a future token event.
+
+## Status
+
+| Component | Status | Where |
+|-----------|--------|-------|
+| Grok connector (MCP: 8 tools, caps, encrypted agent keys) | **Built** · read tools and quotes tested against the live mainnet APIs | [`connector`](connector) |
+| Connect Grok (gasless session-key registration) | **Built** | [`web/src/pages/Connect.jsx`](web/src/pages/Connect.jsx) |
+| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/pages/Real.jsx`](web/src/pages/Real.jsx) |
+| Proof of House (Chainlink CRE) | **Built** · workflow compiles to WASM, live-data test passes, contract 5/5 tests, report delivery verified on a Sepolia fork | [`cre`](cre) |
+| JackTrade Points | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
+| Single-image deploy (connector + web) | **Built** · Docker image builds and serves both | [`Dockerfile`](Dockerfile) |
+| Hosted deployment | In progress | Railway |
+| CRE simulation broadcast to Sepolia | In progress | [`cre/README.md`](cre/README.md) |
+
+## Deployments
+
+**JackTrade exchange — Robinhood Chain mainnet (chain id 4663)**, pre-existing, used as-is:
+
+| Contract | Address |
+|----------|---------|
+| Exchange | `0x698cf1a9220f89ccf6ee75269086288a623ede54` |
+| SessionKeyManager | `0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29` |
+| BatchExecutor | `0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4` |
+| Collateral: USDG | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
+
+**Built at the hackathon:**
+
+| Contract | Chain | Address |
+|----------|-------|---------|
+| `HouseAttestation` (CRE `onReport` consumer) | Ethereum Sepolia | pending deploy |
+
+**Tokens used by Make it real (Robinhood Chain):** TSLA `0x322F0929c4625eD5bAd873c95208D54E1c003b2d` · NVDA `0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC` · WETH `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
