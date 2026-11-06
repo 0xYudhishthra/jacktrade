@@ -1,6 +1,6 @@
-export const PRICES_URL = (import.meta.env?.VITE_PRICES_URL ?? "https://hmprices-production.up.railway.app").replace(/\/$/, "");
-export const RELAYER_URL = (import.meta.env?.VITE_RELAYER_URL ?? "https://hmrelayer-production.up.railway.app").replace(/\/$/, "");
-export const API_URL = (import.meta.env?.VITE_API_URL ?? "https://hmindexer-production.up.railway.app").replace(/\/$/, "");
+export const PRICES_URL = (import.meta.env?.VITE_PRICES_URL ?? "https://jt-prices-production.up.railway.app").replace(/\/$/, "");
+export const RELAYER_URL = (import.meta.env?.VITE_RELAYER_URL ?? "https://jt-relayer-production.up.railway.app").replace(/\/$/, "");
+export const API_URL = (import.meta.env?.VITE_API_URL ?? "https://jt-indexer-production.up.railway.app").replace(/\/$/, "");
 export const RPC_URL = (import.meta.env?.VITE_RPC_URL ?? "https://rpc.mainnet.chain.robinhood.com").replace(/\/$/, "");
 
 export async function requestJson(url, options = {}) {

@@ -80,11 +80,11 @@ export function normalizeConfig(config) {
 const env = import.meta.env ?? {};
 export const TRUSTED = {
   chainId: Number(env.VITE_CHAIN_ID ?? 4663),
-  Exchange: env.VITE_EXCHANGE ?? "0x698cf1a9220f89ccf6ee75269086288a623ede54",
-  SessionKeyManager: env.VITE_SESSION_KEY_MANAGER ?? "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29",
-  staking: env.VITE_STAKING ?? "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd",
+  Exchange: env.VITE_EXCHANGE ?? "0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c",
+  SessionKeyManager: env.VITE_SESSION_KEY_MANAGER ?? "0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af",
+  staking: env.VITE_STAKING ?? "0xdb5d2bbce982f7975fbd5229e25bc1a91facfd7f",
   collateral: env.VITE_USDG ?? "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
-  token: env.VITE_TOKEN ?? "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
+  token: env.VITE_TOKEN ?? "0x6a809d8bbaafd130086d56b8871742a26aef802c",
 };
 
 const sameAddress = (a, b) => typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();

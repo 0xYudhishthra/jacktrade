@@ -4,7 +4,7 @@ import { API_URL, requestJson } from "./backend.js";
 
 // Read-only JackTrade API (indexer). Every amount is a decimal string (USDG with 6 decimals applied, the HOUSE token with
 // 18), prices are decimal strings, times are Unix seconds, addresses are lowercase.
-// Full reference: https://hmindexer-production.up.railway.app/docs
+// Full reference: https://jt-indexer-production.up.railway.app/docs
 
 const get = (path, params) => {
   const query = params ? new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== "")) : null;

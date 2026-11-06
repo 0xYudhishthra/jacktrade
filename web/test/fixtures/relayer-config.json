@@ -1,12 +1,12 @@
 {
  "chainId": 4663,
  "contracts": {
-  "Exchange": "0x698cf1a9220f89ccf6ee75269086288a623ede54",
-  "SessionKeyManager": "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29",
-  "Staking": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
+  "Exchange": "0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c",
+  "SessionKeyManager": "0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af",
+  "Staking": "0xdb5d2bbce982f7975fbd5229e25bc1a91facfd7f"
  },
  "token": {
-  "address": "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
+  "address": "0x6a809d8bbaafd130086d56b8871742a26aef802c",
   "name": "HOUSE",
   "symbol": "HOUSE",
   "decimals": 18
@@ -21,7 +21,7 @@
    "name": "JackTrade Exchange",
    "version": "1",
    "chainId": 4663,
-   "verifyingContract": "0x698cf1a9220f89ccf6ee75269086288a623ede54"
+   "verifyingContract": "0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c"
   },
   "types": {
    "Open": [
@@ -110,7 +110,7 @@
     "name": "JackTrade SessionKeyManager",
     "version": "1",
     "chainId": 4663,
-    "verifyingContract": "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29"
+    "verifyingContract": "0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af"
    },
    "types": {
     "RegisterSessionKey": [
@@ -146,7 +146,7 @@
     "name": "JackTrade Staking",
     "version": "1",
     "chainId": 4663,
-    "verifyingContract": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
+    "verifyingContract": "0xdb5d2bbce982f7975fbd5229e25bc1a91facfd7f"
    },
    "types": {
     "Stake": [
