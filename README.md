@@ -1,8 +1,8 @@
-# JackTrade for Grok
+# JackTrade
 
 Read the news in Grok. Bet on it in the same chat.
 
-JackTrade for Grok is a Grok connector that lets you bet against the house with
+JackTrade is a Grok connector that lets you bet against the house with
 leverage, without leaving the conversation where you did your research.
 
 - **Ask Grok** what the news means for a market.

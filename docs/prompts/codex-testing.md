@@ -4,7 +4,7 @@ Paste everything below the line into Codex, run from the repo root.
 
 ---
 
-You are testing a hackathon project, "JackTrade for Grok", in this repository (read
+You are testing a hackathon project, "JackTrade", in this repository (read
 `docs/spec.md` and `README.md` first). It has:
 
 - `connector/`: Node 24 + TypeScript (run directly with `node src/server.ts`, no build), an

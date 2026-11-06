@@ -1,4 +1,4 @@
-# JackTrade for Grok: spec
+# JackTrade: spec
 
 Status: approved direction, ETHGlobal Mumbai 2026 (deadline Sat 7 Nov, 09:00 IST).
 

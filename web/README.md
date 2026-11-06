@@ -1,4 +1,4 @@
-# JackTrade for Grok: web app
+# JackTrade: web app
 
 Read the news in Grok. Bet on it in the same chat.
 

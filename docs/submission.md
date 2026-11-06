@@ -7,7 +7,7 @@ Bet against the house from inside Grok, then make it real with Flash. Chainlink 
 ## Description
 
 People already use Grok to read the news and X and form a view, then leave Grok to trade.
-JackTrade for Grok puts the trade in the chat. It's a remote MCP connector: add it to
+JackTrade puts the trade in the chat. It's a remote MCP connector: add it to
 Grok once, and Grok can check the house, quote a leveraged bet, place it onchain on
 Robinhood Chain against JackTrade's house, and cash out, all from the conversation.
 
