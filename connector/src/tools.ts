@@ -4,6 +4,7 @@ import { config } from "./config.ts";
 import type { Store, User } from "./db.ts";
 import { pointsLeaderboard, pointsOf } from "./points.ts";
 import * as trading from "./trading.ts";
+import { armTrigger, cancelTrigger } from "./triggers.ts";
 import * as up from "./upstream.ts";
 
 function ok(data: unknown) {
@@ -209,6 +210,83 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
         return fail(e);
       }
     },
+  );
+
+  server.registerTool(
+    "set_trigger",
+    {
+      title: "Arm a conditional bet",
+      description:
+        "Arm a bet that JackTrade places automatically when the price crosses a level, e.g. " +
+        "'if TSLA drops below 350, short 20x with $20'. Use it when the user wants Grok to act on a level " +
+        "while they're away. Confirm the details with the user first.",
+      inputSchema: {
+        market,
+        condition: z.enum(["above", "below"]).describe("Fire when the price goes above or below `price`"),
+        price: z.number().positive().describe("Trigger price in USD"),
+        side,
+        margin_usd: marginUsd,
+        leverage,
+        expires_in_hours: z.number().min(0.1).max(168).optional().describe("Disarm after this many hours (default 24)"),
+      },
+    },
+    async (a) => {
+      try {
+        const t = await armTrigger(
+          {
+            market: a.market,
+            condition: a.condition,
+            price: a.price,
+            side: a.side,
+            marginUsd: a.margin_usd,
+            leverage: a.leverage,
+            expiresInHours: a.expires_in_hours,
+          },
+          user,
+          store,
+        );
+        return ok({
+          message: `Armed: if ${t.market} goes ${t.condition} $${t.price}, bet $${t.marginUsd} ${t.side} at ${t.leverage}x.`,
+          triggerId: t.id,
+          expiresAt: new Date(t.expiresAt * 1000).toISOString(),
+        });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "list_triggers",
+    {
+      title: "List conditional bets",
+      description: "The user's armed and recently fired conditional bets.",
+      inputSchema: {},
+    },
+    async () =>
+      ok(
+        store.triggersByWallet(user.wallet).map((t) => ({
+          triggerId: t.id,
+          status: t.status,
+          rule: `${t.market} ${t.condition} $${t.price} → ${t.side} $${t.marginUsd} at ${t.leverage}x`,
+          expiresAt: new Date(t.expiresAt * 1000).toISOString(),
+          betId: t.betId,
+          error: t.error,
+        })),
+      ),
+  );
+
+  server.registerTool(
+    "cancel_trigger",
+    {
+      title: "Cancel a conditional bet",
+      description: "Disarm a conditional bet before it fires.",
+      inputSchema: { trigger_id: z.string().describe("triggerId from set_trigger or list_triggers") },
+    },
+    async (a) =>
+      cancelTrigger(a.trigger_id, user, store)
+        ? ok({ message: "Cancelled." })
+        : fail(new trading.BetError("No armed trigger with that id.")),
   );
 
   server.registerTool(

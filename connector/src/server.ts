@@ -11,6 +11,7 @@ import { Store, type Caps } from "./db.ts";
 import { pointsLeaderboard, pointsOf } from "./points.ts";
 import { buildServer } from "./tools.ts";
 import { syncBets } from "./trading.ts";
+import { startTriggerWatcher } from "./triggers.ts";
 import * as up from "./upstream.ts";
 
 assertConfig();
@@ -120,6 +121,13 @@ app.get("/api/points/:wallet", async (req, res) => {
   }
 });
 
+app.get("/api/triggers", (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 200);
+  res.json(
+    store.recentTriggers(limit).map(({ tokenHash: _hidden, ...t }) => t),
+  );
+});
+
 app.get("/api/bets/:id", async (req, res) => {
   const bet = store.bet(req.params.id);
   if (!bet) return void res.status(404).json({ message: "Bet not found" });
@@ -191,6 +199,8 @@ if (existsSync(join(webDist, "index.html"))) {
   app.use(express.static(webDist, { index: false, maxAge: "1h" }));
   app.get(/^\/(?!api\/|mcp\/|health$).*/, (_req, res) => res.sendFile(join(webDist, "index.html")));
 }
+
+startTriggerWatcher(store);
 
 app.listen(config.port, () => {
   console.log(`JackTrade connector on :${config.port}`);
