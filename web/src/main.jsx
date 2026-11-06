@@ -17,6 +17,9 @@ import GrokConnectPage from "./routes/grok";
 import GrokBetsPage from "./routes/grokBets";
 import RealPage from "./routes/real";
 import HelpPage from "./routes/help";
+import GrokPage from "./routes/grok";
+import BetsPage from "./routes/bets";
+import RealPage from "./routes/real";
 import { ProductUIProvider, Shell, Panel } from "./components/product/ProductUI";
 import { TradingSessionProvider } from "./context/TradingSession";
 import { ThemeProvider } from "./components/dream/ThemeProvider";
@@ -42,6 +45,9 @@ const routes = root.addChildren([
   createRoute({ getParentRoute: () => root, path: "/points", component: PointsPage }),
   // The HOUSE token is replaced by JackTrade Points: old /token links land on Points.
   createRoute({ getParentRoute: () => root, path: "/token", component: PointsPage }),
+  createRoute({ getParentRoute: () => root, path: "/grok", component: GrokPage }),
+  createRoute({ getParentRoute: () => root, path: "/bets", component: BetsPage }),
+  createRoute({ getParentRoute: () => root, path: "/real/$id", component: RealPage }),
   createRoute({ getParentRoute: () => root, path: "/help", component: HelpPage }),
   createRoute({ getParentRoute: () => root, path: "/docs", component: HelpPage }),
   createRoute({ getParentRoute: () => root, path: "/u/$username", component: PortfolioPage }),
@@ -90,3 +96,4 @@ import "./dream.css";
 import "./dream-theme.css";
 import "./docs.css";
 import "./grok.css";
+import "./theme.css";

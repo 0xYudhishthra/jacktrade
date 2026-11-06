@@ -4,22 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="JackTrade — leveraged trading on Robinhood Chain, from Grok." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/brand/favicon.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
     <title>JackTrade</title>
-    <script>
-      try {
-        const requested = new URLSearchParams(location.search).get('theme');
-        const saved = localStorage.getItem('jacktrade.theme');
-        document.documentElement.dataset.theme = ['light', 'dark'].includes(requested) ? requested : saved === 'dark' ? 'dark' : 'light';
-      } catch { document.documentElement.dataset.theme = 'light'; }
-    </script>
+    <meta name="theme-color" content="#050505" />
+    <!-- JackTrade is dark only: there is no light theme. -->
+    <script>document.documentElement.dataset.theme = 'dark';</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" />
     <!-- Anti-clickjacking: with a session key, a click opens or closes a trade without a wallet prompt, so the app never
          runs inside another site's frame. It stays hidden and tries to take over the top window. -->
-    <style id="jt-antiframe">html { display: none !important; }</style>
+    <style id="hm-antiframe">html { display: none !important; }</style>
     <script>
-      if (window.self === window.top) document.getElementById("jt-antiframe").remove();
+      if (window.self === window.top) document.getElementById("hm-antiframe").remove();
       else try { window.top.location = window.self.location.href; } catch (_) { /* sandboxed frame: stays hidden */ }
     </script>
   </head>
-  <body class="jt-nocturne jt-eastern-violet pd-base dream-exe"><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
+  <body class="hm-nocturne hm-eastern-violet pd-base dream-exe jt-dark"><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
 </html>

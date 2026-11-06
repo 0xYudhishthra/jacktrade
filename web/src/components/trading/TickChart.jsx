@@ -104,7 +104,7 @@ function monotonePath(points) {
 
 function drawFrame(canvas, size, state, frameTime, reduced, clock = Date.now()) {
   const { theme } = state;
-  const normal = theme === "dark" ? [193, 213, 239] : NORMAL;
+  const normal = theme === "dark" ? [228, 222, 208] : NORMAL;
   const { width, height, dpr } = size;
   if (!canvas || width === 0) return;
   const { ticks: allTicks, riskLines: lines, status: feed, hover } = state;

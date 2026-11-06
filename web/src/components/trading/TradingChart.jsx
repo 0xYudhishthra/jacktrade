@@ -592,10 +592,10 @@ export default function TradingChart({
       </div>
       {details && (
         <div className="px-3.5 pb-2 pt-0.5 flex items-center justify-between shrink-0">
-          <span className="text-[11px] font-mono" style={{ color: "#858b98" }}>
+          <span className="text-[11px] font-mono" style={{ color: "var(--theme-muted)" }}>
             Drag to explore · Scroll to zoom
           </span>
-          <span className="text-[11px] font-mono" style={{ color: "#858b98" }}>
+          <span className="text-[11px] font-mono" style={{ color: "var(--theme-muted)" }}>
             {candles.length} {chartType === "line" ? "points" : "candles"} · {symbol} · {timeframe}
           </span>
         </div>

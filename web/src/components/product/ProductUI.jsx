@@ -105,18 +105,18 @@ export function ProductUIProvider({ children }) {
   );
 }
 const NAV = [
-  ["Grok", "/grok"],
   ["Trade", "/trade"],
+  ["Grok", "/grok"],
   ["Portfolio", "/portfolio"],
   ["House", "/house"],
   ["Points", "/points"],
   ["Leaderboard", "/leaderboard"],
 ];
 const LABELS = {
-  en: ["Grok", "Trade", "Portfolio", "House", "Points", "Leaderboard"],
-  es: ["Grok", "Operar", "Portfolio", "Casa", "Puntos", "Leaderboard"],
-  pt: ["Grok", "Operar", "Portfolio", "Casa", "Pontos", "Leaderboard"],
-  zh: ["Grok", "交易", "资产", "庄家", "积分", "排行"],
+  en: ["Trade", "Grok", "Portfolio", "House", "Points", "Leaderboard"],
+  es: ["Operar", "Grok", "Portfolio", "Casa", "Puntos", "Leaderboard"],
+  pt: ["Operar", "Grok", "Portfolio", "Casa", "Pontos", "Leaderboard"],
+  zh: ["交易", "Grok", "资产", "庄家", "积分", "排行"],
 };
 function MoreMenu() {
   const [open, setOpen] = useState(false);
@@ -145,20 +145,23 @@ function MoreMenu() {
       <button
         ref={toggle}
         type="button"
-        className="jt-nav-tab pm-nav pm-more-toggle"
+        className="hm-nav-tab pm-nav pm-more-toggle"
         aria-label="More"
         aria-expanded={open}
         aria-controls="header-more-links"
-        data-active={pathname === "/help" || pathname === "/docs" ? "true" : undefined}
+        data-active={pathname === "/help" || pathname === "/docs" || pathname === "/bets" ? "true" : undefined}
         onClick={() => setOpen(!open)}
       >
-        <span className="jt-nav-en">
+        <span className="hm-nav-en">
           {{ en: "More", es: "Más", pt: "Mais", zh: "更多" }[language]}
         </span>
         <ChevronDown size={11} />
       </button>
       {open && (
         <div id="header-more-links" className="pm-more-links" role="region" aria-label="More links">
+          <Link to="/bets" onClick={() => setOpen(false)}>
+            Agent bets <ArrowUpRight size={12} />
+          </Link>
           <Link to="/docs" onClick={() => setOpen(false)}>
             Docs <ArrowUpRight size={12} />
           </Link>
@@ -186,6 +189,7 @@ export function Header() {
   return (
     <header className="pd-header">
       <Link to="/" className="pd-header-brand" aria-label="JackTrade home">
+        <img className="jt-mark" src="/brand/jack-256.webp" alt="" width="28" height="28" />
         <JacktradeWordmark />
         <JacktradeSparkle className="dream-brand-sparkle" />
       </Link>
@@ -280,10 +284,10 @@ export function Shell({ children, title, kicker, subtitle, action, trade = false
     ] || title;
   return (
     <div
-      className={`jt-workstation sky86 jt-focus pm-workstation ${trade ? "pd-trade" : ""} relative min-h-screen overflow-x-hidden`}
+      className={`hm-workstation sky86 hm-focus pm-workstation ${trade ? "pd-trade" : ""} relative min-h-screen overflow-x-hidden`}
     >
-      <main className="jt-stage">
-        <div className="jt-app-window">
+      <main className="hm-stage">
+        <div className="hm-app-window">
           <Header />
           <IndexerLagNotice />
           {dashboard && dashboard !== "public-profile" && <h1 className="sr-only">{pageTitle}</h1>}
@@ -329,14 +333,14 @@ export function Panel({ title, aside, children, className = "", collapsible = fa
   );
   if (collapsible)
     return (
-      <details className={`jt-panel pm-panel pm-panel-disclosure ${className}`}>
-        <summary className="pm-panel-heading jt-panel-bar">{heading}</summary>
+      <details className={`hm-panel pm-panel pm-panel-disclosure ${className}`}>
+        <summary className="pm-panel-heading hm-panel-bar">{heading}</summary>
         <div className="pm-panel-body">{children}</div>
       </details>
     );
   return (
-    <section className={`jt-panel pm-panel ${className}`}>
-      <div className="pm-panel-heading jt-panel-bar">{heading}</div>
+    <section className={`hm-panel pm-panel ${className}`}>
+      <div className="pm-panel-heading hm-panel-bar">{heading}</div>
       <div className="pm-panel-body">{children}</div>
     </section>
   );

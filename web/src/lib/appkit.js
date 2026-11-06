@@ -36,7 +36,7 @@ async function load() {
       name: "JackTrade",
       description: "Leveraged trading on Robinhood Chain.",
       url: window.location.origin,
-      icons: [`${window.location.origin}/favicon.svg`],
+      icons: [`${window.location.origin}/brand/jack-256.webp`],
     },
     themeMode: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
     themeVariables: { "--w3m-accent": "#5b82c4", "--w3m-font-family": "Inter, system-ui, sans-serif", "--w3m-border-radius-master": "2px" },

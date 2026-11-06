@@ -1,30 +1,15 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { createContext, useContext, useEffect } from 'react';
 
-const ThemeContext = createContext(null);
-const STORAGE_KEY = 'jacktrade.theme';
+// JackTrade only ships the dark theme. The context stays so components (charts) can keep asking for it.
+const ThemeContext = createContext({ theme: 'dark', setTheme: () => {} });
+const VALUE = { theme: 'dark', setTheme: () => {} };
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem(STORAGE_KEY, theme); } catch { /* Theme works without storage. */ }
-  }, [theme]);
-  useEffect(() => {
-    const sync = event => {
-      if (event.key === STORAGE_KEY && ['light', 'dark'].includes(event.newValue)) setTheme(event.newValue);
-    };
-    window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
-  }, []);
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+  useEffect(() => { document.documentElement.dataset.theme = 'dark'; }, []);
+  return <ThemeContext.Provider value={VALUE}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() { return useContext(ThemeContext); }
 
-export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  return <button type="button" className="dream-theme-toggle" aria-label="Dark mode" aria-pressed={theme === 'dark'} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-    {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-  </button>;
-}
+/** Kept for existing imports; there is no light theme to switch to. */
+export function ThemeToggle() { return null; }
