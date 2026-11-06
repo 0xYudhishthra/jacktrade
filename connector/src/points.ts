@@ -1,13 +1,15 @@
+import { createPublicClient, formatUnits, http } from "viem";
 import { config } from "./config.ts";
+import { pointsAbi, robinhood } from "./pointsSync.ts";
 
 // JackTrade Points: 10 points for every $100 of notional (margin × leverage), win or lose.
-// Notional comes straight from the exchange's onchain trade history via the indexer, so
-// points can be recomputed by anyone from public data.
+// The JackTradePoints contract on Robinhood Chain is the source of truth; this mirrors its
+// math exactly (fractions kept) so the app and the chain always agree.
 
 export const POINTS_PER_100_NOTIONAL = 10;
 
 export function pointsFor(notionalUsd: number): number {
-  return Math.floor((notionalUsd * POINTS_PER_100_NOTIONAL) / 100);
+  return Math.round(notionalUsd * POINTS_PER_100_NOTIONAL) / 100;
 }
 
 type Account = { stats?: { volume?: string; trades?: number } };
@@ -19,14 +21,32 @@ async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+async function onchainPoints(wallet: string): Promise<number | null> {
+  if (!config.pointsAddress) return null;
+  try {
+    const client = createPublicClient({ chain: robinhood, transport: http(config.rpcUrl) });
+    const bal = await client.readContract({
+      address: config.pointsAddress as `0x${string}`,
+      abi: pointsAbi,
+      functionName: "balanceOf",
+      args: [wallet as `0x${string}`],
+    });
+    return Number(formatUnits(bal, 18));
+  } catch {
+    return null;
+  }
+}
+
 export async function pointsOf(wallet: string) {
-  const account = await getJson<Account>(`/api/account/${wallet}`);
+  const [account, onchain] = await Promise.all([getJson<Account>(`/api/account/${wallet}`), onchainPoints(wallet)]);
   const notionalUsd = Number(account.stats?.volume ?? 0);
   return {
     wallet,
     trades: account.stats?.trades ?? 0,
     notionalUsd,
     points: pointsFor(notionalUsd),
+    onchainPoints: onchain,
+    contract: config.pointsAddress || null,
     rule: `${POINTS_PER_100_NOTIONAL} points per $100 of notional, win or lose`,
   };
 }
