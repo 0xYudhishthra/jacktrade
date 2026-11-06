@@ -1,7 +1,7 @@
 // Reown AppKit: the wallet picker (hundreds of wallets, WalletConnect QR for phones, email and social login as the
 // fallback). It only hands back the chosen wallet's EIP-1193 provider; connecting, sessions and signing stay in
 // jacktradeClient. Loaded on the first "Connect": the library is large.
-import { RPC_URL } from "./backend.js";
+import { EXPLORER_URL, RPC_URL } from "./backend.js";
 import { TRUSTED } from "./jacktradeClient.js";
 
 export const APPKIT_PROJECT_ID = import.meta.env?.VITE_REOWN_PROJECT_ID ?? "";
@@ -21,7 +21,7 @@ async function load() {
     name: "Robinhood Chain",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: { default: { http: [RPC_URL] } },
-    blockExplorers: { default: { name: "Blockscout", url: "https://robinhoodchain.blockscout.com" } },
+    ...(EXPLORER_URL ? { blockExplorers: { default: { name: "Explorer", url: EXPLORER_URL } } } : {}),
   };
   const adapter = new WagmiAdapter({ projectId: APPKIT_PROJECT_ID, networks: [robinhood] });
   const kit = createAppKit({

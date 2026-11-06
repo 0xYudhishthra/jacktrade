@@ -4,6 +4,7 @@ import { Shell } from "@/components/product/ProductUI";
 import { useTradingSession } from "@/hooks/useTradingSession";
 import { LEVERAGE, money } from "@/lib/protocolModel";
 import { MIN_MARGIN, MIN_POSITION_SIZE } from "@/lib/orderMinimums";
+import { EXPLORER_URL } from "@/lib/backend";
 
 // Product docs. Every number that the protocol sets is read live (GET /api/config, /api/markets), with the launch
 // values from the contracts as the fallback while it loads.
@@ -13,7 +14,7 @@ const LAUNCH = {
   market: { maxLeverage: 1000, liqBufferBps: 5, maxConfBps: 20, maxNotional: 100_000, longOiCap: 250_000 },
   impact: { baseRate: 0.1, rateMultiplier: 15_000, referenceNotional: 100_000, positionMultiplier: { "BTC-PERP": 814.598, "ETH-PERP": 483.979 } },
 };
-const EXPLORER = "https://robinhoodchain.blockscout.com/address/";
+const EXPLORER = EXPLORER_URL ? `${EXPLORER_URL}/address/` : "";
 const CONTRACTS = [
   ["Exchange", "0x698cf1a9220f89ccf6ee75269086288a623ede54", "Balances, positions, settlement, the house pool and the payout queue."],
   ["BatchExecutor", "0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4", "Executes signed orders submitted by the relayer, with the Pyth price update."],
@@ -141,7 +142,7 @@ export default function Help() {
             </ul>
             <p>
               Everything settles on-chain in the Exchange contract. Balances, positions and history are public on{" "}
-              <a href={`${EXPLORER}${CONTRACTS[0][1]}`} target="_blank" rel="noreferrer">Blockscout</a>.
+              {EXPLORER ? <a href={`${EXPLORER}${CONTRACTS[0][1]}`} target="_blank" rel="noreferrer">the block explorer</a> : "the block explorer"}.
             </p>
           </Section>
 
@@ -429,7 +430,7 @@ export default function Help() {
                   {CONTRACTS.map(([name, address, role]) => (
                     <tr key={name}>
                       <td><strong>{name}</strong></td>
-                      <td><a href={`${EXPLORER}${address}`} target="_blank" rel="noreferrer"><code>{address.slice(0, 6)}…{address.slice(-4)}</code></a></td>
+                      <td>{EXPLORER ? <a href={`${EXPLORER}${address}`} target="_blank" rel="noreferrer"><code>{address.slice(0, 6)}…{address.slice(-4)}</code></a> : <code title={address}>{address}</code>}</td>
                       <td>{role}</td>
                     </tr>
                   ))}

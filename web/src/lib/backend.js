@@ -14,3 +14,6 @@ export async function requestJson(url, options = {}) {
   }
   return body;
 }
+
+// Block explorer for tx / address links. Empty by default: hashes then render as plain text.
+export const EXPLORER_URL = (import.meta.env?.VITE_EXPLORER_URL ?? "").replace(/\/+$/, "");

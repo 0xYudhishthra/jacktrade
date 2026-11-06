@@ -8,7 +8,7 @@ import {
   parseUnits,
 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { API_URL, RELAYER_URL, RPC_URL, requestJson } from "./backend.js";
+import { API_URL, EXPLORER_URL, RELAYER_URL, RPC_URL, requestJson } from "./backend.js";
 
 const SESSION_STORAGE_KEY = "hm.session-key.v1";
 const SESSION_KEY_ABI = [
@@ -59,7 +59,7 @@ export function chainFor(config) {
     name: "Robinhood Chain",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: { default: { http: [RPC_URL] } },
-    blockExplorers: { default: { name: "Blockscout", url: "https://robinhoodchain.blockscout.com" } },
+    ...(EXPLORER_URL ? { blockExplorers: { default: { name: "Explorer", url: EXPLORER_URL } } } : {}),
   });
 }
 
@@ -160,7 +160,7 @@ export async function switchToRobinhood(provider, chainId = TRUSTED.chainId) {
     // Unknown chain is 4902, but some wallets (MetaMask mobile, others) wrap it or use another code: only a rejection
     // by the user stops here; anything else tries to add Robinhood Chain.
     if (error.code === 4001 || error.data?.originalError?.code === 4001) throw error;
-    await provider.request({ method: "wallet_addEthereumChain", params: [{ chainId: id, chainName: chain.name, nativeCurrency: chain.nativeCurrency, rpcUrls: [RPC_URL], blockExplorerUrls: [chain.blockExplorers.default.url] }] });
+    await provider.request({ method: "wallet_addEthereumChain", params: [{ chainId: id, chainName: chain.name, nativeCurrency: chain.nativeCurrency, rpcUrls: [RPC_URL], ...(chain.blockExplorers ? { blockExplorerUrls: [chain.blockExplorers.default.url] } : {}) }] });
   }
 }
 
