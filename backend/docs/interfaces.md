@@ -60,7 +60,7 @@ Cosas que no son obvias y que cada pieza tiene que respetar:
 4. **Los fallos individuales no revierten el batch.** Cada llamada que falla emite `CallFailed(index, target, reason)`, con el error truncado a 256 bytes. Se decodifica con la ABI del Exchange y se mapea a `RejectCode`.
 5. **El buffer de liquidación es el actual del mercado.** En `main`, la posición no guarda su `liqBufferBps`: el contrato usa el de `marketConfig` al momento de liquidar. Si llega un `MarketConfigSet`, el liquidador recalcula las posiciones de ese mercado.
 6. **Pasado el disparo, no se puede cerrar.** `closePositionBySig` revierte con `PositionLiquidatable`. El relayer lo devuelve con ese código y la posición queda para el liquidador.
-7. **Confianza.** Open revierte con `PriceUncertain` si `conf / price > maxConfBps`. El relayer lo chequea antes con el precio que va a usar. Ver [AVISOS.md](../AVISOS.md).
+7. **Confianza.** Open revierte con `PriceUncertain` si `conf / price > maxConfBps`. El relayer lo chequea antes con el precio que va a usar.
 8. **Fee de Pyth.** Hoy es 0 en Robinhood Chain, pero el relayer igual consulta `getUpdateFee` y lo manda como `msg.value`.
 
 ## Estado de mainnet

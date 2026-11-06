@@ -54,7 +54,7 @@ const MARKETS = [
   config: {
     maxLeverage: 1000,
     liqBufferBps: 5,
-    // 10 en main. FORK_MAX_CONF_BPS permite subirlo en el fork para probar sin rechazos por confianza (ver AVISOS.md).
+    // 10 en main. FORK_MAX_CONF_BPS permite subirlo en el fork para probar sin rechazos por confianza.
     maxConfBps: Number(process.env.FORK_MAX_CONF_BPS ?? 10),
     maxPriceJumpBps: 0,
     maxNotional: 100_000n * USD,

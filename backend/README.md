@@ -2,8 +2,6 @@
 
 Relayer, liquidador, keepers, indexer y precios para los contratos de JackTrade en Robinhood Chain (4663).
 
-El avance está en [PROGRESO.md](PROGRESO.md). Los avisos para el equipo, en [AVISOS.md](AVISOS.md).
-
 Para el front: [precios en vivo](docs/precios-front.md) y [operar con session keys](docs/intents-front.md). Entre piezas del backend: [interfaces](docs/interfaces.md).
 
 ## Requisitos

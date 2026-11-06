@@ -54,7 +54,7 @@ const signer = hm.sessionKeyAccount(key.privateKey);
 
 - La session key **solo puede abrir y cerrar posiciones**: no puede retirar fondos. Si se pierde o roba, lo peor es que opere con el saldo del usuario. El usuario la revoca con `revokeSessionKey` o `revokeAllSessionKeys` desde su wallet.
 - Antes de operar, conviene chequear con `hm.isValidSessionKey(publicClient, config, user, key.address)` que no venció. Si venció, se crea y registra otra.
-- **Ojo con EIP-7702:** si la wallet del usuario tiene una delegación 7702 (cuentas "smart" de MetaMask, Coinbase, etc.), el Exchange no acepta firmas de intents hechas directamente con la wallet. Con session key sí funciona, porque la registra una transacción normal. Por eso **siempre operar con session key**. Ver [AVISOS.md](../AVISOS.md).
+- **Ojo con EIP-7702:** si la wallet del usuario tiene una delegación 7702 (cuentas "smart" de MetaMask, Coinbase, etc.), el Exchange no acepta firmas de intents hechas directamente con la wallet. Con session key sí funciona, porque la registra una transacción normal. Por eso **siempre operar con session key**.
 
 ## 3. Abrir
 

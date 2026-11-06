@@ -57,7 +57,7 @@ Al conectarse llega un `snapshot` con el último precio de cada mercado. Despué
 
 - **Reconectar siempre.** Si se corta el websocket, reintentar después de 1 s. Al reconectar llega un `snapshot` nuevo: no hace falta pedir nada.
 - **Mostrar cuando un precio está viejo.** Si `Date.now() / 1000 - publishTime` pasa de 5 s, marcar el precio como atrasado y no dejar operar ese mercado. Con apalancamiento de 1000x, un precio viejo es peligroso.
-- **Confianza alta = no se puede abrir.** Los contratos rechazan una apertura si `conf / price` supera `maxConfBps` del mercado (hoy 10 bps; ver [AVISOS.md](../AVISOS.md)). Cuando pase eso, deshabilitar el botón de abrir con un mensaje claro en vez de dejar que falle.
+- **Confianza alta = no se puede abrir.** Los contratos rechazan una apertura si `conf / price` supera `maxConfBps` del mercado (hoy 10 bps). Cuando pase eso, deshabilitar el botón de abrir con un mensaje claro en vez de dejar que falle.
 - **El precio de la pantalla no es el de ejecución.** La posición se abre con el primer precio de Pyth publicado después de que el usuario firma. Por eso el intent lleva un `priceLimit`: el máximo (long) o mínimo (short) aceptable. Sugerido: 0,5% contra el precio mostrado.
 - **No pedir `/prices` en loop.** Para precios en vivo, usar el websocket. `/prices` sirve para la primera carga o para scripts.
 
