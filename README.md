@@ -77,3 +77,59 @@ flowchart TB
     CONN -->|"Flash proxy: quote / order"| FLASH["Definitive Flash"]
     FLASH -->|"market + TP/SL bracket, or limit"| TOKEN["Real token on Robinhood Chain<br/>TSLA · NVDA · WETH"]
 ```
+
+## The bet loop
+
+```mermaid
+sequenceDiagram
+    actor T as Trader
+    participant G as Grok
+    participant C as JackTrade connector
+    participant R as Relayer
+    participant X as Exchange (Robinhood Chain)
+    participant A as HouseAttestation (Sepolia)
+    T->>G: "Bet $20 long TSLA at 50x"
+    G->>C: house_status
+    C->>A: latest()
+    C-->>G: bankroll, payout queue, Chainlink attestation
+    G->>C: quote_bet(TSLA, long, 20, 50)
+    C-->>G: entry, liquidation price, points earned, cap check
+    G->>T: quote, "confirm?"
+    T->>G: "yes"
+    G->>C: place_bet(...)
+    C->>C: enforce caps, sign Open intent with the agent session key
+    C->>R: POST /intent
+    R->>X: batch + Pyth price update
+    X-->>R: position opened
+    C-->>G: position id + transaction
+```
+
+## Proof of House loop
+
+```mermaid
+flowchart LR
+    CRON["CRE cron trigger"] --> READ["HTTP: one batched eth_call to the Exchange<br/>lpBankrollAvailable · totalQueued · lpCash · totalMargin"]
+    CRON --> IDX["HTTP: indexer /api/house<br/>open interest · positions"]
+    READ --> CONS["DON consensus"]
+    IDX --> CONS
+    CONS --> REPORT["ABI-encoded report"]
+    REPORT --> FWD["CRE forwarder"]
+    FWD --> HA["HouseAttestation.onReport<br/>(Sepolia)"]
+    HA --> GROK["connector house_status → Grok quotes it before betting"]
+```
+
+Robinhood Chain isn't a CRE-supported chain, so the workflow reads it through the HTTP capability (raw JSON-RPC) and writes to a supported chain. Simulation: `cre workflow simulate ./proof-of-house --target staging-settings --broadcast` (see [`cre/README.md`](cre/README.md)).
+
+## Make it real (Definitive Flash)
+
+```mermaid
+flowchart LR
+    BET["Grok bet in the public feed"] --> SIDE{"long or short?"}
+    SIDE -->|long| MKT["Flash market buy<br/>+ attachedBracket TP / SL<br/>from the bet's liquidation distance"]
+    SIDE -->|short| LIM["Flash limit buy<br/>at the short's target"]
+    MKT --> SIGN["approve / Permit2 → sign order (+ bracket) in the follower's wallet"]
+    LIM --> SIGN
+    SIGN --> EXEC["Flash executes onchain<br/>real TSLA · NVDA · WETH on Robinhood Chain"]
+```
+
+The Flash API key never reaches the browser: the connector proxies `/v1/quote`, `/v1/order` and `/v1/orders`. If Flash doesn't return a bracket payload, the app refuses to place an unprotected order.
