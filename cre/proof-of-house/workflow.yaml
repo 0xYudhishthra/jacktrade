@@ -1,0 +1,9 @@
+# CRE workflow settings (per target). Run from cre/:
+#   cre workflow simulate ./proof-of-house --target staging-settings --broadcast
+staging-settings:
+  user-workflow:
+    workflow-name: "proof-of-house"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.staging.json"
+    secrets-path: ""

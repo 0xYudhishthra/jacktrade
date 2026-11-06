@@ -1,0 +1,7 @@
+# CRE project settings. Each target defines the RPCs the CLI uses for EVM reads/writes.
+# Robinhood Chain is NOT a CRE-supported chain, so it is read over the HTTP capability instead
+# (see proof-of-house/config.staging.json -> robinhoodRpcUrl) and is not listed here.
+staging-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com
