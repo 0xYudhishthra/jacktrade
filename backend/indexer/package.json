@@ -1,0 +1,22 @@
+{
+  "name": "@hm/indexer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ponder dev",
+    "start": "ponder start",
+    "codegen": "ponder codegen"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.2.13",
+    "@hm/prices": "workspace:*",
+    "@hm/shared": "workspace:*",
+    "hono": "^4.7.0",
+    "pg": "8.23.1",
+    "ponder": "0.17.12",
+    "viem": "^2.57.7"
+  },
+  "devDependencies": {
+    "@types/pg": "8.11.10"
+  }
+}

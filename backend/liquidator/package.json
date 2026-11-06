@@ -1,0 +1,10 @@
+{
+  "name": "@hm/liquidator",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hm/prices": "workspace:*",
+    "@hm/shared": "workspace:*",
+    "viem": "^2.57.7"
+  }
+}

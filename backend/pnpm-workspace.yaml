@@ -1,0 +1,10 @@
+packages:
+  - shared
+  - prices
+  - relayer
+  - liquidator
+  - keepers
+  - indexer
+
+patchedDependencies:
+  ponder@0.17.12: patches/ponder@0.17.12.patch

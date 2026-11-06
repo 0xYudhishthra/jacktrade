@@ -1,0 +1,505 @@
+<title>JackTrade API</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: sticky table of contents on the left, one long reference column; endpoint blocks read like ledger entries. */
+  :root {
+    --bg: #f6f7f4;
+    --panel: #ffffff;
+    --ink: #17201b;
+    --muted: #5d6a62;
+    --line: #dde3dc;
+    --accent: #0b7a53;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2f2ea;
+    --get: #0b7a53;
+    --post: #9a5b00;
+    --put: #6a42b8;
+    --ws: #1c64b8;
+    --code-bg: #eef2ec;
+    --warn-bg: #fff4dd;
+    --warn-ink: #6b4500;
+    --font-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1412; --panel: #151c19; --ink: #e4ebe6; --muted: #93a29a; --line: #26302b;
+      --accent: #3fcf96; --accent-ink: #06130d; --accent-soft: #143428;
+      --get: #3fcf96; --post: #f0b45a; --put: #b79bf0; --ws: #7fb3f0;
+      --code-bg: #1b2420; --warn-bg: #2e2412; --warn-ink: #f3cf8a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1412; --panel: #151c19; --ink: #e4ebe6; --muted: #93a29a; --line: #26302b;
+    --accent: #3fcf96; --accent-ink: #06130d; --accent-soft: #143428;
+    --get: #3fcf96; --post: #f0b45a; --put: #b79bf0; --ws: #7fb3f0;
+    --code-bg: #1b2420; --warn-bg: #2e2412; --warn-ink: #f3cf8a; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font-body); }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  code, pre, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+  :not(pre) > code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
+  .shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; max-width: 1240px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 96px; }
+  nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; max-height: calc(100vh - 48px); overflow: auto; font-size: 14px; }
+  nav.toc .brand { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: 0.04em; margin-bottom: 16px; }
+  nav.toc .group { margin-block: 18px 6px; color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 3px 0; overflow-wrap: anywhere; break-inside: avoid; }
+  nav.toc a:hover { color: var(--accent); }
+  nav.toc a .m { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-right: 6px; }
+  main { min-width: 0; display: grid; gap: 56px; }
+  /* Single-column grids: minmax(0, 1fr) so a long code line or table scrolls inside its box instead of widening the page. */
+  main, .stack, .endpoint, #reference { grid-template-columns: minmax(0, 1fr); }
+  section { min-width: 0; }
+  header.hero h1 { font-family: var(--font-display); font-size: clamp(34px, 5vw, 52px); line-height: 1.05; margin: 0 0 14px; letter-spacing: -0.02em; text-wrap: balance; }
+  header.hero p { max-width: 64ch; margin: 0 0 12px; color: var(--muted); font-size: 18px; }
+  h2 { font-family: var(--font-display); font-size: 28px; margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  h3 { font-family: var(--font-display); font-size: 19px; margin: 0; }
+  section > .lead { color: var(--muted); max-width: 70ch; margin: 0 0 22px; }
+  .stack { display: grid; gap: 18px; }
+  .note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 14px 16px; max-width: 80ch; }
+  .note strong { color: inherit; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+  tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  .endpoint { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; min-width: 0; scroll-margin-top: 24px; }
+  .sig { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .method { font-family: var(--font-mono); font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 5px; color: var(--panel); }
+  .method.GET { background: var(--get); } .method.POST { background: var(--post); } .method.PUT { background: var(--put); } .method.WS { background: var(--ws); }
+  .path { font-family: var(--font-mono); font-size: 15px; font-weight: 500; overflow-wrap: anywhere; }
+  .svc { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; }
+  .endpoint p { margin: 0; max-width: 78ch; }
+  .used { font-size: 13px; color: var(--muted); }
+  pre { background: var(--code-bg); border-radius: 8px; padding: 14px 16px; margin: 0; overflow-x: auto; line-height: 1.5; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  details[open] summary { margin-bottom: 8px; }
+  .try { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .try input { flex: 1 1 280px; min-width: 0; font-family: var(--font-mono); font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+  .try button, .copy { font: 600 13px var(--font-body); padding: 7px 14px; border-radius: 6px; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .try output { display: block; width: 100%; }
+  .flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+  .step .n { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .step b { font-family: var(--font-display); }
+  .step span { color: var(--muted); font-size: 14px; }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 24px 64px; }
+    nav.toc { position: static; max-height: none; border-bottom: 1px solid var(--line); padding-bottom: 16px; columns: 2; column-gap: 24px; }
+    nav.toc .brand { column-span: all; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="shell">
+  <nav class="toc" id="toc" aria-label="Contents"><div class="brand">JACKTRADE API</div></nav>
+  <main id="main">
+    <header class="hero">
+      <h1>JackTrade backend API</h1>
+      <p>Everything the app reads and sends: live prices, trading through the relayer, and the indexed history of the protocol on Robinhood Chain (chain id 4663). Collateral is USDG; the reward token is JACKTRADE.</p>
+      <p>Three services, all public and CORS-open. Reads need no key. Trades and wallet actions are signed in the browser and sent to the relayer, which pays the gas.</p>
+    </header>
+
+    <section id="start">
+      <h2>Start here</h2>
+      <p class="lead">Pick the service by what you need. Every service answers JSON and errors carry a stable <code>code</code> plus a human <code>message</code> in English.</p>
+      <div class="stack">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Service</th><th>Production URL</th><th>What it does</th><th>Local (fork)</th></tr></thead>
+          <tbody>
+            <tr><td><b>Indexer API</b></td><td><code>https://hmindexer-production.up.railway.app</code></td><td>Accounts, positions, history, markets, stats, charts, leaderboard, profiles, token</td><td><code>http://localhost:8096</code></td></tr>
+            <tr><td><b>Relayer</b></td><td><code>https://hmrelayer-production.up.railway.app</code></td><td>Config for signing, open/close intents, wallet actions (deposit, withdraw, session keys, staking)</td><td><code>http://localhost:8091</code></td></tr>
+            <tr><td><b>Prices</b></td><td><code>https://hmprices-production.up.railway.app</code></td><td>Live Pyth prices (websocket), candles and ticks, SPY and TSLA previews</td><td><code>http://localhost:8090</code></td></tr>
+          </tbody>
+        </table></div>
+        <div class="note" id="status-note"><strong>Production status.</strong> All endpoints are live. Trading opens when the contracts team lists the markets on-chain (<code>configure.ts</code>) and the relayer wallet has ETH and its role; until then <code>/api/markets</code> shows <code>listed: false</code>, the relayer's <code>/live</code> answers 503 and every list is empty. Empty lists are real data, not errors.</div>
+      </div>
+    </section>
+
+    <section id="conventions">
+      <h2>Conventions</h2>
+      <p class="lead">The same rules hold across the three services, so the front never guesses units.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thing</th><th>Format</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>USDG amounts (indexer)</td><td>Decimal string, 6 decimals already applied</td><td><code>"1234.56"</code></td></tr>
+          <tr><td>JACKTRADE amounts</td><td>Decimal string, 18 decimals applied</td><td><code>"20.4581"</code></td></tr>
+          <tr><td>Prices (indexer)</td><td>Decimal string in USD</td><td><code>"79783.68"</code></td></tr>
+          <tr><td>Prices (prices service, relayer)</td><td>Integer string with <code>expo</code> (Pyth), or WAD (18 decimals) in relayer results; <code>usd</code> is a number for display only</td><td><code>{"price":"7964500832418","expo":-8}</code></td></tr>
+          <tr><td>Amounts you send to the relayer</td><td>Raw integer strings: USDG × 10⁶, JACKTRADE × 10¹⁸</td><td><code>"10000000"</code> = 10 USDG</td></tr>
+          <tr><td>Percentages</td><td>Number with 2 decimals; <code>bps</code> fields are basis points (1 bps = 0.01 %)</td><td><code>161.33</code>, <code>winFeeBps: 200</code></td></tr>
+          <tr><td>Times</td><td>Unix seconds (chain time). Price ticks use milliseconds where noted</td><td><code>1793072560</code></td></tr>
+          <tr><td>Addresses</td><td>Lowercase in responses; any case accepted in requests</td><td><code>0x3c44…93bc</code></td></tr>
+          <tr><td>Markets</td><td><code>instrumentId</code> 0 = BTC/USD, 1 = ETH/USD (tradable). 100 = SPY/USD, 101 = TSLA/USD (previews, prices only)</td><td><code>market=0</code></td></tr>
+          <tr><td>Errors (indexer, prices)</td><td><code>{ code, message }</code> with HTTP 400/404/409/429/5xx</td><td><code>{"code":"INVALID_REQUEST","message":"…"}</code></td></tr>
+          <tr><td>Errors (relayer)</td><td><code>{ status: "rejected", code, message }</code>; codes are the contract's error names</td><td><code>{"status":"rejected","code":"InvalidSize",…}</code></td></tr>
+          <tr><td>Strict query strings</td><td>Newer routes reject unknown or repeated params with 400. Build queries with <code>URLSearchParams</code> and omit defaults</td><td><code>?window=7d</code></td></tr>
+          <tr><td>Rate limits (per IP)</td><td>Indexer: 60 burst, 20/s. Prices: 30 burst, 10/s (<code>/history</code> costs 3). Relayer: 30 burst, 10/s, and 5 intents/s per signer. Over the limit: 429</td><td>poll every 2–5 s</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="flow">
+      <h2>How a trade happens</h2>
+      <p class="lead">The wallet signs once to create a session key. After that, opening and closing are signed by the session key in the browser, with no popups and no gas for the user.</p>
+      <div class="flow">
+        <div class="step"><span class="n">1 · relayer</span><b>Load config</b><span><code>GET /config</code>: contracts, EIP-712 types, market limits and chain time (use it for <code>signedAt</code>).</span></div>
+        <div class="step"><span class="n">2 · wallet</span><b>Deposit</b><span><code>POST /action</code> kind <code>depositPermit</code>: a USDG permit signature, no approve, no gas.</span></div>
+        <div class="step"><span class="n">3 · wallet</span><b>Register a session key</b><span><code>POST /action</code> kind <code>registerSessionKey</code>, up to 30 days. Keep the private key in the browser only.</span></div>
+        <div class="step"><span class="n">4 · session key</span><b>Open</b><span><code>POST /intent</code> kind <code>open</code> with a <code>priceLimit</code>, then poll <code>GET /intent/:id</code> until <code>executed</code>.</span></div>
+        <div class="step"><span class="n">5 · indexer</span><b>Show it</b><span><code>/api/positions/:user</code> (live PnL, liquidation price) and <code>/api/preview/:id</code> before closing.</span></div>
+        <div class="step"><span class="n">6 · session key</span><b>Close</b><span><code>POST /intent</code> kind <code>close</code>. Profit is paid now or queued if the house is short (see <code>queue</code>).</span></div>
+      </div>
+    </section>
+
+    <div id="reference" class="stack" style="gap:56px"></div>
+
+    <section id="pages">
+      <h2>Which screen uses what</h2>
+      <p class="lead">A map from the app's pages to the calls behind them. Poll account data every 4 s; feeds every 4–10 s; charts every 30–60 s.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Screen</th><th>Calls</th></tr></thead>
+        <tbody>
+          <tr><td>Trade</td><td>Prices websocket, <code>/history</code> + <code>/api/volume</code> (chart), <code>/api/markets</code>, <code>/api/config</code>, <code>/api/positions/:user</code>, <code>/api/preview/:id</code>, <code>/api/activity?kind=trades</code> (tape), relayer <code>/config</code>, <code>/intent</code>, <code>/live</code></td></tr>
+          <tr><td>Portfolio</td><td><code>/api/account/:user</code>, <code>/api/pnl/:user</code>, <code>/api/history/:user</code>, <code>/api/activity?user=</code>, relayer <code>/action</code> (withdraw, deposit)</td></tr>
+          <tr><td>Leaderboard</td><td><code>/api/leaderboard/accounts</code> (sort by pnl, liquidations, staked…), <code>/api/leaderboard/positions</code></td></tr>
+          <tr><td>Public profile</td><td><code>/api/profile/by-username/:name</code>, <code>/api/account/:user</code>, <code>/api/pnl/:user</code>, <code>/api/activity?user=&amp;kind=close,liquidation</code></td></tr>
+          <tr><td>House</td><td><code>/api/house</code>, <code>/api/stats</code>, <code>/api/stats/history</code>, <code>/api/activity</code></td></tr>
+          <tr><td>Token</td><td><code>/api/token</code>, <code>/api/token/history</code>, <code>/api/rate</code>, <code>/api/account/:user</code> (staking), relayer <code>/action</code> (stake, unstake, claim)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="errors">
+      <h2>Error codes</h2>
+      <p class="lead">Show <code>message</code> by default and branch on <code>code</code> only where the UI does something different.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Service</th><th>Code</th><th>HTTP</th><th>Meaning</th></tr></thead>
+        <tbody id="errors-body"></tbody>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const API = "https://hmindexer-production.up.railway.app";
+const RELAYER = "https://hmrelayer-production.up.railway.app";
+const PRICES = "https://hmprices-production.up.railway.app";
+const NOW = Math.floor(Date.now() / 1000);
+// "Try it" only where the page can reach the API (served by the backend itself, or a local copy). Inside a sandbox
+// that blocks requests to other hosts the buttons would always fail, so they are left out there.
+const CAN_TRY = /railway\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname);
+
+const groups = [
+  {
+    id: "prices", title: "Prices", svc: "prices", base: PRICES,
+    lead: "Live Pyth prices for BTC and ETH, streamed from the server so the Pyth key never reaches the browser. SPY/USD and TSLA/USD are preview markets, shown in the app but not tradable. Their price comes only from Pyth (<code>source: \"pyth\"</code>, including pre- and post-market) and only once our key has access to the feed: TSLA today; SPY has no price yet (it is missing from <code>/prices</code> and the websocket, and <code>/history</code> answers 503 <code>FEED_UNAVAILABLE</code>). The service picks a feed up on its own once access is granted.",
+    endpoints: [
+      { m: "WS", p: "/", title: "Live prices", desc: "Open a websocket to the base URL (wss:// in production). The first message is a snapshot of every market, then one message per new price, several per second for BTC and ETH and every few seconds for SPY.",
+        res: `// first message
+{ "type": "snapshot", "prices": [ { "market": 0, "name": "BTC/USD", "price": "7964500832418", "conf": "9109368082", "expo": -8, "publishTime": 1793071337, "usd": 79645.008, "preview": false } ] }
+// then, for each update
+{ "type": "price", "market": 101, "name": "TSLA/USD", "price": "39565383000", "conf": "5510000", "expo": -8, "publishTime": 1793102400, "usd": 395.65,
+  "preview": true, "marketOpen": true, "previousClose": 393.185, "source": "pyth" }`,
+        notes: "A price is stale when <code>now − publishTime</code> passes ~5 s (BTC, ETH). For previews, only while <code>marketOpen</code> is true (an update in the last 2 minutes). <code>previousClose</code> is the reference for the day change: the close of the previous Pyth daily candle. Confidence in bps: <code>conf / price × 10000</code>; disable Open when it passes the market's <code>maxConfBps</code>.",
+        used: "Trade (ticker, chart, ticket), every price shown in the app" },
+      { m: "GET", p: "/prices", title: "Latest prices", desc: "Same objects as the websocket snapshot, as a plain array.", try: "/prices",
+        res: `[ { "market": 0, "name": "BTC/USD", "price": "7964498853532", "conf": "9145329968", "expo": -8, "publishTime": 1793071349, "usd": 79644.98, "preview": false }, … ]` },
+      { m: "GET", p: "/history", title: "Candles and ticks", desc: "Candles for the chart, from Pyth (previews without a feed yet answer 503 <code>FEED_UNAVAILABLE</code>), or the raw ticks of the last 300 s.",
+        params: [["market", "0, 1 or 100", "required"], ["interval", "1m, 5m, 15m, 1h, 4h, 1d, or tick", "required"], ["from", "Unix seconds", "required"], ["to", "Unix seconds, default now", "optional"]],
+        try: `/history?market=0&interval=1h&from=${NOW - 86400}`,
+        res: `{ "market": 0, "name": "BTC/USD", "interval": "1h", "candles": [ { "t": 1792990800, "o": 79012.4, "h": 79310.2, "l": 78955.1, "c": 79288.0 } ] }
+// interval=tick
+{ "market": 0, "name": "BTC/USD", "ticks": [ { "t": 1793071337000, "usd": 79645.0 } ] }`,
+        notes: "At most 500 candles (the newest); the range snaps to the interval grid. No volume here: get it from the indexer's <code>/api/volume</code> on the same grid. 503 <code>BUSY</code> means the upstream cap was hit; retry in a few seconds.",
+        used: "Trade chart, 24h change/high/low (1h candles)" },
+      { m: "GET", p: "/health", title: "Health", desc: "200 when BTC and ETH prices are fresh, 503 otherwise. Previews are listed but never make it fail.", try: "/health",
+        res: `{ "ok": true, "clients": 12, "hermes": "connected to primary", "previewHermes": "connected to primary", "prices": [ { "name": "BTC/USD", "ageSeconds": 0.4, "stale": false } ], "previews": [ { "name": "SPY/USD", "source": null, "ageSeconds": null, "marketOpen": null }, { "name": "TSLA/USD", "source": "pyth", "ageSeconds": 0.9, "marketOpen": true } ] }` },
+    ],
+  },
+  {
+    id: "relayer", title: "Relayer", svc: "relayer", base: RELAYER,
+    lead: "Takes signed intents (open, close) and wallet actions (deposit, withdraw, session keys, staking), batches them and sends them on-chain, paying the gas. It validates everything first, so most mistakes come back right away as a rejection instead of a failed transaction.",
+    endpoints: [
+      { m: "GET", p: "/config", title: "Signing config", desc: "Everything needed to sign: chain id, contract addresses, EIP-712 domains and types, market limits and the chain clock. Load it once at start and refresh every few minutes.", try: "/config",
+        res: `{ "chainId": 4663,
+  "contracts": { "Exchange": "0xc8d9…3f56", "SessionKeyManager": "0xdb4b…c57bc", "JackTradeStaking": "0x1b26…38a6" },
+  "token": { "address": "0x7595…f224", "symbol": "JACKTRADE", "decimals": 18 },
+  "collateral": { "address": "0x5fc5…1d168", "symbol": "USDG", "decimals": 6 },
+  "eip712": { "domain": { "name": "JackTrade Exchange", "version": "1", "chainId": 4663, "verifyingContract": "0xc8d9…" }, "types": { "Open": […], "Close": […], "Withdraw": […] } },
+  "eip712Actions": { "sessionKeys": {…}, "staking": {…} },
+  "markets": [ { "id": 0, "name": "BTC/USD", "maxLeverage": 1000, "maxConfBps": 25, "minMargin": "10000000", "minNotional": "1000000000", "maxNotional": "100000000000", "listed": true } ],
+  "limits": { "intentTtl": 3600, "maxIntentAge": 30, "sessionKeyMaxDuration": 2592000 },
+  "chainTime": 1793071348, "tradingPaused": false }`,
+        notes: "Market amounts here are raw USDG units (6 decimals). <code>signedAt</code> must come from <code>chainTime</code> (keep the offset to the browser clock), never from <code>Date.now()</code>." },
+      { m: "POST", p: "/intent", title: "Open or close", desc: "Send an Open or Close intent signed with the session key (or the wallet). Numbers go as strings.",
+        body: `{ "kind": "open",
+  "intent": { "user": "0x3c44…93bc", "instrumentId": 0, "isLong": true, "margin": "10000000", "leverage": "100",
+              "priceLimit": "80200000000000000000000", "signedAt": "1793071348", "nonce": "17930713480001234567" },
+  "signature": "0x…" }
+// close
+{ "kind": "close", "intent": { "user": "0x…", "positionId": "12", "priceLimit": "…", "signedAt": "…", "nonce": "…" }, "signature": "0x…" }`,
+        res: `202 { "id": "0x3c44…93bc:17930713480001234567", "status": "queued" }
+400 { "status": "rejected", "code": "InvalidSize", "message": "notional below the minimum (1000 USDG)" }`,
+        notes: "Rules: a fresh random <code>nonce</code> per intent; send within 30 s of signing; always send a <code>priceLimit</code> (WAD; long open = max entry, short open = min entry, inverted on close); margin ≥ 10 USDG and margin × leverage ≥ 1,000 USDG.",
+        used: "Trade ticket, close buttons" },
+      { m: "GET", p: "/intent/:id", title: "Intent status", desc: "Poll every ~250 ms after a 202 until executed or failed (usually 1–2 s). The id is <code>user:nonce</code> in lowercase.",
+        res: `{ "id": "…", "status": "queued" }
+{ "id": "…", "status": "submitted", "txHash": "0x…" }
+{ "id": "…", "status": "executed", "txHash": "0x…", "positionId": "12", "price": "79794000000000000000000", "publishTime": 1793072269 }
+{ "id": "…", "status": "failed", "code": "PriceLimitExceeded", "message": "…" }`,
+        notes: "<code>price</code> is the real entry (open) or exit (close) in WAD: <code>Number(price) / 1e18</code>." },
+      { m: "POST", p: "/action", title: "Wallet actions", desc: "Deposit, withdraw, register a session key, stake, unstake and claim, signed by the wallet itself (a signature popup, no gas). Session keys cannot sign these.",
+        params: [["withdraw", "user, to, amount, nonce, deadline", "Exchange EIP-712"], ["depositPermit", "user, amount, nonce, deadline", "USDG permit; nonce = USDG nonces(user)"], ["registerSessionKey", "user, key, expiry, nonce, deadline", "SessionKeyManager EIP-712"], ["stake / unstake", "user, amount, nonce, deadline", "Staking EIP-712, JACKTRADE amounts"], ["claim", "user, nonce, deadline", "Staking EIP-712"]],
+        paramHead: ["kind", "fields of action", "signed with"],
+        body: `{ "kind": "withdraw", "action": { "user": "0x…", "to": "0x…", "amount": "25000000", "nonce": "…", "deadline": "1793071948" }, "signature": "0x…" }`,
+        res: `202 { "id": "withdraw:0x…:1793…", "status": "queued" }`,
+        notes: "<code>deadline</code> at least 60 s ahead (10 min is typical). The first deposit pays the activation fee; minimums are in <code>/api/config</code>. At most 2 pending actions per wallet and 20 per day.",
+        used: "Deposit and withdraw dialogs, session setup, Token page" },
+      { m: "GET", p: "/action/:id", title: "Action status", desc: "Same states as intents. The id is <code>kind:user:nonce</code> in lowercase." },
+      { m: "GET", p: "/live", title: "Can it trade?", desc: "200 when the batch loop runs and the relayer wallet has its role and ETH; 503 with the reasons otherwise. Use it for the trading status badge.", try: "/live",
+        res: `{ "live": false, "reasons": ["the wallet is not a relayer", "the wallet has no ETH"] }` },
+      { m: "GET", p: "/health", title: "Health", desc: "Operational detail for monitoring: price freshness, ETH, role, escape hatch timer, house bankroll and queue.", try: "/health" },
+    ],
+  },
+  {
+    id: "account", title: "Accounts", svc: "indexer", base: API,
+    lead: "One wallet's state: balance, open positions with live PnL, history and its PnL over time. The free balance is read from the chain on each request; the rest comes from indexed events.",
+    endpoints: [
+      { m: "GET", p: "/api/account/:user", title: "Account", desc: "Free balance in the Exchange, place in the payout queue, lifetime stats and staking.", try: "/api/account/0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        res: `{ "user": "0x3c44…93bc", "balance": "968.795419",
+  "queue": { "waiting": "0.061029", "position": 1, "ahead": "0" },
+  "stats": { "trades": 7, "open": 4, "wins": 1, "losses": 1, "liquidations": 0, "realizedPnl": "-0.143552", "volume": "28000",
+             "feesPaid": "0", "minted": "20.4581", "deposited": "1020", "withdrawn": "10" },
+  "staking": { "staked": "500", "claimed": "5", "credited": "0" } }`,
+        notes: "<code>queue</code> is null when nothing is owed. <code>staking.staked</code> is JACKTRADE; <code>claimed</code> and <code>credited</code> are USDG (credited = what actually landed in the balance).",
+        used: "Header balance, Portfolio, Token" },
+      { m: "GET", p: "/api/positions/:user", title: "Open positions", desc: "Open positions, newest first, each with the current mark price, the exact PnL if closed now (same math as the contract) and the liquidation price.", try: "/api/positions/0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        res: `[ { "id": "9", "market": "BTC/USD", "instrumentId": 0, "side": "long", "margin": "10", "leverage": 100, "entryPrice": "79797.23",
+    "markPrice": "79797.43", "liquidationPrice": "79042.12", "liquidatable": false, "pnl": "-0.264644", "openedAt": 1793072574 } ]`,
+        notes: "<code>pnl</code>, <code>markPrice</code> and <code>liquidatable</code> are null when there is no fresh price. <code>liquidatable: true</code> means the close would revert: the liquidator will close it." },
+      { m: "GET", p: "/api/preview/:id", title: "Close preview", desc: "What closing a position now would pay: gross gain or loss, fee, what is paid now and what would go to the queue.",
+        res: `{ "id": "9", "price": "79797.43", "gain": "0", "loss": "0.264644", "fee": "0", "payout": "0", "pnl": "-0.264644",
+  "paidNow": "0", "queued": "0", "returned": "9.735356", "liquidatable": false }`,
+        notes: "404 <code>NOT_FOUND</code>, 409 <code>POSITION_NOT_OPEN</code>, 503 <code>NO_PRICE</code>.", used: "Close confirmation" },
+      { m: "GET", p: "/api/history/:user", title: "History", desc: "Closes, liquidations, deposits and withdrawals, newest first, 50 per page. Pass <code>next</code> back as <code>cursor</code>.",
+        params: [["cursor", "the previous page's next", "optional"]], try: "/api/history/0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        res: `{ "items": [
+    { "type": "close", "id": "7", "market": "BTC/USD", "side": "long", "margin": "20", "leverage": 100, "entryPrice": "79791.85", "exitPrice": "79783.68",
+      "pnl": "-0.204581", "fee": "0", "openedAt": 1793072544, "at": 1793072560, "tx": "0x…" },
+    { "type": "deposit", "amount": "1000", "activationFee": "1", "at": 1793072175, "tx": "0x…" } ],
+  "next": null }` },
+      { m: "GET", p: "/api/pnl/:user", title: "PnL and equity over time", desc: "One point after every close and every deposit or withdrawal, oldest first: the cumulative realized PnL, net deposits and equity (= net deposits + realized PnL). Draw the equity or PnL line straight from it.",
+        params: [["window", "24h, 7d, 30d, all", "default all"]], try: "/api/pnl/0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc?window=all",
+        res: `{ "user": "0x3c44…93bc", "window": "all",
+  "start": { "realizedPnl": "0", "netDeposits": "0", "equity": "0" },
+  "points": [
+    { "at": 1793072175, "type": "deposit", "delta": "1000", "realizedPnl": "0", "netDeposits": "1000", "equity": "1000" },
+    { "at": 1793072505, "type": "close", "delta": "0.061029", "positionId": "6", "market": "BTC/USD", "realizedPnl": "0.061029", "netDeposits": "1010", "equity": "1010.061029" } ],
+  "truncated": false }`,
+        notes: "<code>start</code> is the value just before the first point (for windows that begin mid-history). Open positions are not included: add <code>/api/positions</code> PnL for a live tip.",
+        used: "Portfolio chart, public profile chart" },
+    ],
+  },
+  {
+    id: "markets", title: "Markets and protocol", svc: "indexer", base: API,
+    lead: "Market limits, live open interest, protocol totals and the house's exposure. Use these instead of hardcoding fees, leverage or caps: they change when the owner changes them on-chain.",
+    endpoints: [
+      { m: "GET", p: "/api/markets", title: "Markets", desc: "Each market with the live price, open interest per side and its caps, size limits, and volume (all time and last 24 h).", try: "/api/markets",
+        res: `[ { "instrumentId": 0, "name": "BTC/USD", "price": "79798.13", "listed": true, "retired": false, "frozenPrice": null,
+    "longOi": "11000", "shortOi": "10000", "longOiCap": "250000", "shortOiCap": "250000",
+    "minMargin": "10", "minNotional": "1000", "maxNotional": "100000", "maxLeverage": 1000, "liqBufferBps": 5, "maxConfBps": 25,
+    "volume": "27000", "volume24h": "27000", "trades24h": 6, "trades": 6, "open": 3, "liquidations": 0 } ]`,
+        used: "Trade header, market selector, OI bars" },
+      { m: "GET", p: "/api/config", title: "Fees and limits", desc: "Fees in bps, deposit and withdraw minimums, and per-market limits including the price-impact parameters. The ticket's fee and liquidation-price math should come from here.", try: "/api/config",
+        res: `{ "chainId": 4663,
+  "fees": { "winFeeBps": 200, "lossFeeBps": 200, "liqFeeBps": 200 },
+  "limits": { "intentTtl": 3600, "escapeDelay": 86400, "minDeposit": "10", "minWithdraw": "10", "activationFee": "1", "deadbandDivisor": 50000 },
+  "markets": [ { "instrumentId": 0, "name": "BTC/USD", "maxLeverage": 1000, "liqBufferBps": 5, "maxConfBps": 25, "minMargin": "10", "minNotional": "1000",
+                 "maxNotional": "100000", "longOiCap": "250000", "shortOiCap": "250000",
+                 "impact": { "baseRate": "0.1", "rateMultiplier": "15000", "positionMultiplier": "814.598", "referenceNotional": "100000" } } ] }`,
+        notes: "Liquidation price: <code>dist = entry / leverage − entry × liqBufferBps / 10000</code>; long <code>entry − dist</code>, short <code>entry + dist</code>.",
+        used: "Ticket (fees, leverage range, sizes, liquidation price)" },
+      { m: "GET", p: "/api/stats", title: "Protocol totals", desc: "Trades, volume, fees, the house's realized PnL, deposits, the payout queue and the free bankroll right now.", try: "/api/stats",
+        res: `{ "trades": 9, "open": 6, "volume": "48000", "fees": "0.2", "housePnl": "0.143552", "deposits": "1020", "withdrawals": "10",
+  "queue": { "total": "0", "entries": 0 }, "bankroll": "0.143552", "paused": false, "lastHeartbeat": 1793072235 }` },
+      { m: "GET", p: "/api/stats/history", title: "Protocol over time", desc: "The same totals on a time grid (last value per bucket, carried over empty buckets), plus open interest per market. For the house PnL, queue, fees and OI charts.",
+        params: [["window", "24h, 7d, 30d, all", "default 7d"], ["interval", "5m, 15m, 1h, 4h, 1d", "default by window: 15m, 1h, 4h, 1d"]], try: "/api/stats/history?window=7d",
+        res: `{ "window": "24h", "interval": "1h",
+  "points": [ { "t": 1793070000, "housePnl": "0.143552", "fees": "0", "queue": "0", "deposits": "1020", "withdrawals": "10", "stakerRewards": "0",
+                "volume": "48000", "open": 6, "longOi": "21000", "shortOi": "21000" } ],
+  "markets": [ { "instrumentId": 0, "name": "BTC/USD", "points": [ { "t": 1793070000, "longOi": "21000", "shortOi": "20000" } ] } ] }`,
+        notes: "At most 500 points per request (400 otherwise). Before the first event, values are 0.", used: "House charts" },
+      { m: "GET", p: "/api/house", title: "House exposure now", desc: "What the house is exposed to right now, from the open positions: OI per side, the leverage mix, where liquidations sit, and how much the house wins or loses if the price moves.", try: "/api/house",
+        res: `{ "bankroll": "0", "lpCash": "0", "queue": "0.061029", "queuedPayouts": 1, "housePnl": "0.143552", "fees": "0", "paused": false, "positions": 4, "margin": "40",
+  "markets": [ { "instrumentId": 0, "name": "BTC/USD", "price": "79798.13", "longOiCap": "250000", "shortOiCap": "250000",
+    "positions": 3, "longPositions": 2, "shortPositions": 1, "longOi": "11000", "shortOi": "10000", "margin": "30", "traderUnrealizedPnl": "0.051738",
+    "leverage": [ { "min": 100, "max": 249, "positions": 1, "longNotional": "1000", "shortNotional": "0" } ],
+    "shocks": [ { "move": -1, "houseDelta": "-12.5" }, { "move": 1, "houseDelta": "10.0" } ],
+    "liquidationMap": [ { "from": "79000", "to": "80000", "longNotional": "1000", "shortNotional": "0", "positions": 1 } ] } ] }`,
+        notes: "<code>shocks</code>: house result if the price moved <code>move</code> % now (estimate: linear, loss capped at margin, no fees). <code>liquidationMap</code>: 40 bands covering ±50 % of the price. Both are empty without a fresh price.",
+        used: "House page (exposure, shock table, liquidation heatmap)" },
+      { m: "GET", p: "/api/volume", title: "Volume per candle", desc: "Notional opened per candle, on the same grid as the price candles, to draw volume bars under the chart.",
+        params: [["market", "0 or 1", "required"], ["interval", "1m, 5m, 15m, 1h, 4h, 1d", "required"], ["from", "Unix seconds", "required"], ["to", "Unix seconds, default now", "optional"]],
+        try: `/api/volume?market=0&interval=1h&from=${NOW - 86400}`,
+        res: `{ "market": 0, "name": "BTC/USD", "interval": "5m", "candles": [ { "t": 1793072100, "volume": "23000", "trades": 4 } ] }` },
+      { m: "GET", p: "/api/rate", title: "Mint rate", desc: "JACKTRADE minted per 1 USDG a trader loses, at the current tracked LP size.", try: "/api/rate",
+        res: `{ "rate": "100", "trackedLp": "0" }` },
+    ],
+  },
+  {
+    id: "activity", title: "Activity feed", svc: "indexer", base: API,
+    lead: "Every on-chain event in one feed: the global trades tape, liquidations, a wallet's activity, staking and reward distributions.",
+    endpoints: [
+      { m: "GET", p: "/api/activity", title: "Activity", desc: "Newest first. Filter by kind, wallet and market; page with <code>next</code>.",
+        params: [["kind", "comma list: open, close, liquidation, deposit, withdraw, queued, queuePaid, stake, unstake, claim, mint, distribution; or trades, transfers, staking, queue", "default all"], ["user", "wallet address", "optional"], ["market", "0 or 1", "optional"], ["limit", "1–100", "default 50"], ["cursor", "the previous page's next", "optional"]],
+        try: "/api/activity?kind=trades&limit=20",
+        res: `{ "items": [
+    { "id": "0x5ca7…-5", "kind": "close", "user": "0x3c44…93bc", "username": "house.trader", "market": "BTC/USD", "instrumentId": 0, "positionId": "7",
+      "side": "long", "leverage": 100, "notional": "2000", "price": "79783.68", "amount": "-0.204581", "unit": "USDG", "at": 1793072560, "tx": "0x5ca7…" },
+    { "id": "0x5ca7…-4", "kind": "mint", "user": "0x3c44…93bc", "amount": "20.4581", "unit": "JACKTRADE", … } ],
+  "next": "98940168000002" }`,
+        notes: "<code>amount</code> by kind: open = margin; close/liquidation = realized PnL (signed); stake, unstake, mint = JACKTRADE; the rest = USDG. <code>price</code> is the entry for opens and the exit for closes. <code>distribution</code> has no user (rewards sent to stakers).",
+        used: "Trades tape, House activity, Portfolio activity" },
+    ],
+  },
+  {
+    id: "leaderboard", title: "Leaderboard", svc: "indexer", base: API,
+    lead: "Rankings by realized PnL in a time window. The rank is fixed by PnL; sorting by another column keeps each account's rank.",
+    endpoints: [
+      { m: "GET", p: "/api/leaderboard/accounts", title: "Ranked accounts", desc: "25 accounts per page with search and sorting. Use <code>sortKey=liquidations</code> for the most liquidated and <code>sortKey=staked</code> for the biggest house owners (with <code>window=all</code> stakers who never traded are included).",
+        params: [["window", "24h, 7d, 30d, all", "default all"], ["page", "0, 1, …", "default 0"], ["q", "part of an address or username, ≤ 42 chars", "optional"], ["sortKey", "rank, user, pnl, roi, unrealizedPnl, realizedPnl, volume, trades, winRate, liquidations, margin, openNotional, queued, stakingRewards, staked, minted, lastActive", "default rank"], ["sortDir", "asc, desc", "asc for rank/user, else desc"]],
+        try: "/api/leaderboard/accounts?window=7d",
+        res: `{ "window": "7d", "count": 1240,
+  "summary": { "accounts": 1240, "ranked": 1102, "trades": 8731, "volume": "48210000", "pnl": "-125400.5", "openNotional": "3120000", "queued": "0" },
+  "accounts": [ { "rank": 1, "user": "0x3c44…93bc", "username": "house.trader", "pnl": "52300.12", "roi": 34.5, "trades": 31, "wins": 18, "winRate": 58.06,
+                  "liquidations": 2, "margin": "151600", "volume": "900000", "realizedPnl": "61200.4", "unrealizedPnl": "-1200.5", "openNotional": "45000",
+                  "queued": "0", "stakingRewards": "12.3", "staked": "5000", "minted": "1050.25", "lastActive": 1792586400 } ],
+  "pageInfo": { "page": 0, "pageSize": 25, "totalPages": 50 } }`,
+        notes: "<code>rank</code> is null for accounts with nothing closed in the window: show “–”. <code>roi</code> = pnl / margin of closed trades. <code>unrealizedPnl</code> is an estimate and never ranks. Responses carry an ETag and a 1 s cache.",
+        used: "Leaderboard (Winners, Liquidated, House owners), trade-page top 5" },
+      { m: "GET", p: "/api/leaderboard/positions", title: "Best closed positions", desc: "Top 15 closed positions by PnL in the window. The same wallet can appear more than once.",
+        params: [["window", "24h, 7d, 30d, all", "default all"]], try: "/api/leaderboard/positions?window=all",
+        res: `{ "window": "7d", "positions": [ { "rank": 1, "id": "42", "user": "0x3c44…93bc", "username": "house.trader", "market": "BTC/USD", "instrumentId": 0,
+    "side": "long", "leverage": 76, "margin": "75000", "notional": "5700000", "entryPrice": "82514.5", "exitPrice": "84524.5", "pnl": "121421.31",
+    "roi": 161.89, "liquidated": false, "openedAt": 1792500000, "closedAt": 1792586400 } ] }` },
+      { m: "GET", p: "/api/leaderboard", title: "Old ranking (deprecated)", desc: "All-time only, <code>by=pnl|volume</code>, <code>limit</code> ≤ 100. Kept so older builds keep working; use <code>/api/leaderboard/accounts</code>." },
+    ],
+  },
+  {
+    id: "profiles", title: "Profiles", svc: "indexer", base: API,
+    lead: "Public usernames tied to a wallet. The wallet signs every change; nobody can set a name for a wallet they don't control. Works with regular wallets, smart wallets (ERC-1271) and EIP-7702 accounts.",
+    endpoints: [
+      { m: "GET", p: "/api/profile/:wallet", title: "Profile by wallet", desc: "Always 200; <code>username</code> is null when the wallet has none.", try: "/api/profile/0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        res: `{ "wallet": "0x3c44…93bc", "username": "house.trader", "createdAt": 1792600000, "updatedAt": 1792600000 }` },
+      { m: "GET", p: "/api/profile/by-username/:username", title: "Profile by username", desc: "Resolves <code>/u/:username</code> links. 404 <code>PROFILE_NOT_FOUND</code> if nobody has it." },
+      { m: "POST", p: "/api/profile/challenge", title: "Ask to sign", desc: "Step 1 of claiming or changing a username. Returns typed data to sign (and a plain message as fallback). Valid 10 minutes, single use.",
+        body: `{ "wallet": "0x3c44…93bc", "username": "house.trader" }`,
+        res: `{ "challengeId": "7fb92d7a-…", "message": "JACKTRADE profile\\nWallet: 0x…\\nUsername: house.trader\\n…",
+  "typedData": { "domain": {…}, "types": {…}, "primaryType": "SetUsername", "message": { "wallet": "0x…", "username": "house.trader", "nonce": "0x5f2c…", "expires": "1792602600" } } }`,
+        notes: "<code>expires</code> comes as a string: pass <code>BigInt(expires)</code> to viem when signing." },
+      { m: "PUT", p: "/api/profile/username", title: "Save the username", desc: "Step 2: send the signature. Returns the updated profile.",
+        body: `{ "wallet": "0x3c44…93bc", "username": "house.trader", "challengeId": "7fb92d7a-…", "signature": "0x…" }`,
+        notes: "Usernames: 3–24 characters, lowercase letters, digits, <code>.</code>, <code>-</code> and <code>_</code>, starting with a letter or digit (input is lowercased). Reserved names, anything starting with jacktrade, and names that look like an address are refused. First set is free; after that one change per 24 h (429 <code>CHANGE_TOO_SOON</code>)." },
+    ],
+  },
+  {
+    id: "token", title: "Token and staking", svc: "indexer", base: API,
+    lead: "JACKTRADE is minted to traders when they lose (the rate falls as the LP grows). Stakers receive a share of the protocol's fees in USDG.",
+    endpoints: [
+      { m: "GET", p: "/api/token", title: "Token overview", desc: "Supply, staking totals and rewards distributed to stakers.", try: "/api/token",
+        res: `{ "token": { "address": "0x7595…f224", "symbol": "JACKTRADE", "decimals": 18, "totalSupply": "1020.4581", "transfersEnabled": false, "minted": "20.4581" },
+  "rate": "100",
+  "staking": { "totalStaked": "500", "stakers": 1, "stakedShare": 48.99 },
+  "rewards": { "distributed": "0", "fromFees": "0", "fromLpExcess": "0", "lastDistribution": null } }`,
+        notes: "<code>transfersEnabled: false</code>: hide “send” until it turns true. <code>stakedShare</code> is % of supply. Per-wallet pending rewards: read <code>JackTradeStaking.pendingReward(user)</code> on-chain.",
+        used: "Token page" },
+      { m: "GET", p: "/api/token/history", title: "Token over time", desc: "Per bucket: USDG distributed to stakers, JACKTRADE minted, and total staked at the end of the bucket.",
+        params: [["window", "24h, 7d, 30d, all", "default 7d"], ["interval", "5m, 15m, 1h, 4h, 1d", "default by window"]], try: "/api/token/history?window=30d",
+        res: `{ "window": "30d", "interval": "4h", "points": [ { "t": 1793059200, "distributed": "0", "minted": "20.4581", "totalStaked": "500" } ] }`,
+        used: "Token page charts, reward estimate (your share × recent distributions)" },
+    ],
+  },
+];
+
+const errorRows = [
+  ["indexer", "INVALID_REQUEST", "400", "Bad or unknown parameter; message says which"],
+  ["indexer", "NOT_FOUND", "404", "Position or route does not exist"],
+  ["indexer", "POSITION_NOT_OPEN", "409", "Preview of a closed position"],
+  ["indexer", "NO_PRICE", "503", "No fresh Pyth price for the market"],
+  ["indexer", "PROFILE_NOT_FOUND", "404", "No profile with that username"],
+  ["indexer", "INVALID_USERNAME · USERNAME_TAKEN", "400 · 409", "Format or availability of a username"],
+  ["indexer", "INVALID_SIGNATURE · CHALLENGE_EXPIRED · CHANGE_TOO_SOON", "401 · 410 · 429", "Profile signature problems and the 24 h cooldown"],
+  ["all", "RATE_LIMITED / RateLimited", "429", "Too many requests from this IP or signer"],
+  ["indexer", "INTERNAL_ERROR", "500", "Unexpected; retry"],
+  ["prices", "BUSY · UPSTREAM_ERROR", "503 · 502", "History upstream cap reached or upstream failed; retry"],
+  ["relayer", "InsufficientBalance", "400", "Margin or withdrawal above the free balance: offer a deposit"],
+  ["relayer", "InvalidLeverage · InvalidSize", "400", "Outside the market's limits (see /api/config)"],
+  ["relayer", "PriceUncertain · PriceTooOld · NoPrice", "400", "Price confidence too wide or stale: wait a few seconds"],
+  ["relayer", "PriceLimitExceeded", "400 / failed", "Price moved past the tolerance: retry or widen slippage"],
+  ["relayer", "IntentExpired · TooOld · NonceAlreadyUsed", "400", "Timing or replay problems: sign again"],
+  ["relayer", "InvalidSignature", "400", "Session key expired or revoked: register a new one"],
+  ["relayer", "OiCapExceeded", "400", "That side of the market is full"],
+  ["relayer", "TradingIsPaused · MarketNotListed · MarketIsRetired", "400", "Market not available"],
+  ["relayer", "PositionLiquidatable", "400", "The position already crossed liquidation; the liquidator closes it"],
+  ["relayer", "NotActivated · BelowMinimum · NothingToClaim · InsufficientStake · ZeroAmount", "400", "Wallet action preconditions"],
+];
+
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+const slug = (g, e) => `${g.id}-${e.m.toLowerCase()}-${e.p.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "")}`;
+
+function renderEndpoint(g, e, i) {
+  const id = slug(g, e);
+  const head = e.paramHead ?? ["Param", "Values", "Default"];
+  const params = e.params ? `<div class="table-wrap"><table><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${e.params.map((r) => `<tr><td><code>${esc(r[0])}</code></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join("")}</tbody></table></div>` : "";
+  const body = e.body ? `<details open><summary>Request body</summary><pre><code>${esc(e.body)}</code></pre></details>` : "";
+  const res = e.res ? `<details ${i < 2 ? "open" : ""}><summary>Example response</summary><pre><code>${esc(e.res)}</code></pre></details>` : "";
+  const tryIt = CAN_TRY && e.try ? `<div class="try"><input id="try-${id}" aria-label="Request URL" value="${esc(g.base + e.try)}"><button type="button" data-try="${id}">Try it</button><output id="out-${id}"></output></div>` : "";
+  return `<article class="endpoint" id="${id}">
+    <div class="sig"><span class="method ${e.m}">${e.m}</span><span class="path">${esc(e.p)}</span><span class="svc">${g.svc}</span></div>
+    <h3>${e.title}</h3>
+    <p>${e.desc}</p>
+    ${params}${body}${res}
+    ${e.notes ? `<p>${e.notes}</p>` : ""}
+    ${e.used ? `<p class="used">Used by: ${e.used}</p>` : ""}
+    ${tryIt}
+  </article>`;
+}
+
+const ref = document.getElementById("reference");
+ref.innerHTML = groups.map((g) => `<section id="${g.id}"><h2>${g.title}</h2><p class="lead">${g.lead} <span class="pill">${esc(g.base.replace("https://", ""))}</span></p><div class="stack">${g.endpoints.map((e, i) => renderEndpoint(g, e, i)).join("")}</div></section>`).join("");
+
+document.getElementById("errors-body").innerHTML = errorRows.map((r) => `<tr><td>${r[0]}</td><td><code>${esc(r[1])}</code></td><td>${r[2]}</td><td>${esc(r[3])}</td></tr>`).join("");
+
+const toc = document.getElementById("toc");
+const link = (href, text, m) => `<a href="#${href}">${m ? `<span class="m">${m}</span>` : ""}${esc(text)}</a>`;
+toc.innerHTML += `<div class="group">Guide</div>${link("start", "Start here")}${link("conventions", "Conventions")}${link("flow", "How a trade happens")}`
+  + groups.map((g) => `<div class="group">${g.title}</div>${g.endpoints.map((e) => link(slug(g, e), e.p, e.m)).join("")}`).join("")
+  + `<div class="group">Reference</div>${link("pages", "Which screen uses what")}${link("errors", "Error codes")}`;
+
+ref.addEventListener("click", async (ev) => {
+  const id = ev.target.closest("button[data-try]")?.dataset.try;
+  if (!id) return;
+  const out = document.getElementById(`out-${id}`);
+  const url = document.getElementById(`try-${id}`).value;
+  out.innerHTML = "<pre><code>Loading…</code></pre>";
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    let pretty = text;
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+    out.innerHTML = `<pre><code>HTTP ${res.status}\n${esc(pretty.length > 6000 ? pretty.slice(0, 6000) + "\n…" : pretty)}</code></pre>`;
+  } catch (e) {
+    out.innerHTML = `<pre><code>Request failed: ${esc(e.message)}</code></pre>`;
+  }
+});
+</script>

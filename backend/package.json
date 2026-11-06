@@ -1,0 +1,48 @@
+{
+  "name": "jacktrade-backend",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "fork": "tsx --env-file-if-exists=.env scripts/fork.ts",
+    "sync:exports": "tsx shared/scripts/sync-exports.ts",
+    "check:contracts": "tsx --env-file-if-exists=.env scripts/check-contracts.ts",
+    "typecheck": "tsc --noEmit && tsc -p indexer",
+    "prices": "tsx --env-file-if-exists=.env prices/src/cli.ts",
+    "test": "tsx --test \"*/test/**/*.test.ts\"",
+    "check:pyth": "tsx --env-file-if-exists=.env scripts/check-pyth.ts",
+    "prices:server": "tsx --env-file-if-exists=.env prices/src/server.ts",
+    "check:interfaces": "tsx --env-file-if-exists=.env scripts/check-interfaces.ts",
+    "setup:fork": "tsx --env-file-if-exists=.env scripts/setup-fork.ts",
+    "relayer": "tsx --env-file-if-exists=.env relayer/src/server.ts",
+    "try:intents": "tsx --env-file-if-exists=.env scripts/try-intents.ts",
+    "try:open": "tsx --env-file-if-exists=.env scripts/try-open.ts",
+    "try:cycle": "tsx --env-file-if-exists=.env scripts/try-cycle.ts",
+    "try:front-client": "tsx --env-file-if-exists=.env scripts/try-front-client.ts",
+    "liquidator": "tsx --env-file-if-exists=.env liquidator/src/server.ts",
+    "try:liquidation": "tsx --env-file-if-exists=.env scripts/try-liquidation.ts",
+    "stress:liquidation": "tsx --env-file-if-exists=.env scripts/stress-liquidation.ts",
+    "keepers": "tsx --env-file-if-exists=.env keepers/src/server.ts",
+    "try:keepers": "tsx --env-file-if-exists=.env scripts/try-keepers.ts",
+    "indexer": "cd indexer && node --env-file-if-exists=../.env node_modules/ponder/dist/esm/bin/ponder.js --log-level ${INDEXER_LOG_LEVEL:-warn} start -p ${INDEXER_PORT:-${PORT:-8096}} --schema ${DATABASE_SCHEMA:-${RAILWAY_DEPLOYMENT_ID:-local-$(date +%s)}} --views-schema ${DATABASE_VIEWS_SCHEMA:-jacktrade}",
+    "indexer:dev": "cd indexer && node --env-file-if-exists=../.env node_modules/ponder/dist/esm/bin/ponder.js --log-level ${INDEXER_LOG_LEVEL:-warn} dev -p ${INDEXER_PORT:-${PORT:-8096}}",
+    "try:indexer": "tsx --env-file-if-exists=.env scripts/try-indexer.ts",
+    "try:api": "tsx --env-file-if-exists=.env scripts/try-api.ts",
+    "try:profiles": "tsx --env-file-if-exists=.env scripts/try-profiles.ts",
+    "try:actions": "tsx --env-file-if-exists=.env scripts/try-actions.ts",
+    "test:alert": "tsx --env-file-if-exists=.env scripts/test-alert.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.0"
+  },
+  "dependencies": {
+    "@hm/prices": "workspace:*",
+    "@hm/shared": "workspace:*",
+    "viem": "^2.57.7"
+  }
+}

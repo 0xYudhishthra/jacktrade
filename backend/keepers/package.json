@@ -1,0 +1,9 @@
+{
+  "name": "@hm/keepers",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hm/shared": "workspace:*",
+    "viem": "^2.57.7"
+  }
+}
