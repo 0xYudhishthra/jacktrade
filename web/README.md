@@ -1,3 +1,18 @@
+# JackTrade web app
+
+> **Continuity Track note.** This folder is the pre-existing JackTrade (formerly JackTrade) exchange
+> frontend, imported unchanged in the commit "Import pre-existing JackTrade frontend (pre-hackathon code,
+> unchanged)". Hackathon additions: `/grok` (Connect Grok), `/grok/bets` (Grok bets feed), `/points`
+> (JackTrade Points, replacing the HOUSE token page), `/real/$id` (Make it real with Definitive Flash) and a
+> "via Grok" badge on positions and trades. New code lives in `src/routes/{grok,grokBets,points,real}.jsx`,
+> `src/lib/grok/`, `src/components/grok/` and `src/grok.css`; see `git log -- web` for every change.
+>
+> Build-time env (all optional): `VITE_CONNECTOR_URL` (default: same origin; `http://localhost:8787` in dev),
+> `VITE_EXPLORER_URL` (empty: tx hashes as text), `VITE_REOWN_PROJECT_ID` (empty: browser-wallet list),
+> `VITE_PRICES_URL` / `VITE_RELAYER_URL` / `VITE_API_URL` / `VITE_RPC_URL` (default: live services).
+
+---
+
 # Jacktrade · Frontend V3 / DREAM.EXE
 
 Complete DREAM.EXE frontend from the 8018 iteration, on `main` and `frontend-v3`.

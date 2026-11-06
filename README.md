@@ -56,7 +56,7 @@ points earned     = notional × 10 / 100                     (win or lose)
 | Component | What it does | Where |
 |-----------|--------------|-------|
 | **Grok (xAI) connectors** | Grok calls JackTrade's tools over MCP: `list_markets`, `house_status`, `quote_bet`, `place_bet`, `my_bets`, `cash_out`, `my_points`, `make_it_real` | [`connector/src/tools.ts`](connector/src/tools.ts) |
-| **Definitive Flash** | "Make it real": a long bet becomes a `market` order with an `attachedBracket` (take-profit / stop-loss); a short becomes a `limit` buy, on the real Robinhood Chain token | [`web/src/pages/Real.jsx`](web/src/pages/Real.jsx) · proxy in [`connector/src/server.ts`](connector/src/server.ts) |
+| **Definitive Flash** | "Make it real": a long bet becomes a `market` order with an `attachedBracket` (take-profit / stop-loss); a short becomes a `limit` buy, on the real Robinhood Chain token | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) · proxy in [`connector/src/server.ts`](connector/src/server.ts) |
 | **Chainlink CRE** | Proof of House: reads the house's bankroll and payout queue from Robinhood Chain + open interest from the indexer → DON consensus → `HouseAttestation` onchain | [`cre/proof-of-house`](cre/proof-of-house) · [`cre/contracts`](cre/contracts) |
 | **JackTrade exchange** (pre-existing) | Bet-against-the-house contracts, relayer and indexer on Robinhood Chain mainnet | [`PRE-EXISTING.md`](PRE-EXISTING.md) |
 
@@ -146,8 +146,8 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Component | Status | Where |
 |-----------|--------|-------|
 | Grok connector (MCP: 8 tools, caps, encrypted agent keys) | **Built** · read tools and quotes tested against the live mainnet APIs | [`connector`](connector) |
-| Connect Grok (gasless session-key registration) | **Built** | [`web/src/pages/Connect.jsx`](web/src/pages/Connect.jsx) |
-| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/pages/Real.jsx`](web/src/pages/Real.jsx) |
+| Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
+| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
 | Proof of House (Chainlink CRE) | **Built** · workflow compiles to WASM, live-data test passes, contract 5/5 tests, report delivery verified on a Sepolia fork | [`cre`](cre) |
 | JackTrade Points | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
 | Single-image deploy (connector + web) | **Built** · Docker image builds and serves both | [`Dockerfile`](Dockerfile) |
@@ -179,7 +179,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 jacktrade/
 ├── connector/            # remote MCP server (Grok connector) + REST API + Flash proxy; serves the web app
 │   └── src/              # server, MCP tools, trading (intent signing), points, store, upstream clients
-├── web/                  # Vite + React + viem: Connect Grok, Grok bets feed, Points, Make it real
+├── web/                  # pre-existing JackTrade exchange frontend (imported) + Connect Grok, Grok bets, Points, Make it real
 ├── cre/
 │   ├── proof-of-house/   # Chainlink CRE workflow (TypeScript / bun)
 │   └── contracts/        # HouseAttestation consumer (Foundry) + deploy script + tests

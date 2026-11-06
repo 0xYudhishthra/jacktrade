@@ -18,8 +18,19 @@ The exchange's deployed contracts and services on **Robinhood Chain mainnet (cha
 | Prices API | `https://hmprices-production.up.railway.app` |
 | Indexer API | `https://hmindexer-production.up.railway.app` |
 
-None of that source code is in this repository. We only call the deployed contracts and
-the public APIs above. Contract addresses, the EIP-712 signing format and the market list
+The exchange's contracts and backend source are not in this repository. We only call the
+deployed contracts and the public APIs above.
+
+### The exchange frontend (imported into `web/`)
+
+`web/` is built on the exchange's **pre-existing web frontend** (React 19, TanStack Router,
+wagmi + Reown AppKit, Tailwind, Vite). It was imported unchanged in commit
+`Import pre-existing JackTrade frontend (pre-hackathon code, unchanged)`, so `git log -- web`
+shows exactly what changed during the hackathon. Only its `frontend/` folder was copied, never
+contracts or backend code. Pre-existing in `web/`: the landing page, Trade, Portfolio, House,
+Leaderboard, Docs, the wallet / deposit / one-click trading flows, and everything under
+`web/src/components/{jacktrade,product,trading,dream,ui}`, `web/src/hooks`, `web/src/context`
+and `web/src/lib` (except `web/src/lib/grok`). Contract addresses, the EIP-712 signing format and the market list
 are read at runtime from the relayer's public `GET /config`. (The EIP-712 domain names
 still read "JackTrade"; they are part of the deployed contracts.)
 
@@ -27,12 +38,18 @@ still read "JackTrade"; they are part of the deployed contracts.)
 
 - `connector/`: a remote MCP server that turns Grok (and any MCP client) into a trading
   rail: check the house, quote, place and cash out bets, read points.
-- `web/`: Connect Grok, the Grok bets feed, JackTrade Points, and "Make it real", which
-  turns a bet into a Definitive Flash advanced order on the real token.
+- `web/` additions on top of the imported frontend: Connect Grok (`/grok`), the Grok bets
+  feed (`/grok/bets`), JackTrade Points (`/points`, replacing the HOUSE token page), "Make it
+  real" (`/real/$id`), which turns a bet into a Definitive Flash advanced order on the real
+  token, and a "via Grok" badge on Grok's positions and trades. Code: `web/src/routes/{grok,
+  grokBets,points,real}.jsx`, `web/src/lib/grok/`, `web/src/components/grok/`,
+  `web/src/grok.css`, plus small marked edits (rebrand to JackTrade, nav, routes, configurable
+  block explorer, badges).
 - `cre/`: a Chainlink CRE workflow ("Proof of House") that attests the house's bankroll and
   payout queue onchain, plus its consumer contract.
 - JackTrade Points (10 points per $100 of notional, win or lose), computed from onchain
   trade history.
 - `docs/`: the spec, runbook and prompts used to build it.
 
-The full commit history of this repository starts at the hackathon.
+The full commit history of this repository starts at the hackathon. The imported frontend arrives as one
+clearly labelled commit; every change to it after that is a separate, visible commit.
