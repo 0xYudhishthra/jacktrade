@@ -12,7 +12,7 @@ import TradePage from "./routes/trade";
 import PortfolioPage from "./routes/profile";
 import LeaderboardPage from "./routes/ranking";
 import HousePage from "./routes/house";
-import TokenPage from "./routes/token";
+import PointsPage from "./routes/points";
 import HelpPage from "./routes/help";
 import { ProductUIProvider, Shell, Panel } from "./components/product/ProductUI";
 import { TradingSessionProvider } from "./context/TradingSession";
@@ -31,7 +31,9 @@ const root = createRootRoute({
 });
 const routes = root.addChildren([
   createRoute({ getParentRoute: () => root, path: "/house", component: HousePage }),
-  createRoute({ getParentRoute: () => root, path: "/token", component: TokenPage }),
+  createRoute({ getParentRoute: () => root, path: "/points", component: PointsPage }),
+  // The HOUSE token is replaced by JackTrade Points: old /token links land on Points.
+  createRoute({ getParentRoute: () => root, path: "/token", component: PointsPage }),
   createRoute({ getParentRoute: () => root, path: "/help", component: HelpPage }),
   createRoute({ getParentRoute: () => root, path: "/docs", component: HelpPage }),
   createRoute({ getParentRoute: () => root, path: "/u/$username", component: PortfolioPage }),

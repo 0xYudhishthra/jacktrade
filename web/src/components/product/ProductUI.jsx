@@ -108,14 +108,14 @@ const NAV = [
   ["Trade", "/trade"],
   ["Portfolio", "/portfolio"],
   ["House", "/house"],
-  ["Token", "/token"],
+  ["Points", "/points"],
   ["Leaderboard", "/leaderboard"],
 ];
 const LABELS = {
-  en: ["Trade", "Portfolio", "House", "Token", "Leaderboard"],
-  es: ["Operar", "Portfolio", "Casa", "Token", "Leaderboard"],
-  pt: ["Operar", "Portfolio", "Casa", "Token", "Leaderboard"],
-  zh: ["交易", "资产", "庄家", "代币", "排行"],
+  en: ["Trade", "Portfolio", "House", "Points", "Leaderboard"],
+  es: ["Operar", "Portfolio", "Casa", "Puntos", "Leaderboard"],
+  pt: ["Operar", "Portfolio", "Casa", "Pontos", "Leaderboard"],
+  zh: ["交易", "资产", "庄家", "积分", "排行"],
 };
 function MoreMenu() {
   const [open, setOpen] = useState(false);
