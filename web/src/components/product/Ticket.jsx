@@ -8,15 +8,16 @@ import { previewPriceLabel } from "@/lib/pricesApi";
 // The 10× floor and 10× steps are product choices; the ceiling is the market's maxLeverage from the backend.
 const clampLeverage = (value, maximum) =>
   Math.max(LEVERAGE.min, Math.min(maximum ?? Infinity, Math.round(value / LEVERAGE.step) * LEVERAGE.step));
+// What Jack, the mascot, says about the leverage you picked.
 const LEVERAGE_TIERS = [
-  [10, "warming up"],
-  [25, "getting spicy"],
-  [50, "spicy"],
-  [100, "degen"],
-  [250, "certified degen"],
-  [500, "the house loves you"],
-  [750, "no thoughts, only leverage"],
-  [1000, "max degen"],
+  [10, "Nice and easy."],
+  [25, "Warming up."],
+  [50, "Now we're talking."],
+  [100, "Bold. I like it."],
+  [250, "Hold my moustache."],
+  [500, "Deep breaths."],
+  [750, "You sure about this?"],
+  [1000, "All the way up."],
 ];
 export default function Ticket({ onDraft }) {
   const { account, symbol, livePrice, markets, walletConnected, marketStatus, quotes, protocolMarket, fees } = useTradingSession();
@@ -25,7 +26,7 @@ export default function Ticket({ onDraft }) {
   const [margin, setMargin] = useState("");
   const [lev, setLev] = useState(() => {
     try {
-      const saved = Number(localStorage.getItem("jt.product-desk.leverage"));
+      const saved = Number(localStorage.getItem("hm.product-desk.leverage"));
       return Number.isFinite(saved) && saved > 0 ? clampLeverage(saved) : LEVERAGE.default;
     } catch {
       return LEVERAGE.default;
@@ -103,7 +104,7 @@ export default function Ticket({ onDraft }) {
     const next = clampLeverage(n, maxLeverage);
     setLev(next);
     try {
-      localStorage.setItem("jt.product-desk.leverage", String(next));
+      localStorage.setItem("hm.product-desk.leverage", String(next));
     } catch {
       /* Preference is optional. */
     }
@@ -152,13 +153,13 @@ export default function Ticket({ onDraft }) {
   }
   return (
     <form
-      className="jt-panel jt-focus-ticket pm-ticket pm-original-ticket"
+      className="hm-panel hm-focus-ticket pm-ticket pm-original-ticket"
       onSubmit={submit}
       noValidate
       aria-label="Market order"
     >
-      <div className="jt-focus-ticket-body">
-        <div className="jt-focus-direction" aria-label="Position direction">
+      <div className="hm-focus-ticket-body">
+        <div className="hm-focus-direction" aria-label="Position direction">
           <button
             type="button"
             className="sky-direction-long"
@@ -176,10 +177,10 @@ export default function Ticket({ onDraft }) {
             ↘ Short
           </button>
         </div>
-        <div className="jt-focus-amount">
-          <div className="jt-focus-amount-top">
+        <div className="hm-focus-amount">
+          <div className="hm-focus-amount-top">
             <label htmlFor="product-margin">Margin</label>
-            <div className="jt-focus-quick">
+            <div className="hm-focus-quick">
               {[
                 [0.25, "25%"],
                 [0.5, "Half"],
@@ -198,8 +199,8 @@ export default function Ticket({ onDraft }) {
               ))}
             </div>
           </div>
-          <div className="jt-focus-amount-input">
-            <span className="jt-focus-currency">
+          <div className="hm-focus-amount-input">
+            <span className="hm-focus-currency">
               <CollateralIcon size={18} /> USDG
             </span>
             <input
@@ -222,15 +223,15 @@ export default function Ticket({ onDraft }) {
               ].filter(Boolean).join(" ") || undefined}
             />
           </div>
-          <p className="jt-focus-available">{money(account.availableMargin)} USDG available</p>
+          <p className="hm-focus-available">{money(account.availableMargin)} USDG available</p>
 
         </div>
         <div
-          className={`jt-focus-leverage jt-lev${leverageValue >= 500 ? " is-hot" : ""}`}
+          className={`hm-focus-leverage hm-lev${leverageValue >= 500 ? " is-hot" : ""}`}
           style={{ "--heat": ((Math.log10(leverageValue) - 1) / 2).toFixed(3) }}
         >
-          <span className="jt-focus-field-label">Leverage</span>
-          <div className="jt-focus-leverage-value">
+          <span className="hm-focus-field-label">Leverage</span>
+          <div className="hm-focus-leverage-value">
             <button
               type="button"
               className="luna-btn"
@@ -241,7 +242,7 @@ export default function Ticket({ onDraft }) {
               −
             </button>
             <output aria-live="polite">
-              <b key={leverageValue} className="jt-lev-number">
+              <b key={leverageValue} className="hm-lev-number">
                 {money(leverageValue, 0)}
               </b>
               <span>×</span>
@@ -266,13 +267,14 @@ export default function Ticket({ onDraft }) {
             value={leverageValue}
             disabled={!maxLeverage}
             onChange={(e) => leverage(Number(e.target.value))}
-            className="jt-range"
+            className="hm-range"
             style={{ "--fill": ((leverageValue - LEVERAGE.min) / Math.max(1, sliderMax - LEVERAGE.min)) * 100 + "%" }}
           />
-          <p key={leverageTier} className="jt-lev-tier" aria-hidden="true">
+          <p key={leverageTier} className="hm-lev-tier" aria-hidden="true">
+            <img className="hm-lev-jack" src="/brand/jack-256.webp" alt="" width="18" height="18" />
             {leverageTier}
           </p>
-          <div className="jt-focus-leverage-stops">
+          <div className="hm-focus-leverage-stops">
             {[10, 50, 100, 500, 1000].filter((n) => n <= (maxLeverage ?? 0)).map((n) => (
               <button type="button" key={n} aria-pressed={leverageValue === n} onClick={() => leverage(n)}>
                 {money(n, 0)}×
@@ -296,13 +298,13 @@ export default function Ticket({ onDraft }) {
           </p>
         )}
         {error && (
-          <p id="product-order-error" className="jt-focus-order-error" role="alert">
+          <p id="product-order-error" className="hm-focus-order-error" role="alert">
             {error}
           </p>
         )}
         <button
           type="submit"
-          className={`jt-focus-submit ${side === "long" ? "sky-buy" : "sky-sell"}`}
+          className={`hm-focus-submit ${side === "long" ? "sky-buy" : "sky-sell"}`}
           disabled={opening || closed || (!needsConnection && (paused || !!feedBlock || amount <= 0 || !!minimumIssue))}
           aria-busy={opening}
         >
@@ -323,7 +325,7 @@ export default function Ticket({ onDraft }) {
                 : "Open short"}
         </button>
       </div>
-      <dl className="jt-focus-order-summary">
+      <dl className="hm-focus-order-summary">
         <div>
           <dt>Position size</dt>
           <dd>${money(amount * leverageValue)}</dd>
@@ -337,7 +339,7 @@ export default function Ticket({ onDraft }) {
             Est. liquidation{" "}
             <span title="From the current price, your leverage and the market's liquidation buffer">≈</span>
           </dt>
-          <dd className="jt-focus-liquidation">
+          <dd className="hm-focus-liquidation">
             {liquidation != null && !closed ? `$${money(liquidation, priceDigits)}` : "—"}
           </dd>
         </div>

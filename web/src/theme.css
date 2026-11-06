@@ -202,6 +202,22 @@ html[data-theme="dark"] body.jt-dark.dream-exe.pd-base.hm-nocturne {
     background:#1f1f1d!important;color:var(--jt-gold-hi)!important;border-color:var(--jt-gold)!important;
   }
 
+  /* Leverage heat: ivory at 10×, warming to coral at 1000×. Jack comments under the slider. */
+  & .hm-lev {--lev-color:color-mix(in oklch,#ece8df,#f0644b calc(var(--heat) * 100%));--lev-glow:color-mix(in srgb,#f0644b calc(var(--heat) * 30%),transparent);}
+  & .hm-lev .hm-range {
+    background:linear-gradient(90deg,#ece8df,var(--lev-color)) 0 0/calc(var(--fill) + .1%) 100% no-repeat,#262624!important;
+    box-shadow:none!important;
+  }
+  & .hm-lev .hm-range::-webkit-slider-thumb {background:#ece8df!important;border-color:var(--lev-color)!important;box-shadow:0 0 0 calc(var(--heat) * 4px) var(--lev-glow)!important;}
+  & .hm-lev .hm-range::-moz-range-thumb {background:#ece8df;border-color:var(--lev-color);}
+  & .hm-lev .hm-focus-leverage-value output {text-shadow:none!important;}
+  & .hm-lev .hm-lev-tier {
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    color:var(--jt-cream)!important;opacity:1;
+    font:italic 500 13px/1.2 var(--jt-serif)!important;letter-spacing:0!important;text-transform:none!important;
+  }
+  & .hm-lev-jack {width:18px;height:18px;flex:none;}
+
   /* ------------------------------------------------- call to action -- */
   & :is(.hm-focus-submit,.dream-enter,.dream-enter.dream-glass) {
     background:#f4f1ea!important;
