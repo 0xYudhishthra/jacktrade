@@ -12,3 +12,10 @@ cache/
 broadcast/
 .cre/
 tmp/
+
+# Claude Code worktrees
+.claude/
+
+# Local key backups (never commit)
+*.keys.env
+*.key
