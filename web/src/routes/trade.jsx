@@ -14,6 +14,8 @@ import Ticket from "@/components/product/Ticket";
 import MarketSelector from "@/components/product/MarketSelector";
 import { compact, money } from "@/lib/protocolModel";
 import { previewPriceLabel } from "@/lib/pricesApi";
+import { GrokBadge } from "@/components/grok/GrokUI";
+import { useGrokPositionIds } from "@/lib/grok/useGrokBets";
 
 const shortAddress = (value) => (value ? `${value.slice(0, 6)}…${value.slice(-4)}` : "");
 // Latest protocol trades (GET /api/activity?kind=trades), newest first, as tape/feed items. For opens `amount` is the
@@ -32,6 +34,7 @@ function tradeItems(activity) {
     const verb = { open: "opened", close: "closed", liquidation: "was liquidated on" }[item.kind] ?? item.kind;
     return {
       id: item.id,
+      positionId: item.positionId == null ? null : String(item.positionId),
       market,
       kind,
       text,
@@ -92,6 +95,7 @@ export default function Trade({ preview = false }) {
   // Global trades from the indexer for the tape and the feed, polled every 4 s.
   const activity = usePolledData("trades", () => fetchActivity({ kind: "trades", limit: 30 }), 4_000);
   const trades = useMemo(() => tradeItems(activity.data?.items), [activity.data]);
+  const grokIds = useGrokPositionIds();
   // Open interest and caps from GET /api/markets; preview markets have none.
   const longs = protocolMarket?.longOi ?? null;
   const shorts = protocolMarket?.shortOi ?? null;
@@ -347,6 +351,7 @@ export default function Trade({ preview = false }) {
               title={x.title}
             >
               <span>{x.market}</span> {x.text}
+              {x.positionId && grokIds.has(x.positionId) && <GrokBadge />}
               <small>{x.trader} ↗</small>
             </Link>
           ))}

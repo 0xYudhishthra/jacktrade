@@ -14,6 +14,7 @@ import LeaderboardPage from "./routes/ranking";
 import HousePage from "./routes/house";
 import PointsPage from "./routes/points";
 import GrokConnectPage from "./routes/grok";
+import GrokBetsPage from "./routes/grokBets";
 import HelpPage from "./routes/help";
 import { ProductUIProvider, Shell, Panel } from "./components/product/ProductUI";
 import { TradingSessionProvider } from "./context/TradingSession";
@@ -33,6 +34,7 @@ const root = createRootRoute({
 const routes = root.addChildren([
   createRoute({ getParentRoute: () => root, path: "/house", component: HousePage }),
   createRoute({ getParentRoute: () => root, path: "/grok", component: GrokConnectPage }),
+  createRoute({ getParentRoute: () => root, path: "/grok/bets", component: GrokBetsPage }),
   createRoute({ getParentRoute: () => root, path: "/points", component: PointsPage }),
   // The HOUSE token is replaced by JackTrade Points: old /token links land on Points.
   createRoute({ getParentRoute: () => root, path: "/token", component: PointsPage }),

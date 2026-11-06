@@ -1,6 +1,8 @@
 import { useId, useMemo, useState } from "react";
 import { TradeLeaderboard, TradeStatus } from "./TradeViews";
 import TradeHistoryTab from "@/components/trading/TradeHistoryTab";
+import { GrokBadge } from "@/components/grok/GrokUI";
+import { positionIdOf, useGrokPositionIds } from "@/lib/grok/useGrokBets";
 
 const VIEWS = ["Positions", "History", "Leaderboard", "Status"];
 
@@ -94,6 +96,7 @@ function fmt(n, d = 2) {
 
 // Mark, net PnL and liquidation come from the indexer (GET /api/positions), refreshed with every account poll.
 function PositionsTable({ positions, onClose }) {
+  const grokIds = useGrokPositionIds();
   if (positions.length === 0) {
     return (
       <div className="h-28 flex items-center justify-center">
@@ -139,6 +142,7 @@ function PositionsTable({ positions, onClose }) {
             <tr key={p.id} style={{ borderBottom: "1px solid #EAF4FF" }}>
               <td className="px-3 py-2 font-semibold" style={{ color: "var(--terminal-text)" }}>
                 {p.symbol}
+                {grokIds.has(positionIdOf(p)) && <GrokBadge />}
               </td>
               <td className="px-3 py-2">
                 <span

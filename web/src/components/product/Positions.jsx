@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useTradingSession } from "@/hooks/useTradingSession";
 import { useProductUI, FilterSelect } from "./ProductUI";
 import { money, compact } from "@/lib/protocolModel";
+import { GrokBadge } from "@/components/grok/GrokUI";
+import { positionIdOf, useGrokPositionIds } from "@/lib/grok/useGrokBets";
 
 // Open rows show the indexer's own figures (GET /api/positions): mark price, net PnL after dead zone, impact and fee,
 // and the liquidation price. They refresh with every account poll.
 const markOf = (p) => (Number.isFinite(p.mark) ? p.mark : null);
 export default function Positions({ historyOnly = false, hideTabs = false, control, embedded = false }) {
   const { account } = useTradingSession();
+  const grokIds = useGrokPositionIds();
   const { setModal } = useProductUI();
   const [tab, setTab] = useState(historyOnly ? "history" : "open");
   const [filter, setFilter] = useState("all");
@@ -95,6 +98,7 @@ export default function Positions({ historyOnly = false, hideTabs = false, contr
                 <tr key={p.id}>
                   <td>
                     <strong>{p.symbol}</strong>
+                    {grokIds.has(positionIdOf(p)) && <GrokBadge />}
                   </td>
                   <td className={p.side === "long" ? "pm-up" : "pm-down"}>
                     {p.side.toUpperCase()}
