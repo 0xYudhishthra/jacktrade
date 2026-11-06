@@ -36,7 +36,7 @@ New Connector → Custom → paste. Say: "Grok's key can bet, but it can never w
 In Grok: "How's my bet?" (`my_bets`).
 
 **5. Make it real with Flash (2:05–2:45).** Click Make it real → buy $10 of the real token
-with take-profit / stop-loss attached → sign → order fills onchain. "Play with JackTrade,
+with take-profit / stop-loss attached → sign → order fills onchain. "Bet with Grok,
 keep the real thing."
 
 **6. Proof of House (2:45–3:15).** Terminal: `cre workflow simulate ... --broadcast` →

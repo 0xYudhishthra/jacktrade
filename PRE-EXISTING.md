@@ -1,38 +1,33 @@
 # Pre-existing work
 
-This project is a **Continuity Track** submission. It is an add-on to JackTrade's
-bet-against-the-house exchange, which was already live on Robinhood Chain before the
-hackathon (deployed under its earlier name, JackTrade).
+JackTrade is a **Continuity Track** submission. The bet-against-the-house exchange behind
+it existed before the hackathon. This page lists exactly what was reused and what was new.
 
-## What existed before the hackathon (not in this repo)
+## Reused from before the hackathon
 
-The exchange's deployed contracts and services on **Robinhood Chain mainnet (chain id 4663)**:
+- **Exchange contract code.** The bet-against-the-house exchange (Exchange, PriceOracle,
+  SessionKeyManager, BatchExecutor, PnL math) was written before the event. Its source is
+  kept private and is not in this repository.
+- **Backend services** in `backend/` (prices, relayer, indexer, keepers, liquidator),
+  imported in a single clearly labelled commit. Internal audit notes and ops runbooks were
+  left out on purpose.
+- **Trading frontend** in `web/`, imported in a single clearly labelled commit.
 
-| Piece | Address / URL |
-| --- | --- |
-| Exchange | `0x698cf1a9220f89ccf6ee75269086288a623ede54` |
-| SessionKeyManager | `0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29` |
-| BatchExecutor | `0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4` |
-| Collateral (USDG) | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
-| Relayer API | `https://hmrelayer-production.up.railway.app` |
-| Prices API | `https://hmprices-production.up.railway.app` |
-| Indexer API | `https://hmindexer-production.up.railway.app` |
+## Built during the hackathon
 
-None of that source code is in this repository. We only call the deployed contracts and
-the public APIs above. Contract addresses, the EIP-712 signing format and the market list
-are read at runtime from the relayer's public `GET /config`. (The EIP-712 domain names
-still read "JackTrade"; they are part of the deployed contracts.)
+- **A fresh deployment of the exchange on Robinhood Chain mainnet** with new logic. Losses
+  no longer mint a lose-to-earn token. Every trade earns JackTrade Points instead, 10 points
+  per $100 of notional, win or lose. Contract signing domains were renamed to JackTrade.
+- **`contracts/`** JackTradePoints, the non-transferable onchain points ledger, with tests.
+- **`connector/`** the Grok connector (remote MCP server). Grok can check the house, quote,
+  place and cash out bets, arm conditional bets that fire when a price crosses, and read
+  points. It also syncs points onchain and proxies Definitive Flash.
+- **Grok features in `web/`** Connect Grok, the Grok bets feed with "via Grok" badges,
+  JackTrade Points, and Make it real (copy a bet into the real stock token with a
+  Definitive Flash advanced order).
+- **New backend deployment** of the services above on Railway, with new keys and a new
+  Ponder indexer.
+- **`docs/`** the spec, runbook, submission copy and prompts used to build it.
 
-## What was built during the hackathon (everything in this repo)
-
-- `connector/`: a remote MCP server that turns Grok (and any MCP client) into a trading
-  rail: check the house, quote, place and cash out bets, read points.
-- `web/`: Connect Grok, the Grok bets feed, JackTrade Points, and "Make it real", which
-  turns a bet into a Definitive Flash advanced order on the real token.
-- `cre/`: a Chainlink CRE workflow ("Proof of House") that attests the house's bankroll and
-  payout queue onchain, plus its consumer contract.
-- JackTrade Points (10 points per $100 of notional, win or lose), computed from onchain
-  trade history.
-- `docs/`: the spec, runbook and prompts used to build it.
-
-The full commit history of this repository starts at the hackathon.
+Everything outside the two labelled import commits was written during the hackathon, and
+the commit history shows it step by step.
