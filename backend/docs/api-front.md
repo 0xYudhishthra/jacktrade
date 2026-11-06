@@ -1,6 +1,6 @@
 # API para el front
 
-> **Referencia completa en inglés, con ejemplos y botones para probar:** `https://hmindexer-production.up.railway.app/docs` (también en `indexer/src/api/docs.html`).
+> **Referencia completa en inglés, con ejemplos y botones para probar:** `https://jt-indexer-production.up.railway.app/docs` (también en `indexer/src/api/docs.html`).
 
 Datos de cuenta, posiciones, historial, mercados y stats de la casa. Va en el mismo servidor que el indexer: lo histórico sale de lo indexado, y lo que cambia con cada bloque (balance libre, caja de la casa) se lee de la cadena en el momento. Precios en vivo: [precios-front.md](precios-front.md). Abrir y cerrar: [intents-front.md](intents-front.md).
 
@@ -8,7 +8,7 @@ Datos de cuenta, posiciones, historial, mercados y stats de la casa. Va en el mi
 
 | Qué | Dónde |
 | --- | --- |
-| Base | `http://localhost:8096` en local · producción: `https://hmindexer-production.up.railway.app` |
+| Base | `http://localhost:8096` en local · producción: `https://jt-indexer-production.up.railway.app` |
 | Cuenta | `GET /api/account/:user` |
 | Posiciones abiertas | `GET /api/positions/:user` |
 | Vista previa de cierre | `GET /api/preview/:positionId` |

@@ -6,14 +6,14 @@ Actualizado el 20/10/2026. Robinhood Chain (chain id 4663).
 
 | Servicio | URL | Para qué |
 | --- | --- | --- |
-| Precios | `https://hmprices-production.up.railway.app` | Websocket de Pyth (`wss://`), `/prices`, `/history` |
-| Relayer | `https://hmrelayer-production.up.railway.app` | `/config`, órdenes (`/intent`) y acciones con firma (`/action`) |
-| API | `https://hmindexer-production.up.railway.app` | Cuenta, posiciones, historial, mercados, stats, ranking |
+| Precios | `https://jt-prices-production.up.railway.app` | Websocket de Pyth (`wss://`), `/prices`, `/history` |
+| Relayer | `https://jt-relayer-production.up.railway.app` | `/config`, órdenes (`/intent`) y acciones con firma (`/action`) |
+| API | `https://jt-indexer-production.up.railway.app` | Cuenta, posiciones, historial, mercados, stats, ranking |
 
 ```sh
-VITE_PRICES_URL=https://hmprices-production.up.railway.app
-VITE_RELAYER_URL=https://hmrelayer-production.up.railway.app
-VITE_API_URL=https://hmindexer-production.up.railway.app
+VITE_PRICES_URL=https://jt-prices-production.up.railway.app
+VITE_RELAYER_URL=https://jt-relayer-production.up.railway.app
+VITE_API_URL=https://jt-indexer-production.up.railway.app
 ```
 
 > `VITE_*` se hornea en el build: si cambia, hay que redeployar el front. La URL tiene que llevar `https://`.
@@ -34,7 +34,7 @@ Al arrancar, pedir `GET {RELAYER}/config`. Trae:
 
 ## 2. Precios en vivo
 
-- Websocket `wss://hmprices-production.up.railway.app`: llega un `snapshot` al conectar y un `price` por cada precio nuevo. **Reconectar siempre** (reintentar a 1 s).
+- Websocket `wss://jt-prices-production.up.railway.app`: llega un `snapshot` al conectar y un `price` por cada precio nuevo. **Reconectar siempre** (reintentar a 1 s).
 - Precio real = `price × 10^expo`.
   - Para cuentas que tengan que coincidir con el contrato (PnL, liquidación, `priceLimit`), usar `BigInt(price)`.
   - `usd` es solo para mostrar.

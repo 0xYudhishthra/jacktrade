@@ -6,7 +6,7 @@ Two tabs, **Positions** (best closed trades) and **Accounts** (ranked traders), 
 
 | Environment | URL |
 | --- | --- |
-| Production | `https://hmindexer-production.up.railway.app` |
+| Production | `https://jt-indexer-production.up.railway.app` |
 | Local fork | `http://localhost:8096` (`NETWORK=fork pnpm indexer`) |
 
 ## Conventions

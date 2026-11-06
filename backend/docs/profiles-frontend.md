@@ -6,7 +6,7 @@ Wallet-linked public profiles with a unique, editable `username`. The wallet is 
 
 | Environment | URL |
 | --- | --- |
-| Production | `https://hmindexer-production.up.railway.app` |
+| Production | `https://jt-indexer-production.up.railway.app` |
 | Local fork | `http://localhost:8096` (`NETWORK=fork pnpm indexer`) |
 
 Same server as the rest of the read API (`/api/account`, `/api/positions`, `/api/leaderboard`…).
@@ -90,7 +90,7 @@ Response `200`: the updated profile (same shape as `GET`). Setting the same user
 ## Example (viem)
 
 ```js
-const API = import.meta.env.VITE_API_URL; // https://hmindexer-production.up.railway.app
+const API = import.meta.env.VITE_API_URL; // https://jt-indexer-production.up.railway.app
 
 async function setUsername(walletClient, wallet, username) {
   const ch = await fetch(`${API}/api/profile/challenge`, {

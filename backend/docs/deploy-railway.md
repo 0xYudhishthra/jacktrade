@@ -20,7 +20,7 @@ En cada servicio, en **Settings**:
    - **Config-as-code → Railway Config File:** el path de la tabla.
    - **Deploy → Custom Start Command:** `pnpm prices:server`, `pnpm relayer`, `pnpm liquidator`, `pnpm keepers` o `pnpm indexer`. Es lo que usamos en el primer deploy.
    - Ninguna de las dos: `scripts/start.sh` elige solo por el nombre del servicio (`RAILWAY_SERVICE_NAME`, por ejemplo `@hm/liquidator`) o por la variable `SERVICE`.
-3. **Networking:** generar dominio solo en prices, relayer e indexer. Hoy: prices `hmprices-production.up.railway.app`, relayer `hmrelayer-production.up.railway.app`, indexer `hmindexer-production.up.railway.app` (con Postgres: `DATABASE_URL=${{Postgres.DATABASE_URL}}`).
+3. **Networking:** generar dominio solo en prices, relayer e indexer. Hoy: prices `jt-prices-production.up.railway.app`, relayer `jt-relayer-production.up.railway.app`, indexer `jt-indexer-production.up.railway.app` (con Postgres: `DATABASE_URL=${{Postgres.DATABASE_URL}}`).
 4. **Watch paths:** cada servicio mira su carpeta y las comunes (`/shared/**`, `/prices/**` si la usa, `/Dockerfile`, `/.dockerignore`, `/package.json`, `/pnpm-lock.yaml`, `/pnpm-workspace.yaml`, `/tsconfig.json`, `/scripts/start.sh`, `/railway/**`). Railway los había puesto solo en la carpeta del servicio, y saltaba (SKIPPED) los commits que tocaban solo `shared/`: así no llegaron las alertas en el primer push.
 5. **Deploys:** branch `main`, con deploy automático en cada push. Si no lo toma, en Deployments usar **Cmd+K → "Deploy Latest Commit"**. "Redeploy" sobre un deploy viejo reusa ese commit.
 

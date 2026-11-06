@@ -116,9 +116,9 @@
         <div class="table-wrap"><table>
           <thead><tr><th>Service</th><th>Production URL</th><th>What it does</th><th>Local (fork)</th></tr></thead>
           <tbody>
-            <tr><td><b>Indexer API</b></td><td><code>https://hmindexer-production.up.railway.app</code></td><td>Accounts, positions, history, markets, stats, charts, leaderboard, profiles, token</td><td><code>http://localhost:8096</code></td></tr>
-            <tr><td><b>Relayer</b></td><td><code>https://hmrelayer-production.up.railway.app</code></td><td>Config for signing, open/close intents, wallet actions (deposit, withdraw, session keys, staking)</td><td><code>http://localhost:8091</code></td></tr>
-            <tr><td><b>Prices</b></td><td><code>https://hmprices-production.up.railway.app</code></td><td>Live Pyth prices (websocket), candles and ticks, SPY and TSLA previews</td><td><code>http://localhost:8090</code></td></tr>
+            <tr><td><b>Indexer API</b></td><td><code>https://jt-indexer-production.up.railway.app</code></td><td>Accounts, positions, history, markets, stats, charts, leaderboard, profiles, token</td><td><code>http://localhost:8096</code></td></tr>
+            <tr><td><b>Relayer</b></td><td><code>https://jt-relayer-production.up.railway.app</code></td><td>Config for signing, open/close intents, wallet actions (deposit, withdraw, session keys, staking)</td><td><code>http://localhost:8091</code></td></tr>
+            <tr><td><b>Prices</b></td><td><code>https://jt-prices-production.up.railway.app</code></td><td>Live Pyth prices (websocket), candles and ticks, SPY and TSLA previews</td><td><code>http://localhost:8090</code></td></tr>
           </tbody>
         </table></div>
         <div class="note" id="status-note"><strong>Production status.</strong> All endpoints are live. Trading opens when the contracts team lists the markets on-chain (<code>configure.ts</code>) and the relayer wallet has ETH and its role; until then <code>/api/markets</code> shows <code>listed: false</code>, the relayer's <code>/live</code> answers 503 and every list is empty. Empty lists are real data, not errors.</div>
@@ -191,9 +191,9 @@
 </div>
 
 <script>
-const API = "https://hmindexer-production.up.railway.app";
-const RELAYER = "https://hmrelayer-production.up.railway.app";
-const PRICES = "https://hmprices-production.up.railway.app";
+const API = "https://jt-indexer-production.up.railway.app";
+const RELAYER = "https://jt-relayer-production.up.railway.app";
+const PRICES = "https://jt-prices-production.up.railway.app";
 const NOW = Math.floor(Date.now() / 1000);
 // "Try it" only where the page can reach the API (served by the backend itself, or a local copy). Inside a sandbox
 // that blocks requests to other hosts the buttons would always fail, so they are left out there.
