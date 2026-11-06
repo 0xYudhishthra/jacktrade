@@ -12,6 +12,7 @@ import { pointsLeaderboard, pointsOf } from "./points.ts";
 import { buildServer } from "./tools.ts";
 import { syncBets } from "./trading.ts";
 import { startTriggerWatcher } from "./triggers.ts";
+import { startPointsSync } from "./pointsSync.ts";
 import * as up from "./upstream.ts";
 
 assertConfig();
@@ -201,6 +202,7 @@ if (existsSync(join(webDist, "index.html"))) {
 }
 
 startTriggerWatcher(store);
+startPointsSync();
 
 app.listen(config.port, () => {
   console.log(`JackTrade connector on :${config.port}`);

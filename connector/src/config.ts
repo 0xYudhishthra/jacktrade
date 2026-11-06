@@ -22,6 +22,10 @@ export const config = {
   explorerUrl: trim(env.EXPLORER_URL ?? ""),
   flashApiKey: env.FLASH_API_KEY ?? "",
   flashUrl: trim(env.FLASH_URL ?? "https://flash.definitive.fi/v1"),
+  /** JackTradePoints contract on Robinhood Chain (optional). */
+  pointsAddress: env.POINTS_ADDRESS ?? "",
+  /** Private key allowed to call JackTradePoints.sync (optional; enables the sync job). */
+  pointsSyncerKey: env.POINTS_SYNCER_KEY ?? "",
 };
 
 export function txLink(hash: string | null | undefined): string | null {
