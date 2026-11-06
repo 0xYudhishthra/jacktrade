@@ -1,0 +1,256 @@
+/* Hackathon addition (ETHGlobal Mumbai 2026): styles for the Grok pages (Connect Grok, Grok bets, Points, Make it
+   real). Built on the exchange UI's panels, buttons and tables; only the pieces it doesn't have live here. */
+.jt-grok {
+  display: grid;
+  gap: 14px;
+  padding: 0 0 24px;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+}
+.jt-grok p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+.jt-grok .pm-panel-body > * + * {
+  margin-top: 10px;
+}
+.jt-mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.92em;
+}
+.jt-selectable {
+  user-select: all;
+  word-break: break-all;
+}
+.jt-muted {
+  opacity: 0.68;
+}
+.jt-small {
+  font-size: 12px;
+}
+.jt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.jt-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.jt-alert {
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.jt-alert-error {
+  color: var(--loss-red, #c85c67);
+  background: color-mix(in srgb, var(--loss-red, #c85c67) 8%, transparent);
+}
+.jt-alert-warn {
+  color: #b7791f;
+  background: color-mix(in srgb, #b7791f 8%, transparent);
+}
+.jt-alert-ok {
+  color: var(--profit-green, #2d9562);
+  background: color-mix(in srgb, var(--profit-green, #2d9562) 8%, transparent);
+}
+.jt-ok {
+  color: var(--profit-green, #2d9562);
+}
+
+/* Connect Grok steps */
+.jt-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start !important;
+}
+.jt-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+.jt-step-todo {
+  opacity: 0.5;
+}
+.jt-step-done .jt-step-n {
+  background: var(--profit-green, #2d9562);
+  border-color: var(--profit-green, #2d9562);
+  color: #fff;
+}
+.jt-step-error .jt-step-n {
+  border-color: var(--loss-red, #c85c67);
+  color: var(--loss-red, #c85c67);
+}
+.jt-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px 14px;
+  align-items: end;
+}
+.jt-form .pm-field input,
+.jt-input {
+  width: 100%;
+  min-width: 0;
+}
+.jt-copy {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.jt-copy code,
+.jt-copy input {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 6px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  word-break: break-all;
+  background: transparent;
+  color: inherit;
+}
+.jt-howto {
+  margin: 6px 0;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+.jt-safety {
+  font-weight: 600;
+}
+
+/* Key/value grid */
+.jt-kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+.jt-kv div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.jt-kv dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+}
+.jt-kv dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Grok bets feed */
+.jt-bets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.jt-bet {
+  display: grid;
+  gap: 10px;
+}
+.jt-bet-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.jt-bet-market {
+  font-weight: 700;
+  font-size: 16px;
+}
+.jt-bet-time {
+  margin-left: auto;
+}
+.jt-bet-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.jt-side {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+}
+.jt-grok-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: #fff;
+  background: #171923;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+[data-theme="dark"] .jt-grok-badge {
+  color: #171923;
+  background: #e8edf2;
+}
+
+/* Make it real */
+.jt-exec-log {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.jt-exec-log li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.jt-exec-dot {
+  width: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+.jt-exec-done .jt-exec-dot {
+  color: var(--profit-green, #2d9562);
+}
+.jt-exec-error .jt-exec-dot {
+  color: var(--loss-red, #c85c67);
+}
+.jt-quote {
+  border: 1px dashed color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+.jt-cta {
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .jt-bets {
+    grid-template-columns: 1fr;
+  }
+}
