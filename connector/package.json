@@ -1,9 +1,9 @@
 {
-  "name": "jacktrade-grok-connector",
+  "name": "jacktrade-connector",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Remote MCP server that lets Grok bet against the house",
+  "description": "JackTrade Grok connector: remote MCP server for betting against the house",
   "engines": {
     "node": ">=22.18"
   },
