@@ -1,93 +1,47 @@
 # Submission copy
 
-## Short description (max 100 characters)
+Plain sentences, no colons, written to paste straight into the ETHGlobal form.
 
-Let Grok trade the news: leveraged bets on stock tokens from inside the chat, against the house.
+## Short description
 
-## Description (min 280 characters)
+Grok reads the news and places leveraged stock token bets for you on JackTrade, right in the chat
 
-Millions of people already ask Grok what the news and X mean for a stock. Then they leave
-Grok to trade, and the moment is gone. JackTrade puts the trade inside the conversation.
+## Description
 
-JackTrade is a bet-against-the-house exchange on Robinhood Chain: you go long or short on
-stocks and crypto with up to 1000x leverage, and the house takes the other side. This
-project turns it into a rail for AI agents. Add the JackTrade connector to Grok once
-(grok.com → Connectors → Custom), and Grok can check the house, quote a bet, place it
-onchain, track it and cash out, all from the chat where you did your research.
+Lots of people already ask Grok what the news means for a stock before they trade. The problem is they then have to leave Grok, open another app and place the trade themselves, and by then the moment has usually passed. JackTrade lets Grok do it for them in the same chat.
 
-Picture a retail trader in Kuala Lumpur. US stock tokens are available to them onchain,
-but leverage isn't. They ask Grok what tariff headlines mean for Tesla, Grok reads X and
-the news, and they say "bet $20 long TSLA at 50x". Grok places it on JackTrade in seconds.
+JackTrade is a bet against the house exchange on Robinhood Chain. You go long or short on stock tokens and crypto with leverage and the house takes the other side. We built a Grok connector on top of it. You add it to Grok once and then Grok can check the house, quote a bet, place it onchain, track it and cash out. You can also ask Grok to watch a level, like shorting TSLA at 20x with $20 if it drops below $350, and JackTrade fires the bet the moment the price crosses even if you are not around.
 
-Safety is built in. Grok trades with a session key that can open and close bets but can
-never withdraw funds, and the user sets its limits: max bet, max leverage, and a 24-hour
-risk budget. They can revoke it from their wallet at any time.
+Think of a retail trader in Kuala Lumpur who follows Tesla on X. They can hold US stock tokens onchain but there is no simple way to use leverage on them. With JackTrade they ask Grok what the tariff headlines mean, make up their mind, and Grok places the trade in seconds.
 
-Every Grok bet appears in a public feed. Anyone can follow an agent's call and hit "Make it
-real" to copy it into the real token with a Definitive Flash advanced order: a market buy
-with an attached take-profit / stop-loss bracket for longs, or a limit buy for shorts.
+Grok never gets access to your money. It trades with a session key that can open and close bets but can never withdraw, and you set the limits for bet size, leverage and how much it can risk in a day. You can revoke it from your wallet at any time.
 
-A Chainlink CRE workflow, "Proof of House", reads the house's bankroll and payout queue
-straight from Robinhood Chain, reaches consensus, and writes an attestation onchain. Grok
-reads it before every bet, so users know the house is good for it.
+Every Grok bet shows up in a public feed in the JackTrade app. Anyone can follow a call and hit Make it real to copy it into the actual stock token with a Definitive Flash order, with take profit and stop loss attached so the copy is protected from the start.
 
-Every bet earns JackTrade Points: 10 points per $100 of notional, win or lose.
+Every trade also earns JackTrade Points, 10 points for every $100 of notional whether you win or lose, so active traders are rewarded ahead of a future token launch.
 
-## How it's made (min 280 characters)
+## How it's made
 
-Three new pieces sit on top of JackTrade's exchange contracts, which were already live on
-Robinhood Chain mainnet (Continuity Track; no exchange source is in this repo).
+JackTrade's exchange contracts were already live on Robinhood Chain mainnet before the hackathon, so this is a Continuity Track project. Everything described here was built during the event.
 
-**Grok connector (`connector/`).** A remote MCP server in Node 24 + TypeScript, run directly
-with Node's built-in type stripping (no build step), Express and the official MCP SDK in
-stateless Streamable HTTP mode. Each user gets a secret connector URL; behind it is an
-agent key generated server-side and stored AES-256-GCM encrypted in SQLite (`node:sqlite`).
-The user registers that key on the exchange's SessionKeyManager with one gasless EIP-712
-signature, which the exchange's relayer submits. When Grok calls `place_bet`, the connector
-reads the EIP-712 domain, types and markets live from the relayer's public `/config`,
-signs an `Open` intent with viem (chain-time `signedAt`, random nonce, slippage-bounded
-WAD price limit), posts it to the relayer and polls until it executes onchain. Caps are
-enforced before signing, because session keys have no onchain limits. Hacky but notable:
-the connector also serves the web app on the same origin, so the whole product is one
-Docker image and one URL.
+The Grok connector is a remote MCP server written in TypeScript on Node 24 with Express and the official MCP SDK. Each user gets a private connector URL that they paste into Grok's custom connectors. Behind that URL sits an agent key that we generate on the server and keep encrypted in SQLite. The user registers that key with the exchange's session key manager using one gasless signature from their wallet. When Grok calls place_bet, the connector pulls the signing format and market list from the exchange's public relayer, checks the user's limits, signs the order with viem and waits until it lands onchain. Session keys have no onchain limits, so we enforce the caps ourselves before anything gets signed.
 
-**Make it real with Definitive Flash (`web/`).** Vite + React + viem, no wallet SDK. For a
-long bet we request a Flash `market` quote with `attachedBracket` (take-profit and
-stop-loss derived from the bet's liquidation distance) on the real Robinhood Chain token
-(TSLA and NVDA stock tokens, WETH for ETH). For a short we place a `limit` buy at the
-target. The user approves (ERC-20 or Permit2, whichever the quote returns), signs the
-entry and bracket typed data, and Flash executes onchain. The Flash API key never reaches
-the browser: the connector proxies `/v1/quote`, `/v1/order` and `/v1/orders`.
+Conditional bets run on a small watcher inside the connector. It checks the exchange's Pyth prices every few seconds and fires an armed bet through the exact same path as a manual one, so the same limits always apply.
 
-**Proof of House with Chainlink CRE (`cre/`).** A TypeScript CRE workflow on a cron
-trigger. Robinhood Chain isn't a CRE-supported chain, so the workflow uses the HTTP
-capability to send one batched JSON-RPC `eth_call` to the Exchange
-(`lpBankrollAvailable`, `totalQueued`, `lpCash`, `totalMargin`) and fetches open interest
-from the indexer. Nodes reach consensus, and the report is written through the CRE
-forwarder to our `HouseAttestation` consumer contract (Foundry, 5 tests) on Ethereum
-Sepolia. The connector's `house_status` tool reads `latest()` back, so Grok quotes a
-Chainlink-attested bankroll before you bet.
+Definitive Flash powers Make it real. A long bet turns into a Flash market order with an attached bracket for take profit and stop loss, set from how far the bet was from liquidation. A short bet turns into a limit buy below the current price. The user approves and signs in their own wallet, Flash routes and executes the order onchain on Robinhood Chain, and the real TSLA, NVDA or WETH lands in their wallet. The Flash API key stays on our server behind a small proxy so it never reaches the browser.
 
-**JackTrade Points** are computed from onchain notional (via the indexer), 10 per $100,
-win or lose, so anyone can recompute them.
+The web app is the existing JackTrade trading UI extended with pages for connecting Grok, the Grok bets feed, points and Make it real. Points are tracked by a new non transferable JackTrade Points contract on Robinhood Chain that our server keeps in sync with each trader's onchain volume.
 
-## Partner prize notes
+The whole thing ships as one Docker image on Railway because the connector also serves the web app from the same origin.
 
-**Definitive:** Flash powers "Make it real": `market` + `attachedBracket` (TP/SL) and
-`limit` orders on Robinhood Chain stock tokens and WETH, signed in the user's wallet and
-executed onchain by Flash. Social: a public feed of agent (Grok) bets that anyone can follow
-and copy with one Flash order; Grok hands out the copy link itself (`make_it_real` tool).
+## Definitive Flash, how we used it
 
-**Chainlink:** CRE workflow (cron → HTTP JSON-RPC reads of a non-CRE chain + HTTP API →
-consensus → EVM write to a consumer on Sepolia). It is the product's trust layer: the
-connector's `house_status` tool reads the attestation and Grok quotes it before betting.
+We use Flash so anyone can copy a Grok bet into the real stock token on Robinhood Chain with one order, using market orders with an attached take profit and stop loss bracket for longs and limit orders for shorts.
 
 ## X post
 
-Grok can now trade the news.
+Grok can now trade the news for you.
 
-Ask Grok what the headlines mean for $TSLA, say "bet $20 long at 50x", and JackTrade places
-it onchain from the chat. Followers can make it real with one @DefinitiveFi Flash order,
-and a @chainlink CRE workflow proves the house can pay.
+Ask Grok what the headlines mean for $TSLA, tell it to bet $20 long at 50x, and JackTrade places it onchain right from the chat. Anyone following can copy the call into the real stock with one @DefinitiveFi Flash order.
 
 Built at @ETHGlobal Mumbai. [video] [repo]
