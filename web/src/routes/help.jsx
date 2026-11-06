@@ -16,13 +16,12 @@ const LAUNCH = {
 };
 const EXPLORER = EXPLORER_URL ? `${EXPLORER_URL}/address/` : "";
 const CONTRACTS = [
-  ["Exchange", "0x698cf1a9220f89ccf6ee75269086288a623ede54", "Balances, positions, settlement, the house pool and the payout queue."],
-  ["BatchExecutor", "0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4", "Executes signed orders submitted by the relayer, with the Pyth price update."],
-  ["SessionKeyManager", "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29", "One-click trading keys: register, expire, revoke."],
-  ["PriceOracle", "0xaed4385e882c823e202d8e34f08dd7cda55e73d9", "Pyth adapter: freshness and confidence checks."],
-  ["Token", "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76", "HOUSE, the ERC-20 minted on trader losses."],
-  ["Tokenomics", "0xe7ac6846d9c5ffa92f3e45dd50335c4fe478633d", "The HOUSE emission curve."],
-  ["Staking", "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd", "HOUSE staking and USDG rewards."],
+  ["Exchange", "0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c", "Balances, positions, settlement, the house pool and the payout queue."],
+  ["BatchExecutor", "0x9221254c99f4b15886b204116f979acebdcddec2", "Executes signed orders submitted by the relayer, with the Pyth price update."],
+  ["SessionKeyManager", "0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af", "One-click trading keys: register, expire, revoke."],
+  ["PriceOracle", "0x35367e32bf94d9abe8af29a38323536b876ae51f", "Pyth adapter: freshness and confidence checks."],
+  ["JackTradePoints", "0xdc4d5b817C3Df2fB19cE5856b3967FbFA1199Ed7", "JTP points: 10 per $100 of notional traded, win or lose. Non-transferable."],
+  ["NoMintTokenomics", "0x506b4124d2f63b83c147b026ebc7fa004683ddea", "Losses mint nothing; points replace lose-to-earn."],
   ["USDG", "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168", "Collateral (Paxos Global Dollar, 6 decimals)."],
 ];
 const NAV = [
