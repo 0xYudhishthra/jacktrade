@@ -1,0 +1,635 @@
+@font-face {
+  font-family:"JetBrains Mono";
+  src:url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+  font-weight:100 800;
+  font-display:swap;
+}
+@font-face {
+  font-family:Inter;
+  src:url("/fonts/inter-latin.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+}
+
+/* 8012 remains the source of components and finishes. Only the desk geometry changes. */
+.pd-base.jt-nocturne .jt-workstation.jt-focus .jt-stage {
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:0;
+}
+.pd-base .jt-focus .jt-app-window {
+  gap:3px;
+}
+.pd-base.jt-nocturne .jt-workstation .pm-header {
+  border-radius:0;
+  box-shadow:inset 0 1px #ffffffb0;
+  border-left:0;
+  border-right:0;
+}
+.pd-base .jt-eastern-caption {
+  display:none;
+}
+.pd-base .pd-trade .jt-focus-layout {
+  grid-template-columns:minmax(0, 1fr) 336px;
+  gap:3px;
+  padding:0 3px;
+  align-items:stretch;
+  height:calc(100dvh - 280px);
+  min-height:600px;
+}
+.pd-base .pd-trade .jt-focus-chart {
+  height:100%;
+  min-height:0;
+}
+.pd-base .pd-trade .jt-focus-chart-column,
+.pd-base .pd-trade .jt-focus-order {
+  min-height:0;
+}
+.pd-base .pd-trade .jt-focus-order-entry {
+  height:100%;
+  display:flex;
+  min-height:0;
+}
+.pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
+  height:100%;
+  min-height:0;
+  overflow:auto;
+  box-shadow:inset 0 1px #ffffffb0;
+}
+.pd-base .pd-trade .pm-original-ticket .jt-focus-order-summary {
+  margin-top:auto;
+  padding-bottom:14px;
+}
+.pd-base .pd-trade .jt-positions-panel {
+  min-height:200px;
+  border-radius:0;
+  box-shadow:none;
+  margin:0 3px;
+}
+.pd-base .pd-trade .jt-positions-panel > div:first-child {
+  min-height:44px;
+  padding:6px 14px;
+  border-bottom-color:#dce3ee !important;
+  flex-wrap:nowrap;
+}
+.pd-base .pd-trade .jt-positions-panel > div:last-child {
+  min-height:150px;
+}
+.pd-base .pd-trade .pm-integrated-chart {
+  box-shadow:none;
+}
+.pd-base .pm-dashboard-content {
+  padding:0 3px 12px;
+  gap:4px;
+}
+.pd-base
+  .pm-dashboard-content:is(.pm-overview-grid, .pm-two-columns, .pm-summary-stack, .pm-main-stack, .pm-podium) {
+  gap:4px;
+}
+.pd-base .pm-overview-grid {
+  grid-template-columns:minmax(290px, 25%) minmax(0, 1fr);
+  align-items:stretch;
+}
+.pd-base .pm-overview-grid > .pm-main-stack > .pm-panel:first-child {
+  flex:1;
+}
+.pd-base .pm-overview-grid > .pm-main-stack > .pm-panel:first-child .pm-plot {
+  min-height:240px;
+}
+
+.pd-activity {
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:1;
+  min-width:100px;
+  height:28px;
+  overflow:hidden;
+  margin:0 18px;
+}
+.pd-activity-watermark {
+  position:absolute;
+  inset:0;
+  white-space:nowrap;
+  font-size:11px;
+  letter-spacing:0.16em;
+  color:#171923;
+  display:flex;
+  align-items:center;
+  gap:36px;
+  pointer-events:none;
+}
+.pd-activity-track {
+  display:flex;
+  width:max-content;
+  flex-shrink:0;
+  animation:pd-tape 50s linear infinite;
+  position:relative;
+}
+.pd-activity-track[data-paused="true"] {
+  animation-play-state:paused;
+}
+.pd-activity-group {
+  display:flex;
+  gap:14px;
+  padding-right:14px;
+  flex-shrink:0;
+}
+.pd-activity-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
+  padding:4px 9px;
+  border:1px solid #dce3ee;
+  background:#f4f7fc;
+  font-size:11px;
+}
+.pd-activity-pill.pm-up {
+  border-color:#bcd7cb;
+  background:#edf5f1;
+}
+.pd-activity-pill.pm-down {
+  border-color:#e5c8cd;
+  background:#f4f7fc;
+}
+.pd-activity-pill b {
+  font-size:10px;
+  color:#687080;
+  font-weight:500;
+}
+.pd-activity-pause {
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:0;
+  z-index:1;
+  background:#ffffff;
+  padding:6px;
+  color:#254a87;
+  font-size:9px;
+}
+@keyframes pd-tape {
+  to {
+    transform:translateX(-50%);
+  }
+}
+
+/* The original sign-in window beside a scaled view of the original terminal. */
+.pd-base .jt-signin.pd-landing {
+  display:grid;
+  grid-template-columns:minmax(350px, 440px) minmax(0, 1fr);
+  gap:clamp(32px, 5vw, 88px);
+  padding:56px clamp(28px, 4.5vw, 80px);
+  align-items:center;
+}
+.pd-landing .jt-login-window {
+  width:100%;
+  justify-self:center;
+}
+.pd-landing .jt-login-body {
+  padding:24px;
+}
+.pd-terminal-preview {
+  position:relative;
+  min-width:0;
+  width:100%;
+  aspect-ratio:1400/860;
+  border:1px solid #dce3ee;
+  box-shadow:0 20px 65px #254a8710;
+  overflow:hidden;
+  isolation:isolate;
+  border-radius:2px;
+  background:#ffffff;
+  z-index:1;
+}
+.pd-terminal-preview-inner {
+  position:absolute;
+  inset:0 auto auto 0;
+  width:1400px;
+  height:860px;
+  transform-origin:top left;
+  pointer-events:none;
+}
+.pd-terminal-preview-inner .jt-wallpaper {
+  position:absolute;
+}
+.pd-terminal-preview-inner .jt-stage {
+  width:1400px !important;
+  max-width:none !important;
+  padding:0 !important;
+}
+.pd-base .pd-terminal-preview-inner .jt-focus-layout {
+  height:610px;
+  min-height:0;
+  grid-template-columns:minmax(0, 1fr) 336px;
+}
+.pd-terminal-preview-inner .pm-header {
+  flex-wrap:nowrap !important;
+  height:56px;
+  min-height:56px;
+}
+.pd-terminal-preview-inner .pm-header .jt-main-nav {
+  order:0 !important;
+  width:auto !important;
+  margin-left:10px !important;
+  flex-wrap:nowrap !important;
+}
+.pd-terminal-preview-inner .jt-focus-chart {
+  height:100% !important;
+  min-height:0 !important;
+}
+.pd-terminal-preview-link {
+  position:absolute;
+  inset:0;
+  z-index:2;
+}
+.pd-terminal-preview-link:focus-visible {
+  outline:2px solid #dce3ee;
+  outline-offset:-3px;
+}
+@media (max-width:1100px) {
+  .pd-base .pd-trade .jt-focus-layout {
+    grid-template-columns:minmax(0, 1fr) 310px;
+  }
+  .pd-base .jt-signin.pd-landing {
+    grid-template-columns:minmax(0, 1fr);
+    max-width:780px;
+    margin:auto;
+    gap:40px;
+    padding:48px 24px;
+  }
+  .pd-landing .jt-login-window {
+    max-width:478px;
+  }
+}
+@media (max-width:800px) {
+  .pd-base .pd-trade .jt-focus-layout {
+    height:auto;
+    min-height:0;
+    grid-template-columns:minmax(0, 1fr);
+  }
+  .pd-base .pd-trade .jt-focus-chart {
+    height:440px;
+    min-height:0;
+  }
+  .pd-base .pd-trade .jt-focus-order-entry,
+  .pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
+    height:auto;
+    overflow:visible;
+  }
+  .pd-base .pd-trade .pm-original-ticket .jt-focus-order-summary {
+    margin-top:0;
+  }
+  .pd-base .pm-overview-grid {
+    grid-template-columns:minmax(0, 1fr);
+  }
+  .pd-base .pd-trade .jt-positions-panel > div:first-child {
+    flex-wrap:wrap;
+  }
+  .pd-activity {
+    order:3;
+    flex-basis:100%;
+    margin:0;
+  }
+  .pd-base .pd-terminal-preview-inner .jt-focus-layout {
+    grid-template-columns:minmax(0, 1fr) 336px;
+    height:610px;
+  }
+  .pd-base .pd-terminal-preview-inner .jt-focus-chart {
+    height:100%;
+  }
+  .pd-base .pd-terminal-preview-inner .jt-focus-order-entry,
+  .pd-base .pd-terminal-preview-inner .jt-focus-order-entry > .jt-panel {
+    height:100%;
+  }
+  .pd-terminal-preview-inner .jt-positions-panel > div:first-child {
+    flex-wrap:nowrap !important;
+  }
+  .pd-terminal-preview-inner .pd-activity {
+    order:0;
+    flex-basis:auto;
+    margin:0 18px;
+  }
+}
+
+/* One continuous workspace:surfaces fill the viewport, separators belong to the grid. */
+.pd-base .jt-workstation {
+  background:#ffffff;
+}
+.pd-base .jt-focus .jt-app-window {
+  gap:0;
+}
+.pd-base.jt-nocturne
+  .pm-workstation:is(.jt-panel, .pm-profile-hero, .pm-metrics-grid, .pm-ranking-board) {
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:#ffffff;
+}
+.pd-base .pd-trade .jt-focus-layout {
+  gap:1px;
+  padding:0;
+  background:#f4f7fc;
+}
+.pd-base .pd-trade .jt-focus-order-entry > .jt-panel {
+  border:0;
+  box-shadow:none;
+}
+.pd-base .pd-trade .jt-positions-panel {
+  margin:0;
+  border:0;
+  border-top:1px solid #dce3ee;
+  min-height:220px;
+}
+.pd-base .pm-dashboard-content {
+  padding:0;
+  gap:0;
+}
+.pd-base .pm-dashboard-content .pm-overview-grid {
+  gap:1px;
+  background:#f4f7fc;
+}
+.pd-base .pm-dashboard-content:is(.pm-summary-stack, .pm-main-stack) {
+  gap:0;
+  background:#ffffff;
+  min-width:0;
+}
+.pd-base
+  .pm-dashboard-content:is(.pm-summary-stack, .pm-main-stack)
+  > :is(.jt-panel, .pm-profile-hero, .pm-metrics-grid) {
+  border:0;
+  border-bottom:1px solid #dce3ee;
+  border-radius:0;
+  box-shadow:none;
+  background:#ffffff;
+}
+.pd-base .pm-dashboard-content .pm-summary-stack {
+  border-right:1px solid #dce3ee;
+}
+.pd-base .pm-dashboard-content .pm-metric {
+  border-radius:0;
+  box-shadow:none;
+  background:transparent;
+}
+.pd-base .pm-dashboard-content > :is(.jt-panel, .pm-two-columns) {
+  border:0;
+  border-top:1px solid #dce3ee;
+}
+.pd-base .pm-dashboard-content .pm-two-columns {
+  gap:0;
+  background:#ffffff;
+  align-items:stretch;
+}
+.pd-base .pm-dashboard-content .pm-two-columns > * + * {
+  border-left:1px solid #dce3ee;
+}
+.pd-base .pm-dashboard-content .pm-two-columns > .jt-panel {
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:#ffffff;
+}
+.pd-base .pm-dashboard-content .pm-podium {
+  gap:0;
+  background:#ffffff;
+}
+.pd-base .pm-dashboard-content .pm-podium-card {
+  border:0;
+  border-radius:0;
+  border-right:1px solid #dce3ee;
+  box-shadow:none;
+  background:transparent;
+}
+.pd-base .pm-dashboard-content .pm-ranking-board {
+  min-height:calc(100dvh - 44px);
+}
+
+/* 8014 navigation dimensions and hierarchy; the 8012 logo keeps its own type. */
+.pd-header {
+  display:flex;
+  align-items:center;
+  gap:0;
+  height:44px;
+  padding:0 20px;
+  border-bottom:1px solid #dce3ee;
+  background:linear-gradient(#f4f7fc, #ffffff);
+  position:relative;
+  z-index:40;
+  font:500 12px Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+.pd-header-brand {
+  flex:none;
+  margin-right:22px;
+  line-height:1;
+}
+.pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
+  font-size:20px !important;
+  letter-spacing:-1px;
+}
+.pd-base .pd-header-brand .jt-brand-wordmark:after {
+  content:none;
+}
+.pd-header-nav {
+  display:flex;
+  align-items:stretch;
+  height:100%;
+  gap:4px;
+  flex-shrink:0;
+}
+.pd-header-nav > a {
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  border-bottom:2px solid transparent;
+  color:#687080;
+}
+.pd-header-nav > a[aria-current="page"] {
+  color:#171923;
+  border-bottom-color:#dce3ee;
+  font-weight:600;
+}
+.pd-header-nav > a:hover {
+  color:#171923;
+}
+.pd-header-nav > .pm-more {
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+}
+.pd-base.jt-nocturne .pd-header:is(button, .jt-nav-en) {
+  font-family:Inter, ui-sans-serif, system-ui, sans-serif !important;
+  text-transform:none;
+  letter-spacing:0;
+  font-size:12px;
+  font-weight:500;
+  color:#687080;
+}
+.pd-header .pm-more-toggle {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.pd-header .pm-more-links {
+  top:calc(100% + 2px);
+  left:0;
+  right:auto;
+}
+.pd-base .pd-header .pm-more-links > :is(a, button) {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  padding:10px;
+  font-size:12px;
+  color:#171923;
+}
+.pd-header .pm-more-links > :is(a, button):hover {
+  background:#f4f7fc;
+}
+.pd-header-demo {
+  font-size:8px;
+  line-height:1;
+  letter-spacing:0.06em;
+  color:#254a87;
+  border:1px solid #dce3ee;
+  padding:2px 5px;
+  margin-left:12px;
+  white-space:nowrap;
+}
+.pd-header-actions {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:30px;
+  white-space:nowrap;
+}
+.pd-header-actions button {
+  display:flex;
+  align-items:center;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding:0;
+}
+.pd-header-connected {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:12px;
+  color:#171923;
+}
+.pd-header-connected i {
+  width:6px;
+  height:6px;
+  background:var(--terminal-status-up);
+  border-radius:50%;
+}
+.pd-header:is(a, button):focus-visible {
+  outline:1px solid #dce3ee;
+  outline-offset:3px;
+}
+@media (max-width:1150px) {
+  .pd-header-actions {
+    gap:18px;
+  }
+  .pd-header-brand {
+    margin-right:14px;
+  }
+  .pd-header-nav > a {
+    padding:0 9px;
+  }
+  .pd-header-demo {
+    display:none;
+  }
+}
+@media (max-width:800px) {
+  .pd-header {
+    height:auto;
+    min-height:80px;
+    flex-wrap:wrap;
+    align-content:center;
+    gap:5px 0;
+    padding:6px 10px;
+  }
+  .pd-header-brand {
+    margin-right:0;
+  }
+  .pd-base.jt-nocturne .pd-header-brand .jt-brand-wordmark {
+    font-size:19px !important;
+  }
+  .pd-header-nav {
+    order:3;
+    width:100%;
+    height:30px;
+    justify-content:space-between;
+    gap:0;
+  }
+  .pd-header-nav > a {
+    padding:0 8px;
+    font-size:11px;
+  }
+  .pd-header-nav > .pm-more {
+    padding:0 8px;
+    flex:0 0 auto;
+  }
+  .pd-base.jt-nocturne .pd-header button,
+  .pd-header .jt-nav-en {
+    font-size:11px;
+  }
+  .pd-header-actions {
+    gap:16px;
+  }
+  .pd-header-language {
+    display:none !important;
+  }
+}
+.pd-terminal-preview-inner .pd-header {
+  height:44px;
+  min-height:44px;
+  flex-wrap:nowrap;
+  padding:0 20px;
+  gap:0;
+}
+.pd-terminal-preview-inner .pd-header-nav {
+  order:0;
+  width:auto;
+  height:100%;
+  justify-content:initial;
+  gap:4px;
+}
+.pd-terminal-preview-inner .pd-header-actions {
+  gap:30px;
+}
+
+/* One integrated bar for positions, history, standings and terminal status. */
+.pd-trade-tabs {display:flex;align-self:stretch;align-items:stretch;flex-shrink:0;gap:2px;}
+.pd-trade-tabs button {border:0;border-bottom:2px solid transparent;background:none;color:#687080;padding:0 13px;font:500 12px/1 Inter,system-ui;white-space:nowrap;cursor:pointer;}
+.pd-trade-tabs button[aria-selected="true"] {color:#171923;border-bottom-color:#dce3ee;}
+.pd-trade-tabs button:hover {color:#171923;background:#f4f7fc;}
+.pd-trade-tabs button:focus-visible {outline:1px solid #dce3ee;outline-offset:-4px;}
+.pd-trade-view-actions {display:flex;align-items:center;justify-content:space-between;padding:9px 14px;color:#687080;font:12px/1.4 Inter,system-ui;}
+.pd-trade-view-actions small {margin-left:8px;font-size:9px;color:#687080;}
+.pd-trade-view-actions a,.pd-trade-leaders td a {color:#171923;}
+.pd-trade-leaders .pm-table {min-width:620px;}
+.pd-trade-leaders .pm-table:is(th,td) {padding:7px 14px;font-family:Inter,system-ui;font-size:12px;}
+.pd-trade-leaders .pm-table th {font-size:10px;}
+.pd-trade-status {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;max-width:1060px;padding:6px 16px 12px;font:12px/1.5 Inter,system-ui;}
+.pd-trade-status>div {display:flex;justify-content:space-between;gap:20px;padding:9px 0;border-bottom:1px solid #dce3ee;}
+.pd-trade-status dt {color:#687080;}
+.pd-trade-status dd {color:#171923;text-align:right;}
+@media(max-width:800px){
+  .pd-trade-tabs {flex:1 1 100%;min-height:38px;}
+  .pd-trade-tabs button {flex:1;padding:0 8px;}
+  .pd-trade-status {grid-template-columns:minmax(0,1fr);}
+  .pd-trade-status>div {gap:10px;}
+}

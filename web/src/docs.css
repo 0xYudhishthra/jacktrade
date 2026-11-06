@@ -1,0 +1,373 @@
+/* Documentation (/help): a sidebar of sections and one long, readable article. */
+.jt-docs {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 56px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+  color: var(--theme-text);
+}
+
+.jt-docs-nav {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-right: 8px;
+}
+.jt-docs-nav > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.jt-docs-nav strong {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--theme-muted);
+  margin-bottom: 6px;
+}
+.jt-docs-nav a {
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--theme-muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-left: 2px solid transparent;
+  border-radius: 0 6px 6px 0;
+}
+.jt-docs-nav a:hover {
+  color: var(--theme-text);
+  background: var(--theme-raised);
+}
+.jt-docs-nav a[aria-current="location"] {
+  color: var(--theme-accent-strong);
+  border-left-color: var(--theme-accent);
+  background: var(--theme-raised);
+  font-weight: 500;
+}
+
+.jt-docs-body {
+  max-width: 760px;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.jt-docs-hero {
+  padding-bottom: 32px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--theme-line);
+}
+.jt-docs-hero > span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-accent);
+}
+.jt-docs-hero h1 {
+  margin: 8px 0 12px;
+  font-size: 44px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+.jt-docs-hero p {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--theme-muted);
+}
+
+.jt-docs-section {
+  padding-top: 40px;
+  scroll-margin-top: 16px;
+}
+.jt-docs-section h2 {
+  margin: 0 0 14px;
+  font-size: 26px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+.jt-docs-section h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+.jt-docs-section h2 a:hover::after {
+  content: " #";
+  color: var(--theme-faint);
+}
+.jt-docs-section p {
+  margin: 0 0 16px;
+}
+.jt-docs-body a:not(.jt-docs-cta, h2 a) {
+  color: var(--theme-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+.jt-docs-body strong {
+  font-weight: 600;
+}
+.jt-docs-muted {
+  color: var(--theme-muted);
+  font-size: 14px;
+}
+.jt-docs-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--theme-raised);
+  border: 1px solid var(--theme-line);
+}
+
+.jt-docs-points,
+.jt-docs-steps {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+.jt-docs-points {
+  list-style: disc;
+}
+.jt-docs-points li::marker {
+  color: var(--theme-accent);
+}
+.jt-docs-points li,
+.jt-docs-steps li {
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.jt-docs-steps {
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+}
+.jt-docs-steps li {
+  position: relative;
+  padding-left: 44px;
+  margin-bottom: 14px;
+}
+.jt-docs-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-accent-strong);
+  background: var(--theme-raised);
+  border: 1px solid var(--theme-line);
+}
+.jt-docs-steps.is-compact li {
+  margin-bottom: 10px;
+}
+
+.jt-docs-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--theme-accent-strong);
+  background: var(--theme-raised);
+  border: 1px solid var(--theme-control-border);
+}
+.jt-docs-cta:hover {
+  border-color: var(--theme-accent);
+}
+
+.jt-docs-note {
+  margin: 4px 0 18px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--theme-line);
+  border-left: 3px solid var(--theme-accent);
+  background: var(--theme-raised);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.jt-docs-terms {
+  margin: 0 0 18px;
+  border: 1px solid var(--theme-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.jt-docs-terms > div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+}
+.jt-docs-terms > div + div {
+  border-top: 1px solid var(--theme-line);
+}
+.jt-docs-terms dt {
+  font-weight: 600;
+}
+.jt-docs-terms dd {
+  margin: 0;
+  color: var(--theme-muted);
+}
+
+.jt-docs-table {
+  margin: 0 0 18px;
+  border: 1px solid var(--theme-line);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.jt-docs-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.jt-docs-table th,
+.jt-docs-table td {
+  padding: 11px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+.jt-docs-table thead th {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--theme-muted);
+  background: var(--theme-raised);
+  border-bottom: 1px solid var(--theme-line);
+}
+.jt-docs-table tbody tr + tr > * {
+  border-top: 1px solid var(--theme-line);
+}
+.jt-docs-table tbody th {
+  font-weight: 600;
+  width: 38%;
+}
+.jt-docs-table td:not(:first-child) {
+  font-variant-numeric: tabular-nums;
+}
+
+.jt-docs-pre,
+.jt-docs-formula pre {
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  background: var(--theme-raised);
+  border: 1px solid var(--theme-line);
+  white-space: pre;
+}
+.jt-docs-formula {
+  margin: 0 0 18px;
+  border: 1px solid var(--theme-line);
+  border-radius: 8px;
+  padding: 0 18px;
+}
+.jt-docs-formula[open] {
+  padding-bottom: 4px;
+}
+.jt-docs-formula summary,
+.jt-docs-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+}
+.jt-docs-faq {
+  border-bottom: 1px solid var(--theme-line);
+}
+.jt-docs-faq:first-of-type {
+  border-top: 1px solid var(--theme-line);
+}
+.jt-docs-faq p {
+  margin: 0 0 14px;
+  color: var(--theme-muted);
+}
+
+@media (max-width: 900px) {
+  .jt-docs {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0 16px 72px;
+  }
+  /* On narrow screens the sections become a scrollable strip pinned under the header. */
+  .jt-docs-nav {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    max-height: none;
+    flex-direction: row;
+    gap: 4px;
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 10px 16px;
+    background: var(--theme-surface);
+    border-bottom: 1px solid var(--theme-line);
+    scrollbar-width: none;
+  }
+  .jt-docs-nav > div {
+    flex-direction: row;
+    gap: 4px;
+  }
+  .jt-docs-nav strong {
+    display: none;
+  }
+  .jt-docs-nav a {
+    white-space: nowrap;
+    border-left: 0;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  .jt-docs-hero {
+    padding-top: 28px;
+  }
+  .jt-docs-hero h1 {
+    font-size: 34px;
+  }
+  .jt-docs-hero p {
+    font-size: 17px;
+  }
+  .jt-docs-section {
+    scroll-margin-top: 64px;
+  }
+  .jt-docs-section h2 {
+    font-size: 22px;
+  }
+  .jt-docs-terms > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .jt-docs-table table {
+    font-size: 14px;
+  }
+  .jt-docs-table th,
+  .jt-docs-table td {
+    padding: 10px 12px;
+  }
+}
+
+/* The app shell hides horizontal overflow, which would stop the sidebar from sticking; clip doesn't. */
+.pm-workstation:has(.jt-docs) {
+  overflow: clip visible;
+  overflow-x: clip;
+}

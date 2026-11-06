@@ -2,14 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0d10" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="JackTrade — leveraged trading on Robinhood Chain, from Grok." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>JackTrade</title>
-    <meta name="description" content="Read the news in Grok. Bet on it in the same chat." />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script>
+      try {
+        const requested = new URLSearchParams(location.search).get('theme');
+        const saved = localStorage.getItem('jacktrade.theme');
+        document.documentElement.dataset.theme = ['light', 'dark'].includes(requested) ? requested : saved === 'dark' ? 'dark' : 'light';
+      } catch { document.documentElement.dataset.theme = 'light'; }
+    </script>
+    <!-- Anti-clickjacking: with a session key, a click opens or closes a trade without a wallet prompt, so the app never
+         runs inside another site's frame. It stays hidden and tries to take over the top window. -->
+    <style id="jt-antiframe">html { display: none !important; }</style>
+    <script>
+      if (window.self === window.top) document.getElementById("jt-antiframe").remove();
+      else try { window.top.location = window.self.location.href; } catch (_) { /* sandboxed frame: stays hidden */ }
+    </script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <body class="jt-nocturne jt-eastern-violet pd-base dream-exe"><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
 </html>

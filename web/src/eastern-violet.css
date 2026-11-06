@@ -1,0 +1,150 @@
+/* Local identity study. All terminal colors and controls remain inherited. */
+@media (min-width:901px) {
+  .jt-eastern-violet .jt-wallpaper > img:first-child {
+    left:calc(8vw - 455px);
+  }
+}
+
+.jt-eastern-violet .jt-eastern-seal {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  width:25px;
+  height:25px;
+  margin-right:5px;
+  color:var(--terminal-accent);
+  border:1px solid currentColor;
+  outline:1px solid var(--terminal-border);
+  outline-offset:2px;
+  background:transparent;
+  font:20px/1 "Songti SC",
+    "Noto Sans SC",
+    "PingFang SC",
+    serif;
+  transform:rotate(-2deg);
+}
+.jt-eastern-violet .jt-wallpaper > .jt-eastern-city,
+.jt-eastern-violet .jt-signin-wallpaper > .jt-eastern-city {
+  left:auto;
+  right:-80px;
+  top:-2%;
+  width:auto;
+  height:110%;
+  z-index:2;
+  opacity:0.35;
+  mask-image:linear-gradient(90deg, transparent 65%, black 94%);
+  pointer-events:none;
+}
+.jt-eastern-caption {
+  position:fixed;
+  z-index:3;
+  right:20px;
+  top:180px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  align-items:center;
+  color:var(--terminal-muted);
+  pointer-events:none;
+}
+.jt-eastern-caption > [lang] {
+  writing-mode:vertical-rl;
+  font-family:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size:13px;
+  font-weight:400;
+  letter-spacing:0.25em;
+  padding-top:16px;
+  border-top:1px solid var(--terminal-border);
+}
+.jt-eastern-caption > span:last-child {
+  writing-mode:vertical-rl;
+  font-family:var(--font-mono);
+  font-size:8px;
+  letter-spacing:0.2em;
+  opacity:0.6;
+}
+.jt-eastern-violet .jt-signin-brand .jt-eastern-seal {
+  width:28px;
+  height:28px;
+  font-size:22px;
+  margin-right:8px;
+}
+@media (max-width:1200px) {
+  .jt-eastern-caption {
+    right:13px;
+  }
+}
+@media (max-width:900px) {
+  .jt-eastern-caption {
+    display:none;
+  }
+  .jt-eastern-violet .jt-wallpaper > .jt-eastern-city {
+    opacity:0.2;
+  }
+}
+@media (max-width:540px) {
+  .jt-eastern-violet .jt-eastern-seal {
+    width:20px;
+    height:20px;
+    font-size:16px;
+    margin-right:3px;
+  }
+}
+
+.jt-eastern-violet [lang="zh-Hans"] {
+  font-family:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-weight:500;
+  letter-spacing:0.08em;
+}
+.jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
+  min-width:71px;
+  flex-direction:column;
+  gap:3px;
+  padding:6px 9px;
+  line-height:1.1;
+}
+.jt-eastern-violet .jt-nav-cn {
+  font-size:12px;
+  color:var(--terminal-secondary);
+}
+.jt-eastern-violet .jt-nav-en {
+  font-size:8px;
+  letter-spacing:0.06em;
+}
+.jt-eastern-violet .jt-main-nav .luna-btn-active .jt-nav-cn {
+  color:var(--terminal-accent);
+}
+.jt-eastern-violet .jt-main-nav .jt-more-menu .jt-nav-tab {
+  min-width:54px;
+  flex-direction:row;
+  padding:10px 8px;
+}
+.jt-eastern-violet .jt-bilingual-heading {
+  display:inline-flex;
+  align-items:baseline;
+  gap:9px;
+}
+.jt-eastern-violet .jt-bilingual-heading > [lang] {
+  font-size:13px;
+  color:var(--terminal-text);
+}
+.jt-eastern-violet .jt-bilingual-heading > span:last-child {
+  font-size:10px;
+  letter-spacing:0.08em;
+  color:var(--terminal-secondary);
+  font-weight:400;
+}
+@media (max-width:1200px) {
+  .jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
+    min-width:62px;
+    padding-left:7px;
+    padding-right:7px;
+  }
+}
+@media (max-width:540px) {
+  .jt-eastern-violet .sky86 .jt-main-nav .jt-nav-tab {
+    min-width:0;
+    padding:7px 5px;
+  }
+}

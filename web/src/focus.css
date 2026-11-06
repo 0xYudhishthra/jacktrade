@@ -1,0 +1,453 @@
+/* A centered trading desk with room around the windows. */
+.jt-workstation.jt-focus .jt-stage {
+  width:calc(100% - 240px);
+  max-width:1280px;
+  margin:0 auto;
+  padding:48px 0 48px;
+}
+.jt-focus .jt-app-window {
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.jt-focus-layout {
+  display:grid;
+  grid-template-columns:minmax(0, 68fr) minmax(290px, 32fr);
+  align-items:stretch;
+  gap:16px;
+}
+.jt-focus-chart-column {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.jt-focus-market-strip {
+  position:relative;
+  z-index:11;
+}
+.jt-focus-market-strip > .jt-chart-market-header {
+  min-height:73px;
+  padding-left:14px;
+}
+.jt-focus-symbol-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0;
+  border:0;
+  background:none;
+  color:#254a87;
+  font-size:13px;
+  font-weight:700;
+}
+.jt-focus-symbol-toggle:hover {
+  color:#254a87;
+}
+.jt-focus-symbol-toggle[aria-expanded="true"] > svg {
+  transform:rotate(180deg);
+}
+.jt-focus-market-popover {
+  position:absolute;
+  z-index:30;
+  top:calc(100% + 8px);
+  left:12px;
+  width:290px;
+  padding:7px;
+  border:1px solid #dce3ee;
+  border-radius:13px;
+  background:linear-gradient(#ffffff, #ffffff);
+  box-shadow:0 12px 35px #254a8710,
+    inset 0 1px white;
+}
+.jt-focus-market-popover .jt-panel {
+  box-shadow:none;
+  border:0;
+  background:transparent;
+}
+.jt-focus-market-popover .jt-panel > div:first-child {
+  display:none;
+}
+.jt-focus-market-popover .jt-panel > div:last-child {
+  max-height:350px;
+}
+.jt-focus-picker-top {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:3px 3px 7px;
+}
+.jt-focus-picker-top label {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex:1;
+  min-width:0;
+  color:#254a87;
+  padding:8px 9px;
+  background:#ffffff;
+  border:1px solid #dce3ee;
+  border-radius:8px;
+}
+.jt-focus-picker-top input {
+  background:none;
+  width:100%;
+  min-width:0;
+  outline:none;
+  font-size:11px;
+  color:#254a87;
+}
+.jt-focus-picker-top > button {
+  color:#254a87;
+  padding:5px;
+}
+.jt-focus-chart {
+  flex:1;
+  min-height:clamp(620px, calc(100dvh - 240px), 850px);
+}
+.jt-focus-order {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-width:0;
+}
+.jt-focus-order-entry {
+  min-width:0;
+}
+.jt-workstation.jt-focus .jt-positions-panel {
+  min-height:150px;
+}
+.jt-workstation.jt-focus .jt-positions-panel > div:last-child {
+  min-height:65px;
+}
+.jt-focus .jt-positions-panel > div:last-child > div {
+  height:65px;
+}
+@media (max-width:1200px) {
+  .jt-workstation.jt-focus .jt-stage {
+    width:calc(100% - 160px);
+  }
+  .jt-focus-layout {
+    grid-template-columns:minmax(0, 1fr) 300px;
+  }
+  .jt-focus-market-strip > .jt-chart-market-header {
+    flex-wrap:wrap;
+    gap:8px;
+    min-height:82px;
+  }
+  .jt-focus-market-strip > .jt-chart-market-header > .flex-1 {
+    display:none;
+  }
+}
+@media (max-width:900px) {
+  .jt-workstation.jt-focus .jt-stage {
+    width:calc(100% - 80px);
+    padding-top:24px;
+  }
+  .jt-focus-layout {
+    grid-template-columns:minmax(0, 1fr) 280px;
+    gap:13px;
+  }
+  .jt-focus-market-strip > .jt-chart-market-header > div:last-child {
+    display:none;
+  }
+  .jt-focus-chart {
+    min-height:710px;
+  }
+}
+@media (max-width:700px) {
+  .jt-workstation.jt-focus .jt-stage {
+    width:calc(100% - 32px);
+    padding-top:16px;
+  }
+  .jt-focus-layout {
+    grid-template-columns:minmax(0, 1fr);
+  }
+  .jt-focus-chart {
+    flex:none;
+    min-height:0;
+    height:585px;
+  }
+  .jt-focus-market-strip > .jt-chart-market-header {
+    padding-top:12px;
+    padding-left:14px;
+    min-height:75px;
+  }
+  .jt-focus-order-entry {
+    flex:none;
+    min-height:0;
+  }
+  .jt-focus-order-entry > .jt-panel {
+    height:auto !important;
+  }
+  .jt-focus .jt-positions-panel > div:last-child {
+    overflow:auto;
+  }
+  .jt-focus .jt-positions-panel table {
+    min-width:800px;
+  }
+  .jt-focus-market-popover {
+    width:min(290px, calc(100vw - 64px));
+  }
+}
+
+/* Price and market selection are part of the chart's single window. */
+.jt-focus-market-strip {
+  flex-shrink:0;
+}
+/* The secondary rooms use the same centered workstation as Trade. */
+.jt-workstation.jt-focus.jt-explore .jt-explore-main {
+  min-width:0;
+  gap:14px;
+}
+.jt-workstation.jt-focus.jt-explore .jt-explore-main > * {
+  min-width:0;
+}
+.jt-workstation.jt-focus.jt-explore .jt-page-heading {
+  min-height:82px;
+  padding:14px 18px;
+}
+.jt-workstation.jt-focus.jt-explore .jt-portfolio-overview,
+.jt-workstation.jt-focus.jt-explore .jt-leader-bottom {
+  grid-template-columns:minmax(0, 68fr) minmax(290px, 32fr);
+  gap:16px;
+}
+@media (max-width:900px) {
+  .jt-workstation.jt-focus.jt-explore .jt-portfolio-overview,
+  .jt-workstation.jt-focus.jt-explore .jt-leader-bottom {
+    grid-template-columns:minmax(0, 1fr) 280px;
+    gap:13px;
+  }
+}
+@media (max-width:700px) {
+  .jt-workstation.jt-focus.jt-explore .jt-portfolio-overview,
+  .jt-workstation.jt-focus.jt-explore .jt-leader-bottom {
+    grid-template-columns:minmax(0, 1fr);
+  }
+}
+.jt-focus-market-strip > .jt-chart-market-header {
+  border:0;
+  border-bottom:1px solid #dce3ee;
+  border-radius:13px 13px 0 0;
+  background:linear-gradient(#ffffff, #ffffffcc);
+  box-shadow:inset 0 1px #ffffffb0;
+  padding:13px 16px;
+  gap:11px;
+}
+.jt-chart-market-header > div:last-child {
+  margin-left:auto;
+  gap:10px;
+}
+@media (max-width:1100px) {
+  .jt-chart-market-header > div:last-child {
+    flex-basis:100%;
+    justify-content:space-between;
+  }
+  .jt-chart-market-header > .flex-1 {
+    display:none;
+  }
+}
+@media (max-width:900px) {
+  .jt-focus-market-strip > .jt-chart-market-header > div:last-child {
+    display:none;
+  }
+}
+
+/* A short order ticket:amount, leverage, one action, four estimates. */
+.jt-focus-ticket {
+  color:#254a87;
+  overflow:hidden;
+}
+.jt-focus-ticket-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:16px 18px;
+  border-bottom:1px solid #dce3ee;
+  background:linear-gradient(#ffffff, #ffffffcc);
+}
+.jt-focus-ticket-heading h2 {
+  font-size:15px;
+  font-weight:700;
+}
+.jt-focus-ticket-heading > span {
+  color:#254a87;
+  font-size:11px;
+}
+.jt-focus-ticket-body {
+  padding:16px 18px 18px;
+}
+.jt-focus-direction {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.jt-focus-direction button {
+  padding:8px;
+  font-size:12px;
+  font-weight:700;
+}
+.jt-focus-amount {
+  padding:24px 0 20px;
+}
+.jt-focus-amount-top,
+.jt-focus-amount-input {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.jt-focus-amount-top > label,
+.jt-focus-field-label {
+  color:#254a87;
+  font-size:11px;
+}
+.jt-focus-quick {
+  display:flex;
+  gap:12px;
+}
+.jt-focus-quick button {
+  font-size:11px;
+  color:#254a87;
+}
+.jt-focus-quick button:hover {
+  color:#254a87;
+}
+.jt-focus-amount-input {
+  margin-top:16px;
+}
+.jt-focus-currency {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  font-weight:700;
+}
+.jt-focus-currency > span {
+  display:grid;
+  place-items:center;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:linear-gradient(#f4f7fc, #f4f7fc);
+  color:white;
+  border:1px solid #dce3ee;
+  box-shadow:inset 0 1px #254a8710;
+  font-size:17px;
+}
+.jt-focus-amount-input input {
+  min-width:0;
+  width:65%;
+  padding:0;
+  outline:none;
+  background:none;
+  text-align:right;
+  color:#254a87;
+  font-size:30px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.jt-focus-amount-input input::placeholder {
+  color:#254a87;
+}
+.jt-focus-amount-input input::-webkit-inner-spin-button,
+.jt-focus-amount-input input::-webkit-outer-spin-button {
+  appearance:none;
+  margin:0;
+}
+.jt-focus-amount-input input {
+  appearance:textfield;
+}
+.jt-focus-available {
+  color:#254a87;
+  text-align:right;
+  font-size:10px;
+  margin-top:7px;
+}
+.jt-focus-leverage {
+  border-top:1px solid #dce3ee;
+  padding:17px 0 23px;
+}
+.jt-focus-leverage-value {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:9px 0 19px;
+}
+.jt-focus-leverage-value > .luna-btn {
+  width:28px;
+  height:28px;
+  font-size:18px;
+  line-height:1;
+}
+.jt-focus-leverage-value output {
+  font-size:30px;
+  line-height:1.2;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.jt-focus-leverage-value output > span {
+  font-size:23px;
+  color:#254a87;
+  margin-left:2px;
+}
+.jt-focus-leverage .jt-range {
+  width:100%;
+  height:6px;
+  display:block;
+}
+.jt-focus-leverage-stops {
+  display:flex;
+  justify-content:space-between;
+  margin-top:12px;
+}
+.jt-focus-leverage-stops button {
+  font-size:11px;
+  color:#254a87;
+}
+.jt-focus-leverage-stops button[aria-pressed="true"] {
+  color:#254a87;
+  font-weight:700;
+}
+.sky86 .jt-focus-submit {
+  width:100%;
+  padding:13px 10px;
+  font-size:14px;
+}
+.jt-focus-order-summary {
+  margin:0 18px;
+  padding:16px 0 3px;
+  border-top:1px solid #dce3ee;
+}
+.jt-focus-order-summary > div {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+  font-size:11px;
+}
+.jt-focus-order-summary dt {
+  color:#254a87;
+}
+.jt-focus-order-summary dd {
+  font-weight:600;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+.jt-focus-order-summary .jt-focus-liquidation {
+  color:#c85c67;
+}
+.jt-focus-demo-note {
+  color:#254a87;
+  text-align:center;
+  font-size:10px;
+  padding:13px 18px 18px;
+}
+.jt-focus-order-error {
+  color:#c85c67;
+  background:#fcf0f1;
+  border-radius:8px;
+  padding:9px;
+  margin-bottom:12px;
+  font-size:11px;
+}

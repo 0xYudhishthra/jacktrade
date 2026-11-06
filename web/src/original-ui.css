@@ -1,0 +1,555 @@
+/* Original 8009 components and visual hierarchy, with the product-preview features. */
+.pm-workstation .jt-focus-market-popover {
+  width:290px;
+}
+.pm-workstation .jt-focus-market-strip .jt-chart-market-header {
+  flex-wrap:nowrap;
+}
+.pm-workstation .jt-chart-market-header > div:last-child {
+  gap:16px;
+}
+.jt-nocturne .pm-workstation .jt-focus-picker-top input {
+  background:transparent;
+  border:0;
+  padding:0;
+  color:#171923;
+  font-size:11px;
+  line-height:1.5;
+}
+.pm-market-favorites {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#687080;
+  font-size:9px;
+  padding:3px 7px 8px;
+}
+.jt-market-option {
+  position:relative;
+  min-width:0;
+}
+.jt-market-option > .jt-market-row {
+  width:100%;
+  padding-right:26px;
+}
+.jt-market-favorite {
+  position:absolute;
+  top:50%;
+  right:3px;
+  transform:translateY(-50%);
+  padding:5px;
+  color:#687080;
+}
+.jt-market-favorite[aria-pressed="true"] {
+  color:#254a87;
+}
+.pm-workstation .jt-focus-market-popover .jt-market-row {
+  border-radius:1px;
+}
+.pm-original-ticket {
+  overflow:visible;
+}
+.pm-original-ticket .jt-focus-ticket-body {
+  gap:0;
+}
+.jt-nocturne .pm-original-ticket .jt-focus-direction button {
+  font-size:11px;
+}
+.jt-nocturne .pm-original-ticket .jt-focus-order-summary {
+  flex:none;
+}
+.jt-nocturne .pm-original-ticket .jt-focus-order-summary > div {
+  font-size:10px;
+}
+.pm-original-ticket .jt-focus-demo-note {
+  margin:0;
+}
+.jt-nocturne .pm-panel .jt-panel-bar {
+  min-height:42px;
+  padding:11px 17px;
+}
+.jt-nocturne .pm-panel .jt-panel-bar h2 {
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0;
+}
+.jt-nocturne .pm-page-heading h1 {
+  font-weight:700;
+  letter-spacing:-0.8px;
+}
+.jt-nocturne .pm-position-toolbar {
+  background:linear-gradient(#f4f7fc, #ffffff);
+}
+@media (max-width:1200px) {
+  .pm-workstation .jt-focus-market-strip .jt-chart-market-header {
+    flex-wrap:wrap;
+  }
+}
+@media (max-width:700px) {
+  .pm-workstation .jt-focus-market-popover {
+    width:min(290px, calc(100vw - 64px));
+  }
+  .pm-original-ticket .jt-focus-ticket-body {
+    display:block;
+  }
+}
+.jt-nocturne .pm-workstation .pm-original-ticket .jt-focus-amount-input input {
+  width:65%;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  font-size:31px;
+  font-weight:500;
+  letter-spacing:-0.08em;
+}
+
+/* Trade starts with the 8009 layout; optional controls live in closed popovers. */
+.pm-simple-trade .jt-focus-chart > .jt-panel {
+  overflow:visible;
+}
+.pm-chart-controls {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+  padding:6px 12px;
+  position:relative;
+  z-index:10;
+}
+.pm-chart-control {
+  position:relative;
+}
+.jt-nocturne .pm-chart-controls .pm-chart-control-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:4px 8px;
+  min-height:25px;
+  font-size:10px;
+}
+.pm-chart-control-toggle[aria-expanded="true"] > svg:last-child {
+  transform:rotate(180deg);
+}
+.pm-chart-menu {
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  width:242px;
+  max-width:calc(100vw - 112px);
+  padding:12px;
+  border:1px solid #dce3ee;
+  background:#ffffff;
+  box-shadow:4px 5px 0 #254a8710;
+  color:#171923;
+  max-height:420px;
+  overflow-y:auto;
+}
+.pm-timeframe-menu {
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:5px;
+}
+.jt-nocturne .pm-chart-menu .luna-btn {
+  padding:5px 8px;
+  font-size:10px;
+}
+.pm-tools-menu fieldset + fieldset {
+  margin-top:13px;
+}
+.pm-tools-menu legend {
+  font-size:9px;
+  text-transform:uppercase;
+  color:#687080;
+  margin-bottom:8px;
+}
+.pm-chart-type-options {
+  display:flex;
+  gap:6px;
+}
+.pm-chart-tool-option {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:10px;
+  padding:6px 0;
+  cursor:pointer;
+}
+.pm-chart-tool-option input {
+  accent-color:#254a87;
+}
+.pm-simple-trade .jt-focus-chart canvas {
+  touch-action:pan-y;
+}
+@media (max-width:700px) {
+  .pm-tools-menu {
+    left:-60px;
+  }
+}
+
+.jt-nocturne .pm-header .pm-settings-toggle {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:31px;
+  height:31px;
+  padding:0;
+}
+.pm-settings-options {
+  display:grid;
+  gap:10px;
+}
+.pm-modal .pm-settings-options > button {
+  display:block;
+  padding:13px 14px;
+  text-align:left;
+}
+.pm-settings-options > button > span {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.pm-settings-options small {
+  display:block;
+  margin-top:6px;
+  color:#687080;
+  font-size:10px;
+  font-weight:400;
+}
+
+/* The plot fills its window. Only the individual controls float over it. */
+.pm-integrated-chart {
+  position:relative;
+}
+.pm-chart-overlay {
+  position:absolute;
+  z-index:20;
+  top:12px;
+  left:12px;
+  right:72px;
+  pointer-events:none;
+}
+.pm-chart-overlay-main {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.pm-chart-overlay-main > *,
+.pm-chart-overlay > .pm-oi-strip {
+  pointer-events:auto;
+}
+.pm-chart-overlay .pm-chart-controls {
+  padding:0;
+}
+.pm-chart-overlay .jt-focus-market-strip {
+  flex:none;
+}
+.jt-nocturne .pm-workstation .pm-floating-market-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:7px 10px;
+  min-height:40px;
+  background:#ffffffed;
+  border:1px solid #dce3ee;
+  box-shadow:inset 0 1px #ffffffb0;
+  white-space:nowrap;
+  font-size:10px;
+}
+.pm-floating-market-coin {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:25px;
+  width:25px;
+  border-radius:50%;
+  font-size:17px;
+}
+.pm-floating-market-symbol {
+  font-size:11px;
+  font-weight:700;
+}
+.pm-floating-market-toggle strong {
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:-0.7px;
+}
+.pm-floating-market-toggle[aria-expanded="true"] > svg {
+  transform:rotate(180deg);
+}
+.pm-chart-overlay .jt-focus-market-popover {
+  left:0;
+  top:calc(100% + 7px);
+}
+.pm-chart-overlay > .pm-oi-strip {
+  width:fit-content;
+  margin-top:8px;
+  padding:9px 10px;
+  background:#ffffffed;
+  border:1px solid #dce3ee;
+}
+.pm-chart-market-stats {
+  font-size:9px;
+}
+.pm-chart-market-stats > div {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:5px 0;
+}
+.pm-chart-market-stats dt {
+  color:#687080;
+}
+@media (max-width:700px) {
+  .pm-chart-overlay {
+    top:10px;
+    left:10px;
+    right:10px;
+  }
+  .jt-nocturne .pm-workstation .pm-floating-market-toggle {
+    gap:7px;
+    padding:6px 8px;
+  }
+  .pm-floating-market-symbol {
+    font-size:10px;
+  }
+  .pm-floating-market-toggle strong {
+    font-size:15px;
+  }
+  .pm-chart-overlay > .pm-oi-strip {
+    flex-wrap:wrap;
+    max-width:100%;
+  }
+}
+
+/* One height and visual weight for every floating chart control. */
+.jt-nocturne .pm-workstation .pm-floating-market-toggle,
+.jt-nocturne .pm-chart-overlay .pm-chart-controls .pm-chart-control-toggle,
+.pm-floating-market-stats {
+  height:40px;
+  min-height:40px;
+  box-sizing:border-box;
+  border:1px solid #dce3ee;
+  border-radius:1px;
+  background:#ffffffed;
+  box-shadow:inset 0 1px #ffffffb0;
+}
+.jt-nocturne .pm-workstation .pm-floating-market-toggle,
+.jt-nocturne .pm-chart-overlay .pm-chart-controls .pm-chart-control-toggle {
+  padding:0 10px;
+}
+.pm-floating-market-stats {
+  display:flex;
+  align-items:stretch;
+  flex:none;
+}
+.pm-floating-market-stats > div {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:0 10px;
+}
+.pm-floating-market-stats > div + div {
+  border-left:1px solid #dce3ee;
+}
+.pm-floating-market-stats dt {
+  color:#687080;
+  font-size:8px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.pm-floating-market-stats dd {
+  color:#171923;
+  font-size:11px;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+}
+@media (max-width:700px) {
+  .pm-floating-market-stats > div {
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    gap:2px;
+    padding:0 6px;
+    min-width:58px;
+  }
+  .pm-floating-market-stats dt {
+    font-size:7px;
+  }
+  .pm-floating-market-stats dd {
+    font-size:10px;
+  }
+  .jt-nocturne .pm-chart-overlay .pm-chart-controls .pm-chart-control-toggle {
+    padding:0 7px;
+    gap:5px;
+  }
+}
+
+/* Main navigation is text with an active underline, separate from boxed controls. */
+.jt-nocturne .pm-header .jt-main-nav .pm-nav {
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#687080;
+  text-decoration:none;
+}
+.jt-nocturne .pm-header .jt-main-nav .pm-nav:hover,
+.jt-nocturne .pm-header .jt-main-nav .pm-nav[aria-current="page"] {
+  color:#171923;
+}
+.jt-nocturne .pm-header .jt-main-nav .pm-nav[aria-current="page"] {
+  border-bottom-color:#dce3ee;
+}
+.jt-nocturne .pm-header .pm-nav[aria-current="page"] .jt-nav-cn {
+  color:#687080;
+}
+.jt-nocturne .pm-header .pm-nav:focus-visible {
+  outline:1px solid #dce3ee;
+  outline-offset:3px;
+}
+
+.jt-nocturne .pm-header .pm-header-action {
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#687080;
+  font-weight:400;
+}
+.jt-nocturne .pm-header .pm-header-action:hover {
+  color:#171923;
+}
+.jt-nocturne .pm-header .pm-header-action:focus-visible {
+  outline:1px solid #dce3ee;
+  outline-offset:2px;
+}
+
+/* Compact navigation with a readable middle size. */
+.jt-nocturne .jt-workstation .pm-header {
+  min-height:56px;
+  padding:7px 14px;
+}
+.jt-nocturne .pm-header .jt-main-nav .pm-nav {
+  min-width:60px;
+  padding:5px 8px;
+  gap:2px;
+}
+.jt-nocturne .pm-header .pm-nav .jt-nav-en {
+  font-size:10px;
+  line-height:1.15;
+  letter-spacing:0;
+}
+.jt-nocturne .pm-header .pm-nav .jt-nav-cn {
+  font-size:10.5px;
+  line-height:1.1;
+}
+.jt-nocturne .pm-header .pm-header-action {
+  font-size:10.5px;
+}
+.jt-nocturne .pm-header .pm-settings-toggle svg {
+  width:16px;
+  height:16px;
+}
+@media (max-width:700px) {
+  .jt-nocturne .pm-header .jt-main-nav {
+    gap:2px !important;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .jt-nocturne .pm-header .jt-main-nav .pm-nav {
+    flex:1 0 auto;
+    min-width:0;
+    padding:5px 4px;
+  }
+  .jt-nocturne .pm-header .pm-nav .jt-nav-en {
+    font-size:9.5px;
+  }
+}
+
+/* Single-line primary destinations; secondary resources stay under More. */
+.jt-nocturne .jt-workstation .pm-header {
+  position:relative;
+  z-index:40;
+  overflow:visible;
+}
+.pm-more {
+  position:relative;
+  flex:none;
+}
+.jt-nocturne .pm-header .jt-main-nav .pm-more-toggle {
+  flex-direction:row;
+  justify-content:center;
+  gap:5px;
+  font-size:10px;
+}
+.pm-more-toggle[aria-expanded="true"] > svg {
+  transform:rotate(180deg);
+}
+.jt-nocturne .pm-header .pm-more-toggle[data-active="true"] {
+  border-bottom-color:#dce3ee;
+  color:#171923;
+}
+.pm-more-links {
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  width:172px;
+  padding:5px;
+  background:#fffffff7;
+  border:1px solid #dce3ee;
+  box-shadow:4px 5px #254a8710;
+}
+.jt-nocturne .pm-header .pm-more-links > a,
+.jt-nocturne .pm-header .pm-more-links > button {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  padding:11px 10px;
+  color:#687080;
+  font-size:11px;
+  text-align:left;
+}
+.jt-nocturne .pm-header .pm-more-links > a:hover,
+.jt-nocturne .pm-header .pm-more-links > button:hover {
+  background:#f4f7fc;
+  color:#171923;
+}
+#model,
+#faq {
+  scroll-margin-top:24px;
+}
+@media (max-width:700px) {
+  .jt-nocturne .pm-header .jt-main-nav {
+    overflow:visible;
+    flex-wrap:wrap;
+  }
+  .jt-nocturne .pm-header .jt-main-nav > .pm-nav {
+    flex:1 0 auto;
+  }
+  .pm-more {
+    flex:1 0 auto;
+  }
+  .jt-nocturne .pm-header .jt-main-nav .pm-more-toggle {
+    width:100%;
+    min-width:0;
+  }
+}
+
+/* Override the legacy blue styles applied to buttons inside navigation. */
+.jt-nocturne .pm-header .jt-main-nav .pm-more-toggle { color:#687080 !important; }
+.jt-nocturne .pm-header .jt-main-nav .pm-more-toggle:hover,
+.jt-nocturne .pm-header .jt-main-nav .pm-more-toggle[aria-expanded="true"],
+.jt-nocturne .pm-header .jt-main-nav .pm-more-toggle[data-active="true"] { color:#171923 !important; }
+.jt-nocturne .pm-header .pm-more-links > button {
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  color:#687080 !important;
+  font-weight:400;
+}
+.jt-nocturne .pm-header .pm-more-links > button:hover { background:#f4f7fc; color:#171923 !important; }

@@ -11,7 +11,14 @@ it existed before the hackathon. This page lists exactly what was reused and wha
 - **Backend services** in `backend/` (prices, relayer, indexer, keepers, liquidator),
   imported in a single clearly labelled commit. Internal audit notes and ops runbooks were
   left out on purpose.
-- **Trading frontend** in `web/`, imported in a single clearly labelled commit.
+- **Trading frontend** in `web/` (React 19, TanStack Router, wagmi + Reown AppKit, Tailwind,
+  Vite), imported unchanged in the commit
+  `Import pre-existing JackTrade frontend (pre-hackathon code, unchanged)`, so
+  `git log -- web` shows exactly what changed during the hackathon. Pre-existing in `web/`
+  are the landing page, Trade, Portfolio, House, Leaderboard, Docs, the wallet, deposit and
+  one-click trading flows, and everything under `web/src/components/{jacktrade,product,
+  trading,dream,ui}`, `web/src/hooks`, `web/src/context` and `web/src/lib` except
+  `web/src/lib/grok`.
 
 ## Built during the hackathon
 
@@ -22,12 +29,16 @@ it existed before the hackathon. This page lists exactly what was reused and wha
 - **`connector/`** the Grok connector (remote MCP server). Grok can check the house, quote,
   place and cash out bets, arm conditional bets that fire when a price crosses, and read
   points. It also syncs points onchain and proxies Definitive Flash.
-- **Grok features in `web/`** Connect Grok, the Grok bets feed with "via Grok" badges,
-  JackTrade Points, and Make it real (copy a bet into the real stock token with a
-  Definitive Flash advanced order).
+- **Grok features in `web/`** Connect Grok (`/grok`), the Grok bets feed (`/grok/bets`),
+  JackTrade Points (`/points`), Make it real (`/real/$id`, copy a bet into the real stock
+  token with a Definitive Flash advanced order) and a "via Grok" badge on Grok's positions
+  and trades. Code lives in `web/src/routes/{grok,grokBets,points,real}.jsx`,
+  `web/src/lib/grok/`, `web/src/components/grok/` and `web/src/grok.css`, plus small
+  separate commits for the JackTrade rebrand, navigation, routes, the configurable block
+  explorer and the badges.
 - **New backend deployment** of the services above on Railway, with new keys and a new
   Ponder indexer.
 - **`docs/`** the spec, runbook, submission copy and prompts used to build it.
 
-Everything outside the two labelled import commits was written during the hackathon, and
-the commit history shows it step by step.
+Everything outside the labelled import commits was written during the hackathon, and the
+commit history shows it step by step.
