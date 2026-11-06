@@ -36,6 +36,8 @@ const routes = root.addChildren([
   createRoute({ getParentRoute: () => root, path: "/house", component: HousePage }),
   createRoute({ getParentRoute: () => root, path: "/grok", component: GrokConnectPage }),
   createRoute({ getParentRoute: () => root, path: "/grok/bets", component: GrokBetsPage }),
+  // Earlier links (docs, runbook) used /bets for the Grok feed.
+  createRoute({ getParentRoute: () => root, path: "/bets", component: GrokBetsPage }),
   createRoute({ getParentRoute: () => root, path: "/real/$id", component: RealPage }),
   createRoute({ getParentRoute: () => root, path: "/points", component: PointsPage }),
   // The HOUSE token is replaced by JackTrade Points: old /token links land on Points.
