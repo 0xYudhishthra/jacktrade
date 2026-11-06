@@ -1,0 +1,35 @@
+const env = process.env;
+
+function trim(url: string): string {
+  return url.replace(/\/+$/, "");
+}
+
+export const config = {
+  port: Number(env.PORT ?? 8787),
+  publicUrl: trim(env.PUBLIC_URL ?? "http://localhost:8787"),
+  webUrl: trim(env.WEB_URL ?? "http://localhost:5173"),
+  serverSecret: env.SERVER_SECRET ?? "",
+  dbPath: env.DB_PATH ?? "./data/connector.db",
+  relayerUrl: trim(env.RELAYER_URL ?? "https://hmrelayer-production.up.railway.app"),
+  pricesUrl: trim(env.PRICES_URL ?? "https://hmprices-production.up.railway.app"),
+  indexerUrl: trim(env.INDEXER_URL ?? "https://hmindexer-production.up.railway.app"),
+  rpcUrl: env.RPC_URL ?? "https://rpc.mainnet.chain.robinhood.com",
+  /** Block explorer base URL. Empty means tx links are returned as bare hashes. */
+  explorerUrl: trim(env.EXPLORER_URL ?? ""),
+  flashApiKey: env.FLASH_API_KEY ?? "",
+  flashUrl: trim(env.FLASH_URL ?? "https://flash.definitive.fi/v1"),
+  attestationRpcUrl: env.ATTESTATION_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com",
+  attestationAddress: env.ATTESTATION_ADDRESS ?? "",
+  attestationExplorerUrl: trim(env.ATTESTATION_EXPLORER_URL ?? "https://sepolia.etherscan.io"),
+};
+
+export function txLink(hash: string | null | undefined): string | null {
+  if (!hash) return null;
+  return config.explorerUrl ? `${config.explorerUrl}/tx/${hash}` : hash;
+}
+
+export function assertConfig(): void {
+  if (!/^[0-9a-f]{64,}$/i.test(config.serverSecret)) {
+    throw new Error("SERVER_SECRET must be at least 32 bytes of hex (openssl rand -hex 32)");
+  }
+}
