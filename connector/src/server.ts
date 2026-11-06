@@ -143,6 +143,9 @@ async function handleMcp(req: Request, res: Response) {
   const token = String(req.params.token ?? "");
   const user = store.userByTokenHash(hashToken(token));
   if (!user) return void res.status(404).json({ jsonrpc: "2.0", error: { code: -32001, message: "Unknown connector URL" }, id: null });
+  // The MCP transport rejects POSTs whose Accept header lacks either type; some hosted
+  // connectors only send application/json.
+  req.headers.accept = "application/json, text/event-stream";
   const server = buildServer(user, () => decrypt(user.agentKeyEnc, config.serverSecret) as `0x${string}`, store);
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   res.on("close", () => {
