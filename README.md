@@ -171,3 +171,60 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | `HouseAttestation` (CRE `onReport` consumer) | Ethereum Sepolia | pending deploy |
 
 **Tokens used by Make it real (Robinhood Chain):** TSLA `0x322F0929c4625eD5bAd873c95208D54E1c003b2d` · NVDA `0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC` · WETH `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
+
+## Repository layout
+
+```
+jacktrade/
+├── connector/            # remote MCP server (Grok connector) + REST API + Flash proxy; serves the web app
+│   └── src/              # server, MCP tools, trading (intent signing), points, store, upstream clients
+├── web/                  # Vite + React + viem: Connect Grok, Grok bets feed, Points, Make it real
+├── cre/
+│   ├── proof-of-house/   # Chainlink CRE workflow (TypeScript / bun)
+│   └── contracts/        # HouseAttestation consumer (Foundry) + deploy script + tests
+├── docs/                 # spec, demo runbook, submission copy, prompts
+├── Dockerfile            # one image: connector + built web app
+└── PRE-EXISTING.md       # what this builds on
+```
+
+## Quickstart
+
+One service runs everything:
+
+```bash
+docker build -t jacktrade .
+docker run -p 8787:8787 -v jacktrade:/data \
+  -e SERVER_SECRET=$(openssl rand -hex 32) \
+  -e PUBLIC_URL=http://localhost:8787 \
+  -e FLASH_API_KEY=<your Flash key> \
+  -e ATTESTATION_ADDRESS=<HouseAttestation on Sepolia> \
+  jacktrade
+# open http://localhost:8787 → Connect Grok → paste the connector URL into grok.com/connectors
+```
+
+Development:
+
+```bash
+cd connector && npm install && npm run dev        # env: connector/.env.example
+cd web && bun install && bun run dev              # env: web/.env.example
+cd cre/contracts && forge test                    # HouseAttestation: 5 tests
+cd cre/proof-of-house && bun install && bun test  # workflow against live Robinhood Chain data
+```
+
+Chainlink CRE simulation (after `cre login`): see [`cre/README.md`](cre/README.md).
+
+## Tech stack
+
+| Layer | Choice |
+|-------|--------|
+| Agent interface | MCP (Streamable HTTP, stateless) via `@modelcontextprotocol/sdk`, added to Grok as a custom connector |
+| Connector | Node 24 + TypeScript (native type stripping), Express 5, viem, `node:sqlite` |
+| Web app | Vite + React 18 + viem (injected wallet, no wallet SDK) |
+| Advanced orders | Definitive Flash API (market + attached bracket, limit) on Robinhood Chain |
+| Oracle / attestation | Chainlink CRE (TypeScript SDK) → `HouseAttestation` (Solidity, Foundry) on Sepolia |
+| Exchange | JackTrade bet-against-the-house contracts on Robinhood Chain mainnet, USDG collateral, Pyth prices |
+| Deploy | Single Docker image on Railway |
+
+## Continuity Track
+
+This is a Continuity Track project. JackTrade's exchange contracts and services were live on Robinhood Chain before the hackathon; none of their source is in this repo. Everything here (connector, web app, CRE workflow and contract, points) was built during the hackathon. See [`PRE-EXISTING.md`](PRE-EXISTING.md) and [`docs/AI_USAGE.md`](docs/AI_USAGE.md).
