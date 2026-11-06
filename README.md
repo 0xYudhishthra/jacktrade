@@ -1,12 +1,12 @@
 # JackTrade
 
-> **Let Grok trade the news.** Ask Grok what the headlines mean for a stock, say "bet $20 long TSLA at 50x", and JackTrade places a leveraged bet against the house onchain, from inside the chat. Followers can make it real with a Definitive Flash order, and a Chainlink CRE workflow proves the house can pay.
+> **Let Grok trade the news.** Ask Grok what the headlines mean for a stock, say "bet $20 long TSLA at 50x", and JackTrade places a leveraged bet against the house onchain, from inside the chat. Grok can also watch a level and fire the bet when the price crosses. Followers can make it real with one Definitive Flash order.
 
 - **Live app**: [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) (Connect Grok · Grok bets · Points · Make it real)
 - **Spec** (source of truth): [`docs/spec.md`](docs/spec.md)
 - **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
 - **What existed before the hackathon**: [`PRE-EXISTING.md`](PRE-EXISTING.md) · **AI usage**: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
-- **Grok connector**: [`connector`](connector) · **Web app**: [`web`](web) · **Chainlink CRE**: [`cre`](cre)
+- **Grok connector**: [`connector`](connector) · **Web app**: [`web`](web) · **Points contract**: [`contracts`](contracts) · **Backend**: [`backend`](backend)
 
 ---
 
@@ -24,7 +24,8 @@ Picture a retail trader in Kuala Lumpur. US stock tokens trade onchain on Robinh
 
 - **The trader** bets against the house with leverage, from the chat. Grok's key can open and close bets but can **never withdraw**, and the trader sets its limits.
 - **Followers** see every Grok bet in a public feed and can **make it real**: copy the call into the real stock token with one Definitive Flash order, take-profit and stop-loss attached.
-- **The house** is the counterparty. A Chainlink CRE workflow attests its bankroll onchain, and Grok reads that attestation before every bet.
+- **Grok can act while you're away**: arm a conditional bet ("short TSLA 20x with $20 if it drops below $350") and JackTrade fires it the moment the price crosses.
+- **The house** is the counterparty. Grok checks its live bankroll and payout queue before every bet.
 - **Everyone earns JackTrade Points**: 10 points per $100 of notional, win or lose.
 
 ## How a bet works
@@ -39,7 +40,7 @@ points earned     = notional × 10 / 100                     (win or lose)
 
 - **You lose** → your margin (or the part the move ate) goes to the house bankroll.
 - **You win** → you're paid from the house bankroll. If a win is bigger than the bankroll, the rest waits in a first-in-first-out payout queue that refills as the house earns. Nothing is lost; it's paid in order.
-- **The house is solvent by construction**: it only ever pays out what it holds or has queued. Proof of House (Chainlink CRE) publishes that bankroll and queue onchain.
+- **The house is solvent by construction**: it only ever pays out what it holds or has queued, and `house_status` shows both before you bet.
 
 ## Safety model
 
@@ -49,16 +50,18 @@ points earned     = notional × 10 / 100                     (win or lose)
 | Session keys have no onchain size limits | The connector enforces the user's caps **before signing**: max bet, max leverage, and a 24-hour risk budget. |
 | Key storage | Agent keys are generated server-side and stored **AES-256-GCM encrypted**; connector URL tokens are stored hashed. |
 | Grok betting without being asked | The connector instructs Grok to quote first and get explicit confirmation before `place_bet`. |
-| Can the house pay? | `house_status` returns the live bankroll, payout queue and the latest **Chainlink-attested** Proof of House. |
+| Can the house pay? | `house_status` returns the live bankroll, payout queue and open interest before every bet. |
+| A trigger firing twice | Each armed trigger is claimed atomically before it fires, and it goes through the same caps as a manual bet. |
 
 ## Integrations
 
 | Component | What it does | Where |
 |-----------|--------------|-------|
-| **Grok (xAI) connectors** | Grok calls JackTrade's tools over MCP: `list_markets`, `house_status`, `quote_bet`, `place_bet`, `my_bets`, `cash_out`, `my_points`, `make_it_real` | [`connector/src/tools.ts`](connector/src/tools.ts) |
+| **Grok (xAI) connectors** | Grok calls JackTrade's tools over MCP: `list_markets`, `house_status`, `quote_bet`, `place_bet`, `my_bets`, `cash_out`, `set_trigger`, `list_triggers`, `cancel_trigger`, `my_points`, `make_it_real` | [`connector/src/tools.ts`](connector/src/tools.ts) |
 | **Definitive Flash** | "Make it real": a long bet becomes a `market` order with an `attachedBracket` (take-profit / stop-loss); a short becomes a `limit` buy, on the real Robinhood Chain token | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) · proxy in [`connector/src/server.ts`](connector/src/server.ts) |
-| **Chainlink CRE** | Proof of House: reads the house's bankroll and payout queue from Robinhood Chain + open interest from the indexer → DON consensus → `HouseAttestation` onchain | [`cre/proof-of-house`](cre/proof-of-house) · [`cre/contracts`](cre/contracts) |
-| **JackTrade exchange** (pre-existing) | Bet-against-the-house contracts, relayer and indexer on Robinhood Chain mainnet | [`PRE-EXISTING.md`](PRE-EXISTING.md) |
+| **Conditional bets** | A watcher checks Pyth prices every 3 seconds and fires armed bets through the same signing and caps path | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
+| **JackTradePoints** | Non-transferable onchain points (JTP), synced every minute from each trader's notional | [`contracts/src/JackTradePoints.sol`](contracts/src/JackTradePoints.sol) · [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
+| **JackTrade exchange** | Bet-against-the-house contracts (pre-existing code, freshly deployed with the new points logic) plus relayer, prices and Ponder indexer | [`backend`](backend) · [`PRE-EXISTING.md`](PRE-EXISTING.md) |
 
 ## Architecture
 
@@ -70,10 +73,10 @@ flowchart TB
     RELAYER --> EXCHANGE["JackTrade Exchange<br/>Robinhood Chain mainnet"]
     EXCHANGE --> INDEXER["Indexer: positions, history, volume"]
     INDEXER --> CONN
-    CONN -->|"reads latest()"| ATTEST["HouseAttestation<br/>Ethereum Sepolia"]
-    CRE["Chainlink CRE<br/>Proof of House workflow"] -->|"HTTP JSON-RPC reads"| EXCHANGE
-    CRE -->|"HTTP"| INDEXER
-    CRE -->|"consensus report → forwarder → onReport"| ATTEST
+    PRICES["Prices (Pyth)"] --> RELAYER
+    PRICES --> WATCH["Trigger watcher"]
+    WATCH -->|"price crossed → place bet"| CONN
+    CONN -->|"sync notional"| POINTS["JackTradePoints<br/>Robinhood Chain"]
     FOLLOWER["Follower (web app)"] -->|"Make it real"| CONN
     CONN -->|"Flash proxy: quote / order"| FLASH["Definitive Flash"]
     FLASH -->|"market + TP/SL bracket, or limit"| TOKEN["Real token on Robinhood Chain<br/>TSLA · NVDA · WETH"]
@@ -88,11 +91,9 @@ sequenceDiagram
     participant C as JackTrade connector
     participant R as Relayer
     participant X as Exchange (Robinhood Chain)
-    participant A as HouseAttestation (Sepolia)
     T->>G: "Bet $20 long TSLA at 50x"
     G->>C: house_status
-    C->>A: latest()
-    C-->>G: bankroll, payout queue, Chainlink attestation
+    C-->>G: bankroll, payout queue, open interest
     G->>C: quote_bet(TSLA, long, 20, 50)
     C-->>G: entry, liquidation price, points earned, cap check
     G->>T: quote, "confirm?"
@@ -105,21 +106,26 @@ sequenceDiagram
     C-->>G: position id + transaction
 ```
 
-## Proof of House loop
+## Conditional bets
 
 ```mermaid
-flowchart LR
-    CRON["CRE cron trigger"] --> READ["HTTP: one batched eth_call to the Exchange<br/>lpBankrollAvailable · totalQueued · lpCash · totalMargin"]
-    CRON --> IDX["HTTP: indexer /api/house<br/>open interest · positions"]
-    READ --> CONS["DON consensus"]
-    IDX --> CONS
-    CONS --> REPORT["ABI-encoded report"]
-    REPORT --> FWD["CRE forwarder"]
-    FWD --> HA["HouseAttestation.onReport<br/>(Sepolia)"]
-    HA --> GROK["connector house_status → Grok quotes it before betting"]
+sequenceDiagram
+    actor T as Trader
+    participant G as Grok
+    participant C as JackTrade connector
+    participant W as Trigger watcher
+    participant P as Prices (Pyth)
+    T->>G: "If TSLA drops below $350, short 20x with $20"
+    G->>C: set_trigger(TSLA, below, 350, short, 20, 20)
+    C->>C: validate market, minimums and caps, store as armed
+    C-->>G: trigger id, expiry
+    loop every 3 seconds
+        W->>P: latest prices
+        W->>W: price crossed? claim the trigger atomically
+    end
+    W->>C: place_bet through the same signing and caps path
+    C-->>T: bet shows in the Grok bets feed with its transaction
 ```
-
-Robinhood Chain isn't a CRE-supported chain, so the workflow reads it through the HTTP capability (raw JSON-RPC) and writes to a supported chain. Simulation: `cre workflow simulate ./proof-of-house --target staging-settings --broadcast` (see [`cre/README.md`](cre/README.md)).
 
 ## Make it real (Definitive Flash)
 
