@@ -158,7 +158,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | JackTradePoints contract | **Live on Robinhood Chain** · 19 tests including a fuzz test | [`contracts`](contracts) |
 | Points sync job | **Built** | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
 | Trading UI with Grok pages | **Built** · build, 22 unit tests and the Docker image pass | [`web`](web) |
-| Fresh exchange deployment on Robinhood Chain | In progress | see Deployments |
+| Fresh exchange deployment on Robinhood Chain | **Live** · 92 contract tests pass, deployed and configured (BTC, ETH, SPY, TSLA) from block 107978288 | see Deployments |
 | New backend (prices, relayer, Ponder indexer) | In progress | [`backend`](backend) |
 | Hosted app | **Live** | [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) |
 
@@ -168,9 +168,11 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 
 | Contract | Address |
 |----------|---------|
-| Exchange | pending deploy |
-| SessionKeyManager | pending deploy |
-| BatchExecutor | pending deploy |
+| Exchange | `0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c` |
+| SessionKeyManager | `0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af` |
+| BatchExecutor | `0x9221254c99f4b15886b204116f979acebdcddec2` |
+| PriceOracle (Pyth) | `0x35367e32bf94d9abe8af29a38323536b876ae51f` |
+| NoMintTokenomics (losses mint nothing) | `0x506b4124d2f63b83c147b026ebc7fa004683ddea` |
 | JackTradePoints (JTP) | `0xdc4d5b817C3Df2fB19cE5856b3967FbFA1199Ed7` (deploy tx `0xe189f8a5b2baec3f66b357ee45f88b0427e07fc7ec01865c8e329a4f581fa852`) |
 | Collateral: USDG | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
 
