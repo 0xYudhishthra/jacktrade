@@ -2,6 +2,7 @@
 
 > **Let Grok trade the news.** Ask Grok what the headlines mean for a stock, say "bet $20 long TSLA at 50x", and JackTrade places a leveraged bet against the house onchain, from inside the chat. Followers can make it real with a Definitive Flash order, and a Chainlink CRE workflow proves the house can pay.
 
+- **Live app**: [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) (Connect Grok · Grok bets · Points · Make it real)
 - **Spec** (source of truth): [`docs/spec.md`](docs/spec.md)
 - **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
 - **What existed before the hackathon**: [`PRE-EXISTING.md`](PRE-EXISTING.md) · **AI usage**: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
@@ -150,7 +151,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Proof of House (Chainlink CRE) | **Built** · workflow compiles to WASM, live-data test passes, contract 5/5 tests, report delivery verified on a Sepolia fork | [`cre`](cre) |
 | JackTrade Points | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
 | Single-image deploy (connector + web) | **Built** · Docker image builds and serves both | [`Dockerfile`](Dockerfile) |
-| Hosted deployment | In progress | Railway |
+| Hosted deployment | **Live** · connector + web app, Flash quotes verified through the hosted proxy | [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) |
 | CRE simulation broadcast to Sepolia | In progress | [`cre/README.md`](cre/README.md) |
 
 ## Deployments
