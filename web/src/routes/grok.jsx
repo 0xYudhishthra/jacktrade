@@ -1,18 +1,22 @@
-// Hackathon addition (ETHGlobal Mumbai 2026): Connect Grok.
-// Wallet → approve Grok's trading key (gasless RegisterSessionKey through the relayer's /action) → set caps →
-// copy the private MCP connector URL into grok.com. The key can open and close bets; it can never withdraw.
-import { useEffect, useState } from "react";
+// Connect Grok: give Grok (or any MCP client) a trading key that can open and close bets but never withdraw,
+// set its limits, and hand back the private connector URL to paste into Grok.
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { getAddress, isAddress } from "viem";
-import { Shell, Panel } from "@/components/product/ProductUI";
-import { submitWalletAction } from "@/lib/jacktradeClient";
-import { connectFinish, connectStart } from "@/lib/grok/api";
+import { Shell } from "@/components/product/ProductUI";
+import { CopyButton, ErrorBox, Note, Step, TxHash, fmtUsd, short } from "@/components/grok/GrokUI";
+import { connectFinish, connectStart, getAccount, getAction, getRelayerConfig, postAction } from "@/lib/grok/api";
 import { SESSION_KEY_MANAGER_ABI } from "@/lib/grok/config";
 import { ensureChain, errMsg, publicClient, useGrokWallet } from "@/lib/grok/wallet";
-import { CopyButton, ErrorBox, Note, Step, TxHash, fmtUsd, short } from "@/components/grok/GrokUI";
 
-const MIN_BALANCE = 1; // market minMargin is 1 USDG
+const MIN_BALANCE = 10; // market minMargin is 10 USDG
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function randomUint256() {
+  const b = new Uint8Array(32);
+  crypto.getRandomValues(b);
+  return BigInt("0x" + Array.from(b, (x) => x.toString(16).padStart(2, "0")).join(""));
+}
 
 const storeKey = (wallet) => `jt-grok-agent:${wallet.toLowerCase()}`;
 function loadAgent(wallet) {
@@ -26,20 +30,27 @@ function saveAgent(wallet, data) {
   try {
     localStorage.setItem(storeKey(wallet), JSON.stringify(data));
   } catch {
-    /* optional */
+    /* works without storage */
   }
 }
 
-const RELAYER_STATUS = {
-  queued: "Relayer: queued…",
-  submitted: "Relayer: submitted onchain…",
-  executed: "Relayer: executed.",
-};
+const TOOLS = [
+  ["house_status", "Bankroll and payout queue before every bet"],
+  ["list_markets", "Live prices and max leverage"],
+  ["quote_bet", "Entry, size and liquidation, without placing"],
+  ["place_bet", "Opens the bet, only after you confirm"],
+  ["my_bets", "Open bets with live PnL"],
+  ["cash_out", "Closes a bet at the current price"],
+  ["make_it_real", "Link to buy the real token"],
+  ["my_points", "Your JackTrade Points"],
+];
 
-export default function GrokConnectPage() {
-  const w = useGrokWallet();
-  const account = w.address;
-  const config = w.config;
+export default function GrokPage() {
+  const wallet = useGrokWallet();
+  const account = wallet.address;
+
+  const [info, setInfo] = useState(null);
+  const [balanceErr, setBalanceErr] = useState("");
 
   const [pending, setPending] = useState(null); // {pendingId, agentAddress, expiry}
   const [regStatus, setRegStatus] = useState("");
@@ -48,7 +59,7 @@ export default function GrokConnectPage() {
   const [regErr, setRegErr] = useState("");
   const [regBusy, setRegBusy] = useState(false);
 
-  const [caps, setCaps] = useState({ maxMarginUsd: "5", maxLeverage: "100", dailyLossUsd: "5" });
+  const [caps, setCaps] = useState({ maxMarginUsd: "25", maxLeverage: "100", dailyLossUsd: "50" });
   const [finishBusy, setFinishBusy] = useState(false);
   const [finishErr, setFinishErr] = useState("");
   const [mcpUrl, setMcpUrl] = useState("");
@@ -59,8 +70,9 @@ export default function GrokConnectPage() {
   const [revokeErr, setRevokeErr] = useState("");
   const [revokeTx, setRevokeTx] = useState(null);
 
-  // Reset when the wallet changes.
+  // Start over when the wallet changes.
   useEffect(() => {
+    setInfo(null);
     setPending(null);
     setRegistered(false);
     setRegStatus("");
@@ -74,7 +86,21 @@ export default function GrokConnectPage() {
     setRevokeKey(account ? loadAgent(account)?.agentAddress || "" : "");
   }, [account]);
 
-  const balance = account ? Number(w.balance ?? 0) : null;
+  const loadBalance = useCallback(async () => {
+    if (!account) return;
+    setBalanceErr("");
+    try {
+      setInfo(await getAccount(account));
+    } catch (err) {
+      setBalanceErr(`Couldn't load your JackTrade balance: ${err.message}`);
+    }
+  }, [account]);
+
+  useEffect(() => {
+    loadBalance();
+  }, [loadBalance]);
+
+  const balance = info ? Number(info.balance) : null;
   const lowBalance = balance !== null && balance < MIN_BALANCE;
 
   async function registerKey() {
@@ -83,43 +109,81 @@ export default function GrokConnectPage() {
     setRegistered(false);
     setRegTx(null);
     try {
-      if (!config) throw new Error("The exchange config is still loading. Try again in a moment.");
-      await ensureChain(w);
+      await ensureChain(wallet);
       setRegStatus("Creating Grok's trading key…");
       const start = await connectStart(account);
       if (!start?.pendingId || !isAddress(start?.agentAddress || "")) {
-        throw new Error("Connector returned an unexpected response for /api/connect/start");
+        throw new Error("The connector returned an unexpected response.");
       }
       setPending(start);
       const agentAddress = getAddress(start.agentAddress);
       saveAgent(account, { agentAddress });
       setRevokeKey(agentAddress);
 
+      setRegStatus("Reading the exchange config…");
+      const config = await getRelayerConfig(true);
       const skm = config.contracts.SessionKeyManager;
-      // The signature is bound to the current epoch: revokeAllSessionKeys bumps it.
+      const sk = config.eip712Actions.sessionKeys;
       const epoch = await publicClient.readContract({
         address: skm,
         abi: SESSION_KEY_MANAGER_ABI,
         functionName: "epochOf",
         args: [account],
       });
+      const now = Number(config.chainTime) || Math.floor(Date.now() / 1000);
+      const message = {
+        user: account,
+        key: agentAddress,
+        expiry: BigInt(start.expiry),
+        epoch: BigInt(epoch),
+        nonce: randomUint256(),
+        deadline: BigInt(now + 600),
+      };
 
       setRegStatus("Sign in your wallet to approve Grok's key (no gas)…");
-      // Same gasless path as the exchange's one-click trading: EIP-712 RegisterSessionKey → relayer POST /action.
-      const result = await submitWalletAction(
-        config,
-        w.walletClient,
+      const signature = await wallet.walletClient.signTypedData({
         account,
-        "registerSessionKey",
-        { key: agentAddress, expiry: BigInt(start.expiry), epoch },
-        (status) => setRegStatus(RELAYER_STATUS[status] || `Relayer: ${status || "working"}…`),
-      );
-      const tx = result?.txHash || result?.hash || result?.result?.txHash || null;
-      if (tx) setRegTx(tx);
+        domain: { ...sk.domain, chainId: Number(sk.domain.chainId) },
+        types: { RegisterSessionKey: sk.types.RegisterSessionKey },
+        primaryType: "RegisterSessionKey",
+        message,
+      });
+
+      setRegStatus("Submitting to the relayer…");
+      const action = {
+        user: account,
+        key: agentAddress,
+        expiry: message.expiry.toString(),
+        epoch: message.epoch.toString(),
+        nonce: message.nonce.toString(),
+        deadline: message.deadline.toString(),
+      };
+      const res = await postAction({ kind: "registerSessionKey", action, signature });
+      const id = res?.id;
+      if (!id) throw new Error("The relayer did not return an action id.");
+
+      const txOf = (a) => a?.txHash || a?.hash || a?.result?.txHash || null;
+      let final = res;
+      for (let i = 0; i < 90; i++) {
+        const st = String(final?.status || "").toLowerCase();
+        if (txOf(final)) setRegTx(txOf(final));
+        if (st === "executed" || st === "failed") break;
+        setRegStatus(`Relayer: ${st || "queued"}…`);
+        await sleep(2000);
+        final = await getAction(id);
+      }
+      const st = String(final?.status || "").toLowerCase();
+      if (txOf(final)) setRegTx(txOf(final));
+      if (st === "failed") {
+        const code = final.code || final.error?.code || "failed";
+        const msg = final.message || final.error?.message || (typeof final.error === "string" ? final.error : "");
+        throw new Error(`Relayer failed (${code})${msg ? `: ${msg}` : ""}`);
+      }
+      if (st !== "executed") throw new Error("Timed out waiting for the relayer. Try again in a minute.");
 
       setRegStatus("Checking the key onchain…");
       let valid = false;
-      for (let i = 0; i < 6 && !valid; i++) {
+      for (let i = 0; i < 5 && !valid; i++) {
         valid = await publicClient.readContract({
           address: skm,
           abi: SESSION_KEY_MANAGER_ABI,
@@ -152,13 +216,13 @@ export default function GrokConnectPage() {
       return;
     }
     if (c.maxMarginUsd < MIN_BALANCE) {
-      setFinishErr(`Max margin per bet must be at least $${MIN_BALANCE} (the JackTrade minimum).`);
+      setFinishErr(`Max margin per bet must be at least $${MIN_BALANCE} (the exchange minimum).`);
       return;
     }
     setFinishBusy(true);
     try {
       const res = await connectFinish(pending.pendingId, c);
-      if (!res?.mcpUrl) throw new Error("Connector did not return an MCP URL");
+      if (!res?.mcpUrl) throw new Error("The connector did not return a URL.");
       setMcpUrl(res.mcpUrl);
     } catch (err) {
       setFinishErr(errMsg(err));
@@ -177,11 +241,10 @@ export default function GrokConnectPage() {
     }
     setRevokeBusy(true);
     try {
-      if (!config) throw new Error("The exchange config is still loading. Try again in a moment.");
-      await ensureChain(w);
+      await ensureChain(wallet);
+      const config = await getRelayerConfig();
       const skm = config.contracts.SessionKeyManager;
-      // Revokes only Grok's key: the browser's own one-click trading key is left alone.
-      const hash = await w.walletClient.writeContract({
+      const hash = await wallet.walletClient.writeContract({
         account,
         address: skm,
         abi: SESSION_KEY_MANAGER_ABI,
@@ -191,16 +254,14 @@ export default function GrokConnectPage() {
       setRevokeTx(hash);
       setRevokeMsg("Waiting for confirmation…");
       const r = await publicClient.waitForTransactionReceipt({ hash, timeout: 120_000 });
-      if (r.status !== "success") throw new Error("Revoke transaction reverted");
+      if (r.status !== "success") throw new Error("The revoke transaction reverted.");
       const still = await publicClient.readContract({
         address: skm,
         abi: SESSION_KEY_MANAGER_ABI,
         functionName: "isValidSessionKey",
         args: [account, getAddress(revokeKey)],
       });
-      setRevokeMsg(
-        still ? "Transaction landed but the key still reads as valid." : "Revoked. Grok can no longer trade for you.",
-      );
+      setRevokeMsg(still ? "The transaction landed but the key still reads as valid." : "Revoked. Grok can no longer trade for you.");
       if (!still) setRegistered(false);
     } catch (err) {
       setRevokeErr(errMsg(err));
@@ -211,7 +272,7 @@ export default function GrokConnectPage() {
   }
 
   const s1 = account ? "done" : "active";
-  const s2 = s1 !== "done" ? "todo" : !lowBalance ? "done" : "active";
+  const s2 = s1 !== "done" ? "todo" : info && !lowBalance ? "done" : "active";
   const s3 = s1 !== "done" ? "todo" : registered ? "done" : regErr ? "error" : "active";
   const s4 = !registered ? "todo" : mcpUrl ? "done" : "active";
   const s5 = mcpUrl ? "active" : "todo";
@@ -219,23 +280,17 @@ export default function GrokConnectPage() {
   return (
     <Shell
       title="Connect Grok"
-      kicker="JACKTRADE / GROK"
-      subtitle="Read the news in Grok. Bet on it in the same chat. Add JackTrade to Grok once, then ask what the news means for a market and tell it to bet: Grok checks the house, quotes the bet and places it onchain."
-      action={
-        <Link to="/grok/bets" className="luna-btn">
-          Grok bets ↗
-        </Link>
-      }
+      kicker="JACKTRADE / AGENTS"
+      subtitle="Add JackTrade to Grok once. Then ask Grok what the news means for a market and tell it to trade: it checks the house, quotes the bet and places it onchain, in the same chat."
     >
-      <div className="jt-grok">
-        <Note tone="ok">
-          <span className="jt-safety">Grok&apos;s key can open and close bets. It can never withdraw your money.</span>{" "}
-          You set its limits, and you can revoke it any time.
-        </Note>
+      <div className="jt-grok jt-agent-page">
+        <p className="jt-safety">
+          Grok's key can open and close bets. It can never withdraw your money, and you can revoke it any time.
+        </p>
 
         <Step n={1} title="Connect your wallet" state={s1}>
           {!account ? (
-            <button className="luna-btn luna-btn-active" onClick={w.connect}>
+            <button className="luna-btn luna-btn-active jt-cta" type="button" onClick={wallet.connect}>
               Connect wallet
             </button>
           ) : (
@@ -245,36 +300,45 @@ export default function GrokConnectPage() {
           )}
         </Step>
 
-        <Step n={2} title="Check your JackTrade balance" state={s2}>
-          <div className="jt-row">
-            <span>
-              Trading balance: <strong>{fmtUsd(balance)}</strong>
-            </span>
-            <button className="luna-btn" onClick={w.deposit}>
-              Deposit
-            </button>
-          </div>
+        <Step n={2} title="Check your balance" state={s2}>
+          {balance === null && !balanceErr && <p className="jt-muted">Loading balance…</p>}
+          {balance !== null && (
+            <div className="jt-row">
+              <span>
+                Balance <strong className="jt-mono">{fmtUsd(balance)}</strong>
+              </span>
+              <button className="luna-btn" type="button" onClick={loadBalance}>
+                Refresh
+              </button>
+              {lowBalance && (
+                <button className="luna-btn" type="button" onClick={wallet.deposit}>
+                  Deposit
+                </button>
+              )}
+            </div>
+          )}
           {lowBalance && (
             <Note>
-              {balance === 0 ? "Your balance is empty." : `Bets need at least $${MIN_BALANCE} of margin.`} Deposit
-              USDG first. You can still connect Grok now.
+              {balance === 0 ? "Your balance is empty." : `Bets need at least $${MIN_BALANCE} of margin.`} Deposit USDG,
+              then hit Refresh. You can still connect Grok now.
             </Note>
           )}
+          <ErrorBox error={balanceErr} />
         </Step>
 
         <Step n={3} title="Approve Grok's trading key" state={s3}>
           <p>
-            We create a dedicated key for Grok. You sign once (gasless) to register it with JackTrade&apos;s
-            SessionKeyManager. The key can open and close bets for you. It can&apos;t withdraw.
+            We create a dedicated key for Grok. You sign once (no gas) to register it with the exchange's
+            SessionKeyManager. The key can open and close bets for you. It can't withdraw.
           </p>
           {pending?.agentAddress && (
             <p className="jt-small">
-              Grok&apos;s key <span className="jt-mono">{short(pending.agentAddress, 6)}</span>
+              Grok's key <span className="jt-mono">{short(pending.agentAddress, 6)}</span>
               {pending.expiry && <> · expires {new Date(Number(pending.expiry) * 1000).toLocaleString()}</>}
             </p>
           )}
           {!registered && (
-            <button className="luna-btn luna-btn-active" onClick={registerKey} disabled={regBusy || s1 !== "done"}>
+            <button className="luna-btn luna-btn-active" type="button" onClick={registerKey} disabled={regBusy || s1 !== "done"}>
               {regBusy ? "Working…" : regErr ? "Try again" : "Approve Grok's key"}
             </button>
           )}
@@ -288,40 +352,19 @@ export default function GrokConnectPage() {
         </Step>
 
         <Step n={4} title="Set Grok's limits" state={s4}>
-          <p className="jt-muted">The connector enforces these on every bet Grok places.</p>
+          <p className="jt-muted">The connector checks these before signing every bet Grok places.</p>
           <form className="jt-form" onSubmit={finish}>
-            <label className="pm-field">
-              Max margin per bet (USD)
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={caps.maxMarginUsd}
-                onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })}
-                disabled={!!mcpUrl}
-              />
+            <label>
+              <span>Max margin per bet (USD)</span>
+              <input className="jt-input" type="number" min="10" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={!!mcpUrl} />
             </label>
-            <label className="pm-field">
-              Max leverage (×)
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={caps.maxLeverage}
-                onChange={(e) => setCaps({ ...caps, maxLeverage: e.target.value })}
-                disabled={!!mcpUrl}
-              />
+            <label>
+              <span>Max leverage (×)</span>
+              <input className="jt-input" type="number" min="1" step="1" value={caps.maxLeverage} onChange={(e) => setCaps({ ...caps, maxLeverage: e.target.value })} disabled={!!mcpUrl} />
             </label>
-            <label className="pm-field">
-              Daily loss limit (USD)
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={caps.dailyLossUsd}
-                onChange={(e) => setCaps({ ...caps, dailyLossUsd: e.target.value })}
-                disabled={!!mcpUrl}
-              />
+            <label>
+              <span>Daily loss limit (USD)</span>
+              <input className="jt-input" type="number" min="1" step="1" value={caps.dailyLossUsd} onChange={(e) => setCaps({ ...caps, dailyLossUsd: e.target.value })} disabled={!!mcpUrl} />
             </label>
             {!mcpUrl && (
               <button className="luna-btn luna-btn-active" type="submit" disabled={finishBusy || !registered}>
@@ -333,9 +376,9 @@ export default function GrokConnectPage() {
         </Step>
 
         <Step n={5} title="Add JackTrade to Grok" state={s5}>
-          <p>Your private connector URL. Treat it like a password: anyone with it can trade with Grok&apos;s key.</p>
+          <p>Your private connector URL. Treat it like a password: anyone with it can trade with Grok's key.</p>
           <div className="jt-copy">
-            <code className="jt-selectable">{mcpUrl}</code>
+            <code className="jt-mono jt-selectable">{mcpUrl}</code>
             <CopyButton text={mcpUrl} label="Copy URL" />
           </div>
           <ol className="jt-howto">
@@ -343,48 +386,64 @@ export default function GrokConnectPage() {
               Open{" "}
               <a href="https://grok.com/connectors" target="_blank" rel="noreferrer">
                 grok.com/connectors
-              </a>{" "}
-              (grok.com → Connectors).
+              </a>
+              .
             </li>
             <li>
               Click <b>New Connector</b>, then <b>Custom</b>.
             </li>
-            <li>Paste the URL above, name it &quot;JackTrade&quot; and save.</li>
+            <li>Paste the URL, name it "JackTrade" and save.</li>
             <li>
-              In a new Grok chat, try: <i>&quot;What does today&apos;s news mean for BTC? If you agree, bet $20 long at
-              50x.&quot;</i>
+              In a new chat, try: <i>"What does today's news mean for BTC? If you agree, bet $20 long at 50x."</i>
             </li>
           </ol>
-          <p>
-            Bets Grok places show up in the <Link to="/grok/bets">Grok bets feed</Link> and in your{" "}
-            <Link to="/portfolio">portfolio</Link>.
+          <p className="jt-small jt-muted">
+            It's a standard MCP server, so the same URL also works in Claude, ChatGPT or any other MCP client. Bets
+            placed by an agent show up in the <Link to="/bets">agent bets feed</Link>.
           </p>
         </Step>
 
+        <section className="hm-panel pm-panel jt-tools">
+          <div className="pm-panel-heading hm-panel-bar">
+            <h2>What Grok can do</h2>
+          </div>
+          <div className="pm-panel-body">
+            <ul className="jt-tool-list">
+              {TOOLS.map(([name, desc]) => (
+                <li key={name}>
+                  <code>{name}</code>
+                  <span>{desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         {account && (
-          <Panel title="Revoke Grok's key">
-            <p className="jt-muted">
-              Sends <span className="jt-mono">revokeSessionKey</span> to JackTrade&apos;s SessionKeyManager from your
-              wallet (needs a little ETH for gas). Grok stops being able to trade immediately.
-            </p>
-            <div className="jt-copy">
-              <input
-                placeholder="Grok's key address 0x…"
-                value={revokeKey}
-                onChange={(e) => setRevokeKey(e.target.value.trim())}
-              />
-              <button className="luna-btn" onClick={revoke} disabled={revokeBusy}>
-                {revokeBusy ? "Revoking…" : "Revoke"}
-              </button>
+          <section className="hm-panel pm-panel jt-revoke">
+            <div className="pm-panel-heading hm-panel-bar">
+              <h2>Revoke Grok's key</h2>
             </div>
-            {revokeTx && (
-              <p className="jt-small">
-                Tx: <TxHash hash={revokeTx} />
+            <div className="pm-panel-body">
+              <p className="jt-muted">
+                Sends <span className="jt-mono">revokeSessionKey</span> from your wallet (needs a little ETH for gas).
+                Grok stops being able to trade immediately.
               </p>
-            )}
-            {revokeMsg && <p className="jt-ok">{revokeMsg}</p>}
-            <ErrorBox error={revokeErr} />
-          </Panel>
+              <div className="jt-copy">
+                <input className="jt-input jt-mono" placeholder="Grok's key address 0x…" value={revokeKey} onChange={(e) => setRevokeKey(e.target.value.trim())} />
+                <button className="luna-btn" type="button" onClick={revoke} disabled={revokeBusy}>
+                  {revokeBusy ? "Revoking…" : "Revoke"}
+                </button>
+              </div>
+              {revokeTx && (
+                <p className="jt-small">
+                  Tx: <TxHash hash={revokeTx} />
+                </p>
+              )}
+              {revokeMsg && <p className="jt-ok">{revokeMsg}</p>}
+              <ErrorBox error={revokeErr} />
+            </div>
+          </section>
         )}
       </div>
     </Shell>

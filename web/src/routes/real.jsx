@@ -1,17 +1,14 @@
-// Hackathon addition (ETHGlobal Mumbai 2026): Make it real with Definitive Flash.
-// Copy a Grok bet into the real token on Robinhood Chain: Flash quote → wrap / approve / Permit2 → sign the order
-// (+ the attached take-profit / stop-loss bracket for longs) → submit → poll status. Long bet → market buy with an
-// attached bracket; short bet → limit buy at the short's target. An unprotected order is never placed: if Flash
-// returns no bracket payload for a long, the order is refused.
+// Make it real: copy an agent's bet into the real token on Robinhood Chain with a Definitive Flash order.
+// Long → market buy with an attached take-profit / stop-loss. Short → limit buy below the market.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { erc20Abi, formatUnits } from "viem";
-import { Shell, Panel, FilterSelect } from "@/components/product/ProductUI";
+import { Shell, Panel } from "@/components/product/ProductUI";
+import { ErrorBox, Note, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
 import { flashOrder, flashOrderDetail, flashOrders, flashQuote, getBet } from "@/lib/grok/api";
 import { FLASH_CHAIN, NATIVE_SENTINEL, TOKENS } from "@/lib/grok/config";
 import { errMsg, publicClient, sendAndWait, signTypedDataJson, useGrokWallet } from "@/lib/grok/wallet";
-import { ErrorBox, GrokBadge, KV, Note, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
-import { isLong, marketSymbol } from "./grokBets";
+import { isLong, marketSymbol } from "@/lib/grok/bets";
 
 const TARGETS = { TSLA: TOKENS.TSLA, NVDA: TOKENS.NVDA, ETH: TOKENS.WETH };
 
@@ -22,12 +19,9 @@ function targetFor(symbol) {
   if (symbol === "BTC")
     return {
       key: "TSLA",
-      note: "There's no wrapped BTC on Robinhood Chain in this app yet, so this defaults to the TSLA stock token. Pick another target below.",
+      note: "There's no wrapped BTC on Robinhood Chain here yet, so this defaults to the TSLA stock token. Pick another target below.",
     };
-  return {
-    key: "TSLA",
-    note: symbol ? `No ${symbol} token mapped on Robinhood Chain; defaulting to TSLA.` : "",
-  };
+  return { key: "TSLA", note: symbol ? `No ${symbol} token on Robinhood Chain; defaulting to TSLA.` : "" };
 }
 
 const STATUS_LABEL = {
@@ -53,14 +47,14 @@ const nonEmpty = (v) => typeof v === "string" && v.length > 0;
 
 export default function RealPage() {
   const { id } = useParams({ strict: false });
-  const w = useGrokWallet();
-  const account = w.address;
+  const wallet = useGrokWallet();
+  const account = wallet.address;
 
   const [bet, setBet] = useState(null);
   const [betErr, setBetErr] = useState("");
 
   const [targetKey, setTargetKey] = useState("TSLA");
-  const [direction, setDirection] = useState("long"); // long → market+bracket, short → limit buy
+  const [direction, setDirection] = useState("long");
   const [payWith, setPayWith] = useState("USDG");
   const [usdAmount, setUsdAmount] = useState("10");
   const [ethAmount, setEthAmount] = useState("0.005");
@@ -80,7 +74,7 @@ export default function RealPage() {
   const [quoteBusy, setQuoteBusy] = useState(false);
   const [quoteErr, setQuoteErr] = useState("");
 
-  const [log, setLog] = useState([]); // [{label, hash?, state}]
+  const [log, setLog] = useState([]);
   const [execBusy, setExecBusy] = useState(false);
   const [execErr, setExecErr] = useState("");
   const [orderId, setOrderId] = useState(null);
@@ -93,7 +87,6 @@ export default function RealPage() {
   const leverage = Math.max(1, Number(bet?.leverage) || 50);
   const liqPct = Math.min(0.2, Math.max(0.005, 1 / leverage));
 
-  // Load the bet.
   useEffect(() => {
     let alive = true;
     setBet(null);
@@ -102,8 +95,7 @@ export default function RealPage() {
       .then((b) => {
         if (!alive) return;
         setBet(b);
-        const m = targetFor(marketSymbol(b?.market));
-        setTargetKey(m.key);
+        setTargetKey(targetFor(marketSymbol(b?.market)).key);
         setDirection(isLong(b?.side) ? "long" : "short");
       })
       .catch((err) => alive && setBetErr(err.message || "Bet not found"));
@@ -142,7 +134,7 @@ export default function RealPage() {
     loadPrice();
   }, [loadPrice]);
 
-  // Derive bracket / limit from the bet's leverage and the live token price.
+  // Bracket / limit derived from the bet's leverage and the live token price.
   useEffect(() => {
     if (!refPrice) return;
     setTp(priceStr(refPrice * (1 + 2 * liqPct)));
@@ -150,24 +142,18 @@ export default function RealPage() {
     setLimitPx(priceStr(refPrice * (1 - liqPct)));
   }, [refPrice, liqPct]);
 
-  // Clear any stale quote when inputs change.
+  // A changed input makes the quote stale.
   useEffect(() => {
     setQuote(null);
     setQuoteBody(null);
     setQuoteErr("");
   }, [targetKey, direction, payWith, usdAmount, ethAmount, maxSlippagePct, tp, sl, limitPx, account]);
 
-  // Wallet balances on Robinhood Chain.
   const loadBalances = useCallback(async () => {
     if (!account) return setBalances(null);
     try {
       const [usdg, eth] = await Promise.all([
-        publicClient.readContract({
-          address: TOKENS.USDG.address,
-          abi: erc20Abi,
-          functionName: "balanceOf",
-          args: [account],
-        }),
+        publicClient.readContract({ address: TOKENS.USDG.address, abi: erc20Abi, functionName: "balanceOf", args: [account] }),
         publicClient.getBalance({ address: account }),
       ]);
       setBalances({ usdg: Number(formatUnits(usdg, 6)), eth: Number(formatUnits(eth, 18)) });
@@ -203,8 +189,7 @@ export default function RealPage() {
       body.attachedBracket = { takeProfit: { notionalPrice: String(tp) }, stopLoss: { notionalPrice: String(sl) } };
       if (Number(maxSlippagePct) > 0) body.maxSlippage = trimNum(Number(maxSlippagePct) / 100, 4);
     } else {
-      const lp = Number(limitPx);
-      if (!(lp > 0)) throw new Error("Set a limit price");
+      if (!(Number(limitPx) > 0)) throw new Error("Set a limit price");
       body.limitNotionalPrice = String(limitPx);
     }
     return body;
@@ -215,8 +200,7 @@ export default function RealPage() {
     setExecErr("");
     setQuoteBusy(true);
     try {
-      const spend = payWith === "ETH" ? NATIVE_SENTINEL : TOKENS.USDG.address;
-      const body = buildBody(spend);
+      const body = buildBody(payWith === "ETH" ? NATIVE_SENTINEL : TOKENS.USDG.address);
       const q = await flashQuote(body);
       if (!q?.quoteId || !q?.evm) throw new Error("Unexpected quote response");
       if (!nonEmpty(q.evm.orderTypedData)) throw new Error("Quote has no order payload to sign");
@@ -235,11 +219,7 @@ export default function RealPage() {
     const key = ++logSeq.current;
     setLog((l) => [...l, { key, label, state: "active" }]);
     const patch = (p) => setLog((l) => l.map((x) => (x.key === key ? { ...x, ...p } : x)));
-    return {
-      hash: (hash) => patch({ hash }),
-      done: () => patch({ state: "done" }),
-      fail: () => patch({ state: "error" }),
-    };
+    return { hash: (hash) => patch({ hash }), done: () => patch({ state: "done" }), fail: () => patch({ state: "error" }) };
   };
 
   async function runStep(label, fn) {
@@ -264,28 +244,25 @@ export default function RealPage() {
       let q = quote;
       let body = quoteBody;
 
-      // 1) Onchain prerequisites from the quote (wrap, approvals). Re-quote afterwards so the
-      //    signed payloads are fresh and reflect the new allowances.
+      // 1) Onchain prerequisites (wrap, approvals), then re-quote so the signed payloads are fresh.
       let sentTx = false;
       if (q.wrap?.evmTx) {
-        const wrapped = q.wrap.wrappedAsset;
-        await runStep(`Wrap ${body.qty} ETH → WETH`, (s) => sendAndWait(w, q.wrap.evmTx, s.hash));
-        body = { ...body, contraAsset: wrapped };
+        await runStep(`Wrap ${body.qty} ETH → WETH`, (s) => sendAndWait(wallet, q.wrap.evmTx, s.hash));
+        body = { ...body, contraAsset: q.wrap.wrappedAsset };
         sentTx = true;
       }
       if (q.evm.approveTx) {
         const sym = payWith === "ETH" ? "WETH" : "USDG";
-        await runStep(`Approve ${sym} for Flash (one-time)`, (s) => sendAndWait(w, q.evm.approveTx, s.hash));
+        await runStep(`Approve ${sym} for Flash (one-time)`, (s) => sendAndWait(wallet, q.evm.approveTx, s.hash));
         sentTx = true;
       }
       if (q.attachedBracket?.evm?.approveTx) {
         await runStep(`Approve ${target.symbol} for the take-profit / stop-loss exits (one-time)`, (s) =>
-          sendAndWait(w, q.attachedBracket.evm.approveTx, s.hash),
+          sendAndWait(wallet, q.attachedBracket.evm.approveTx, s.hash),
         );
         sentTx = true;
       }
-      const stale = Date.now() - quoteAt > 120_000;
-      if (sentTx || stale) {
+      if (sentTx || Date.now() - quoteAt > 120_000) {
         q = await runStep("Refresh quote", async () => {
           if (sentTx) await new Promise((r) => setTimeout(r, 2500)); // let Flash see the new allowance
           const fresh = await flashQuote(body);
@@ -294,12 +271,12 @@ export default function RealPage() {
         });
         if (q.wrap?.evmTx) throw new Error("Flash still asks for a wrap; check your WETH balance and try again.");
         if (q.evm.approveTx) {
-          await runStep("Approve spend token (again)", (s) => sendAndWait(w, q.evm.approveTx, s.hash));
+          await runStep("Approve spend token (again)", (s) => sendAndWait(wallet, q.evm.approveTx, s.hash));
           q = await flashQuote(body);
         }
         if (q.attachedBracket?.evm?.approveTx) {
           await runStep(`Approve ${target.symbol} for exits (again)`, (s) =>
-            sendAndWait(w, q.attachedBracket.evm.approveTx, s.hash),
+            sendAndWait(wallet, q.attachedBracket.evm.approveTx, s.hash),
           );
           q = await flashQuote(body);
         }
@@ -311,14 +288,13 @@ export default function RealPage() {
       // 2) Signatures (gasless).
       let permitFields = {};
       if (nonEmpty(q.evm.permitTypedData)) {
-        const sig = await runStep("Sign Permit2 approval", () => signTypedDataJson(w, q.evm.permitTypedData));
+        const sig = await runStep("Sign Permit2 approval", () => signTypedDataJson(wallet, q.evm.permitTypedData));
         permitFields = { evmPermitTypedData: q.evm.permitTypedData, evmPermitSignature: sig };
       }
       const userSignature = await runStep(direction === "long" ? "Sign the market buy" : "Sign the limit buy", () =>
-        signTypedDataJson(w, q.evm.orderTypedData),
+        signTypedDataJson(wallet, q.evm.orderTypedData),
       );
 
-      // Never place an unprotected long: the bracket must come back from Flash.
       if (body.attachedBracket && !nonEmpty(q.attachedBracket?.evm?.orderTypedData)) {
         throw new Error("Flash didn't return a bracket payload; not placing an unprotected order.");
       }
@@ -327,12 +303,12 @@ export default function RealPage() {
         let bracketPermit = {};
         if (nonEmpty(q.attachedBracket.evm.permitTypedData)) {
           const sig = await runStep("Sign Permit2 for the exits", () =>
-            signTypedDataJson(w, q.attachedBracket.evm.permitTypedData),
+            signTypedDataJson(wallet, q.attachedBracket.evm.permitTypedData),
           );
           bracketPermit = { evmPermitTypedData: q.attachedBracket.evm.permitTypedData, evmPermitSignature: sig };
         }
         const bracketSig = await runStep("Sign the take-profit / stop-loss pair", () =>
-          signTypedDataJson(w, q.attachedBracket.evm.orderTypedData),
+          signTypedDataJson(wallet, q.attachedBracket.evm.orderTypedData),
         );
         attachedBracket = {
           ...body.attachedBracket,
@@ -368,7 +344,7 @@ export default function RealPage() {
     }
   }
 
-  // Poll Flash orders for this wallet.
+  // Poll this wallet's Flash orders.
   useEffect(() => {
     if (!account) return;
     let alive = true;
@@ -401,42 +377,41 @@ export default function RealPage() {
   const spendLabel = payWith === "ETH" ? "ETH" : "USDG";
   const lowUsdg = payWith === "USDG" && balances && balances.usdg < Number(usdAmount);
   const betSymbol = marketSymbol(bet?.market);
-  const payItems =
-    targetKey === "ETH"
-      ? [["USDG", "USDG"]]
-      : [
-          ["USDG", "USDG"],
-          ["ETH", "ETH (native)"],
-        ];
+  const prompts = quote
+    ? [
+        quote.wrap?.evmTx && "wrap ETH (tx)",
+        quote.evm.approveTx && `approve ${spendLabel === "ETH" ? "WETH" : "USDG"} (tx)`,
+        quote.attachedBracket?.evm?.approveTx && `approve ${target.symbol} for exits (tx)`,
+        nonEmpty(quote.evm.permitTypedData) && "Permit2 (signature)",
+        "order (signature)",
+        quote.attachedBracket?.evm && "take-profit / stop-loss (signature)",
+      ].filter(Boolean)
+    : [];
 
   return (
     <Shell
       title="Make it real"
-      kicker="JACKTRADE / DEFINITIVE FLASH"
-      subtitle="Copy a Grok bet into the real token on Robinhood Chain with a Definitive Flash order. Your wallet, your tokens, MEV-protected execution."
-      action={
-        <Link to="/grok/bets" className="luna-btn">
-          ← Grok bets
-        </Link>
-      }
+      kicker="JACKTRADE / AGENTS"
+      subtitle="Copy an agent's bet into the real token on Robinhood Chain with a Definitive Flash order. Your wallet, your tokens."
     >
       <div className="jt-grok">
-        <Panel title="The Grok bet" aside={bet ? <GrokBadge /> : null}>
+        <p className="jt-small">
+          <Link to="/bets">← Agent bets</Link>
+        </p>
+
+        <Panel title="The agent's bet">
           {bet ? (
-            <KV
-              rows={[
-                ["Market", betSymbol || bet.market],
-                ["Side", isLong(bet.side) ? "LONG" : "SHORT", isLong(bet.side) ? "pm-up" : "pm-down"],
-                ["Leverage", `${bet.leverage}×`],
-                ["Entry", bet.entryPrice ? fmtPrice(bet.entryPrice) : "–"],
-                ["Margin", fmtUsd(bet.marginUsd)],
-                ["Placed", timeAgo(bet.openedAt) || "–"],
-              ]}
-            />
+            <dl className="jt-kv">
+              <div><dt>Market</dt><dd>{betSymbol || bet.market}</dd></div>
+              <div><dt>Side</dt><dd className={isLong(bet.side) ? "pm-up" : "pm-down"}>{isLong(bet.side) ? "LONG" : "SHORT"}</dd></div>
+              <div><dt>Leverage</dt><dd>{bet.leverage}×</dd></div>
+              <div><dt>Entry</dt><dd>{bet.entryPrice ? fmtPrice(bet.entryPrice) : "–"}</dd></div>
+              <div><dt>Margin</dt><dd>{fmtUsd(bet.marginUsd)}</dd></div>
+              <div><dt>Placed</dt><dd>{timeAgo(bet.openedAt) || "–"}</dd></div>
+            </dl>
           ) : betErr ? (
             <Note>
-              Couldn&apos;t load bet <span className="jt-mono">{id}</span> ({betErr}). You can still set up an order
-              below.
+              Couldn't load bet <span className="jt-mono">{id}</span> ({betErr}). You can still set up an order below.
             </Note>
           ) : (
             <p className="jt-muted">Loading bet…</p>
@@ -446,112 +421,94 @@ export default function RealPage() {
 
         <Panel title="Your order">
           <div className="jt-form">
-            <div className="pm-field">
-              Buy (real token)
-              <FilterSelect
-                label="Token to buy"
-                value={targetKey}
-                onChange={setTargetKey}
-                items={[
-                  ["TSLA", "TSLA (Tesla stock token)"],
-                  ["NVDA", "NVDA (Nvidia stock token)"],
-                  ["ETH", "WETH (wrapped ETH)"],
-                ]}
-              />
-            </div>
-            <div className="pm-field">
-              Strategy
-              <FilterSelect
-                label="Strategy"
-                value={direction}
-                onChange={setDirection}
-                items={[
-                  ["long", "Long → market buy + take-profit / stop-loss"],
-                  ["short", "Short → limit buy below the market"],
-                ]}
-              />
-            </div>
-            <div className="pm-field">
-              Pay with
-              <FilterSelect label="Pay with" value={payWith} onChange={setPayWith} items={payItems} />
-            </div>
+            <label>
+              <span>Buy (real token)</span>
+              <select className="jt-input" value={targetKey} onChange={(e) => setTargetKey(e.target.value)}>
+                <option value="TSLA">TSLA (Tesla stock token)</option>
+                <option value="NVDA">NVDA (Nvidia stock token)</option>
+                <option value="ETH">WETH (wrapped ETH)</option>
+              </select>
+            </label>
+            <label>
+              <span>Strategy</span>
+              <select className="jt-input" value={direction} onChange={(e) => setDirection(e.target.value)}>
+                <option value="long">Long → market buy + take-profit / stop-loss</option>
+                <option value="short">Short → limit buy below the market</option>
+              </select>
+            </label>
+            <label>
+              <span>Pay with</span>
+              <select className="jt-input" value={payWith} onChange={(e) => setPayWith(e.target.value)}>
+                <option value="USDG">USDG</option>
+                <option value="ETH" disabled={targetKey === "ETH"}>
+                  ETH (native){targetKey === "ETH" ? " (n/a for WETH)" : ""}
+                </option>
+              </select>
+            </label>
             {payWith === "USDG" ? (
-              <label className="pm-field">
-                Amount (USDG)
-                <input type="number" min="1" step="1" value={usdAmount} onChange={(e) => setUsdAmount(e.target.value)} />
+              <label>
+                <span>Amount (USDG)</span>
+                <input className="jt-input" type="number" min="1" step="1" value={usdAmount} onChange={(e) => setUsdAmount(e.target.value)} />
               </label>
             ) : (
-              <label className="pm-field">
-                Amount (ETH)
-                <input
-                  type="number"
-                  min="0"
-                  step="0.001"
-                  value={ethAmount}
-                  onChange={(e) => setEthAmount(e.target.value)}
-                />
+              <label>
+                <span>Amount (ETH)</span>
+                <input className="jt-input" type="number" min="0" step="0.001" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
               </label>
             )}
           </div>
 
           <div className="jt-row">
             <span className="jt-muted">{target.symbol} now</span>
-            <strong>{refPrice ? `$${fmtPrice(refPrice)}` : priceErr ? "–" : "…"}</strong>
-            <button className="luna-btn" onClick={loadPrice}>
+            <strong className="jt-mono">{refPrice ? `$${fmtPrice(refPrice)}` : priceErr ? "–" : "…"}</strong>
+            <button className="luna-btn" type="button" onClick={loadPrice}>
               Refresh
             </button>
-            <span className="jt-muted jt-small">
-              Derived from the bet&apos;s {leverage}× leverage: liquidation distance ≈ {(liqPct * 100).toFixed(2)}%
+            <span className="jt-small jt-muted">
+              From the bet's {leverage}× leverage: liquidation distance ≈ {(liqPct * 100).toFixed(2)}%
             </span>
           </div>
           <ErrorBox error={priceErr} />
 
           {direction === "long" ? (
             <div className="jt-form">
-              <label className="pm-field">
-                Take-profit (USD, +2× liq. distance)
-                <input type="number" step="0.01" value={tp} onChange={(e) => setTp(e.target.value)} />
+              <label>
+                <span>Take-profit (USD)</span>
+                <input className="jt-input" type="number" step="0.01" value={tp} onChange={(e) => setTp(e.target.value)} />
               </label>
-              <label className="pm-field">
-                Stop-loss (USD, at liq. distance)
-                <input type="number" step="0.01" value={sl} onChange={(e) => setSl(e.target.value)} />
+              <label>
+                <span>Stop-loss (USD)</span>
+                <input className="jt-input" type="number" step="0.01" value={sl} onChange={(e) => setSl(e.target.value)} />
               </label>
-              <label className="pm-field">
-                Max slippage % (blank = Flash recommended)
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  placeholder="auto"
-                  value={maxSlippagePct}
-                  onChange={(e) => setMaxSlippagePct(e.target.value)}
-                />
+              <label>
+                <span>Max slippage % (blank = recommended)</span>
+                <input className="jt-input" type="number" step="0.1" min="0" placeholder="auto" value={maxSlippagePct} onChange={(e) => setMaxSlippagePct(e.target.value)} />
               </label>
             </div>
           ) : (
             <div className="jt-form">
-              <label className="pm-field">
-                Limit buy price (USD, liq. distance below)
-                <input type="number" step="0.01" value={limitPx} onChange={(e) => setLimitPx(e.target.value)} />
+              <label>
+                <span>Limit buy price (USD)</span>
+                <input className="jt-input" type="number" step="0.01" value={limitPx} onChange={(e) => setLimitPx(e.target.value)} />
               </label>
-              <p className="jt-muted jt-small">
-                The short bets on a drop. This rests a limit buy at that level (good-til-cancelled) so you pick up
-                the real token if Grok is right.
+              <p className="jt-small jt-muted">
+                The short bets on a drop. This rests a limit buy at that level (good-til-cancelled), so you pick up the
+                real token if the agent is right.
               </p>
             </div>
           )}
 
           {!account ? (
-            <button className="luna-btn luna-btn-active" onClick={w.connect}>
+            <button className="luna-btn luna-btn-active" type="button" onClick={wallet.connect}>
               Connect wallet
             </button>
           ) : (
             <div className="jt-row">
-              <button className="luna-btn luna-btn-active" onClick={getQuote} disabled={quoteBusy || execBusy}>
+              <button className="luna-btn luna-btn-active" type="button" onClick={getQuote} disabled={quoteBusy || execBusy}>
                 {quoteBusy ? "Quoting…" : quote ? "Re-quote" : "Get Flash quote"}
               </button>
               {balances && (
-                <span className="jt-muted jt-small">
+                <span className="jt-small jt-muted">
                   Wallet: {balances.usdg.toFixed(2)} USDG · {balances.eth.toFixed(5)} ETH
                 </span>
               )}
@@ -562,49 +519,37 @@ export default function RealPage() {
 
           {quote && (
             <div className="jt-quote">
-              <KV
-                rows={[
-                  ["You spend", `${quote.from?.amount} ${spendLabel} (${fmtUsd(quote.from?.notional)})`],
-                  [
-                    "You get (est.)",
-                    `${Number(quote.to?.amount).toPrecision(6)} ${target.symbol} (${fmtUsd(quote.to?.notional)})`,
-                  ],
-                  ["Fees (est.)", fmtUsd(quote.fees?.estimatedFeeNotional, 4)],
-                  quote.estimatedPriceImpact != null && [
-                    "Price impact",
-                    `${(Number(quote.estimatedPriceImpact) * 100).toFixed(3)}%`,
-                  ],
-                  quote.recommendedSlippage != null && [
-                    "Slippage",
-                    quoteBody?.maxSlippage
-                      ? `${(Number(quoteBody.maxSlippage) * 100).toFixed(2)}% (yours)`
-                      : `${(Number(quote.recommendedSlippage) * 100).toFixed(2)}% (Flash recommended)`,
-                  ],
-                  quoteBody?.attachedBracket && [
-                    "Bracket",
-                    `TP $${quoteBody.attachedBracket.takeProfit.notionalPrice} / SL $${quoteBody.attachedBracket.stopLoss.notionalPrice}`,
-                  ],
-                  quoteBody?.limitNotionalPrice && ["Limit", `$${quoteBody.limitNotionalPrice} (good-til-cancelled)`],
-                ]}
-              />
-              <p className="jt-muted jt-small">
-                Wallet prompts:{" "}
-                {[
-                  quote.wrap?.evmTx && "wrap ETH (tx)",
-                  quote.evm.approveTx && `approve ${spendLabel === "ETH" ? "WETH" : "USDG"} (tx)`,
-                  quote.attachedBracket?.evm?.approveTx && `approve ${target.symbol} for exits (tx)`,
-                  nonEmpty(quote.evm.permitTypedData) && "Permit2 (signature)",
-                  "order (signature)",
-                  quote.attachedBracket?.evm && "take-profit / stop-loss (signature)",
-                ]
-                  .filter(Boolean)
-                  .join(" → ")}
-              </p>
-              <div>
-                <button className="luna-btn luna-btn-active jt-cta" onClick={execute} disabled={execBusy}>
-                  {execBusy ? "Follow your wallet…" : "Place order"}
-                </button>
-              </div>
+              <dl className="jt-kv">
+                <div><dt>You spend</dt><dd>{quote.from?.amount} {spendLabel} ({fmtUsd(quote.from?.notional)})</dd></div>
+                <div><dt>You get (est.)</dt><dd>{Number(quote.to?.amount).toPrecision(6)} {target.symbol} ({fmtUsd(quote.to?.notional)})</dd></div>
+                <div><dt>Fees (est.)</dt><dd>{fmtUsd(quote.fees?.estimatedFeeNotional, 4)}</dd></div>
+                {quote.estimatedPriceImpact != null && (
+                  <div><dt>Price impact</dt><dd>{(Number(quote.estimatedPriceImpact) * 100).toFixed(3)}%</dd></div>
+                )}
+                {quote.recommendedSlippage != null && (
+                  <div>
+                    <dt>Slippage</dt>
+                    <dd>
+                      {quoteBody?.maxSlippage
+                        ? `${(Number(quoteBody.maxSlippage) * 100).toFixed(2)}% (yours)`
+                        : `${(Number(quote.recommendedSlippage) * 100).toFixed(2)}% (recommended)`}
+                    </dd>
+                  </div>
+                )}
+                {quoteBody?.attachedBracket && (
+                  <div>
+                    <dt>Bracket</dt>
+                    <dd>TP ${quoteBody.attachedBracket.takeProfit.notionalPrice} / SL ${quoteBody.attachedBracket.stopLoss.notionalPrice}</dd>
+                  </div>
+                )}
+                {quoteBody?.limitNotionalPrice && (
+                  <div><dt>Limit</dt><dd>${quoteBody.limitNotionalPrice} (good-til-cancelled)</dd></div>
+                )}
+              </dl>
+              <p className="jt-small jt-muted">Wallet prompts: {prompts.join(" → ")}</p>
+              <button className="luna-btn luna-btn-active" type="button" onClick={execute} disabled={execBusy}>
+                {execBusy ? "Follow your wallet…" : "Place order"}
+              </button>
             </div>
           )}
 
@@ -628,31 +573,28 @@ export default function RealPage() {
 
         {orderId && (
           <Panel title="Order status">
-            <KV
-              rows={[
-                ["Order id", <span className="jt-mono jt-selectable">{orderId}</span>],
-                ["Status", myOrder ? statusLabel(myOrder.status) : "Submitted…", statusTone(myOrder?.status)],
-                myOrder?.filled &&
-                  Number(myOrder.filled.targetAmount) > 0 && [
-                    "Filled",
-                    `${Number(myOrder.filled.targetAmount).toPrecision(6)} ${target.symbol} @ $${fmtPrice(myOrder.filled.averageNotionalPrice)}`,
-                  ],
-                myOrder?.closeReason && ["Reason", myOrder.closeReason],
-                myOrder?.attachedBracket && [
-                  "Bracket",
-                  `${myOrder.attachedBracket.status}${bracketOrder ? ` · ${statusLabel(bracketOrder.status)}` : ""}`,
-                ],
-              ]}
-            />
-            {fills.length > 0 && (
-              <div>
-                {fills.map((f, i) => (
-                  <p key={i} className="jt-small">
-                    Fill {fmtUsd(f.notional)} @ {fmtPrice(f.fillPrice)} · <TxHash hash={f.transactionId} />
-                  </p>
-                ))}
-              </div>
-            )}
+            <dl className="jt-kv">
+              <div><dt>Order id</dt><dd className="jt-mono jt-selectable">{orderId}</dd></div>
+              <div><dt>Status</dt><dd className={statusTone(myOrder?.status)}>{myOrder ? statusLabel(myOrder.status) : "Submitted…"}</dd></div>
+              {myOrder?.filled && Number(myOrder.filled.targetAmount) > 0 && (
+                <div>
+                  <dt>Filled</dt>
+                  <dd>{Number(myOrder.filled.targetAmount).toPrecision(6)} {target.symbol} @ ${fmtPrice(myOrder.filled.averageNotionalPrice)}</dd>
+                </div>
+              )}
+              {myOrder?.closeReason && <div><dt>Reason</dt><dd>{myOrder.closeReason}</dd></div>}
+              {myOrder?.attachedBracket && (
+                <div>
+                  <dt>Bracket</dt>
+                  <dd>{myOrder.attachedBracket.status}{bracketOrder ? ` · ${statusLabel(bracketOrder.status)}` : ""}</dd>
+                </div>
+              )}
+            </dl>
+            {fills.map((f, i) => (
+              <p key={i} className="jt-small">
+                Fill {fmtUsd(f.notional)} @ {fmtPrice(f.fillPrice)} · <TxHash hash={f.transactionId} />
+              </p>
+            ))}
           </Panel>
         )}
 
@@ -661,20 +603,13 @@ export default function RealPage() {
             <div className="pm-table-scroll">
               <table className="pm-table">
                 <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Type</th>
-                    <th>Token</th>
-                    <th>Status</th>
-                  </tr>
+                  <tr><th>Order</th><th>Type</th><th>Token</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {orders.slice(0, 8).map((o) => (
                     <tr key={o.orderId}>
                       <td className="jt-mono">{short(o.orderId, 4)}</td>
-                      <td>
-                        {o.orderType} {o.side}
-                      </td>
+                      <td>{o.orderType} {o.side}</td>
                       <td>{o.targetAsset?.ticker || short(o.targetAsset?.address || "")}</td>
                       <td className={statusTone(o.status)}>{statusLabel(o.status)}</td>
                     </tr>
