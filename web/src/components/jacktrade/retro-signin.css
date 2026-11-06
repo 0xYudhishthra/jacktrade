@@ -1,0 +1,130 @@
+/* Local reconstruction of the approved violet sign-in reference. */
+.hm-nocturne .hm-signin.hm-retro-signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 48px 20px 72px;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  color: #ddd5e8;
+}
+.hm-retro-signin::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  opacity: .15;
+  background: repeating-linear-gradient(0deg, #0000 0 2px, #0004 2px 3px);
+}
+.hm-login-window {
+  width: min(478px, 100%);
+  border: 1px solid #81628e;
+  border-radius: 9px 9px 2px 2px;
+  background: linear-gradient(135deg, #191320f7, #0f0b15fa 74%);
+  box-shadow: inset 0 0 0 2px #251c2d, 0 18px 65px #0009;
+  overflow: hidden;
+  z-index: 1;
+}
+.hm-login-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  padding: 0 8px 0 12px;
+  background: linear-gradient(#71547f, #493553 50%, #3b2b49 51%);
+  border-bottom: 1px solid #5e476e;
+  box-shadow: inset 0 1px #d1b4e345;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .35px;
+}
+.hm-login-window-controls { display: flex; gap: 4px; margin-left: auto; }
+.hm-login-window-controls > span {
+  width: 24px; height: 24px; display: grid; place-items: center;
+  border: 1px solid #231a2b; border-radius: 3px;
+  background: linear-gradient(#745c84, #3d2c4d);
+  box-shadow: inset 0 1px #d2bed940;
+}
+.hm-login-window-controls > span:last-child { background: linear-gradient(#84516c, #502638); }
+.hm-login-menubar {
+  display: flex; gap: 19px; height: 30px; align-items: center;
+  padding: 0 13px; border-bottom: 1px solid #31263a;
+  background: #1d1725; color: #978ba7; font-size: 12px;
+}
+.hm-login-menubar u { text-underline-offset: 2px; }
+.hm-login-body { padding: 25px 31px 23px; }
+.hm-login-brand { text-align: center; }
+.hm-login-brand h1 {
+  margin: 0; font-size: 26px; line-height: 1.3; letter-spacing: -1.6px;
+  font-weight: 600; color: #e5dfed;
+}
+.hm-login-brand h1 > span { color: #b895d5; }
+.hm-login-brand > p { color: #a398b2; font-size: 14px; letter-spacing: .6px; margin: 5px 0 25px; }
+.hm-login-contact {
+  display: flex; align-items: center; gap: 15px;
+  padding: 12px; border: 1px solid #43344e;
+  background: linear-gradient(110deg, #201a28, #17121df0);
+  box-shadow: inset 0 0 0 1px #ffffff03;
+}
+.hm-login-avatar { position: relative; padding: 2px; border: 1px solid #665078; border-radius: 4px; }
+.hm-login-avatar > div { border-radius: 2px !important; }
+.hm-login-presence, .hm-login-online > i, .hm-login-footer i {
+  display: inline-block; width: 8px; height: 8px; flex: none;
+  border-radius: 50%; background: #19df81; box-shadow: 0 0 7px #16df8370;
+}
+.hm-login-presence { position: absolute; bottom: -1px; right: -2px; width: 11px; height: 11px; border: 1px solid #1d1727; }
+.hm-login-contact h2 { margin: 0 0 3px; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+.hm-login-online { display: flex; align-items: center; gap: 7px; color: #3cda90; font-size: 12px; }
+.hm-login-contact p { color: #a399b0; font-size: 12px; font-style: italic; margin: 5px 0 0; }
+.hm-login-auth {
+  min-width: 0; margin: 23px 0 0; padding: 16px 18px 19px;
+  border: 1px solid #50405f; border-radius: 2px;
+}
+.hm-login-auth > legend { color: #bda0d6; font-size: 12px; letter-spacing: 2px; padding: 0 8px; }
+.hm-login-connect {
+  display: flex; align-items: center; justify-content: center; gap: 11px;
+  width: 100%; height: 50px; border-radius: 3px;
+  border: 1px solid #24172e; outline: 1px solid #8c6ca1;
+  color: #f6effa; font-size: 16px; font-weight: 600; letter-spacing: .5px;
+  background: linear-gradient(#a184b5, #785d8d 48%, #654b7c 51%, #523a67);
+  box-shadow: inset 0 1px #e5d4ef60, inset 0 -1px #3b2849, 0 2px 0 #0007;
+  cursor: pointer;
+}
+.hm-login-connect:hover:not(:disabled) { filter: brightness(1.13); }
+.hm-login-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 14px; color: #83738e; font-size: 11px; letter-spacing: .6px; }
+.hm-login-divider::before, .hm-login-divider::after { content: ""; flex: 1; height: 1px; background: #41334d; }
+.hm-login-social { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hm-login-social > button {
+  height: 39px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: #a59aae; background: linear-gradient(#27202f, #18121f);
+  border: 1px solid #44324f; border-radius: 3px; cursor: pointer; font-size: 12px;
+  box-shadow: inset 0 1px #ffffff08;
+}
+.hm-login-social > button:hover:not(:disabled) { background: #302338; color: #e6dcef; }
+.hm-login-x { font-size: 20px; line-height: 1; }
+.hm-login-auth:disabled button { opacity: .6; cursor: wait; }
+.hm-login-status { text-align: center; font-size: 12px; color: #a99ab8; margin: 16px 0 8px; min-height: 18px; }
+.hm-login-note { font-size: 11px; color: #897a97; text-align: center; margin: 12px 0 0; }
+.hm-login-footer { display: flex; gap: 4px; padding: 4px; background: #1c1523; border-top: 1px solid #3d2c4a; }
+.hm-login-footer > span {
+  display: flex; gap: 6px; align-items: center; justify-content: center;
+  padding: 3px 5px; border: 1px solid #36263f; color: #a292af; font-size: 10px;
+  white-space: nowrap;
+}
+.hm-login-footer > span:first-child { flex: 1; justify-content: flex-start; }
+.hm-login-footer i { width: 7px; height: 7px; }
+@media (max-width: 520px) {
+  .hm-nocturne .hm-signin.hm-retro-signin { padding: 28px 12px; }
+  .hm-login-body { padding: 24px 20px; }
+  .hm-login-contact { gap: 12px; padding: 10px; }
+  .hm-login-contact p { font-size: 10px; }
+  .hm-login-auth { padding-left: 14px; padding-right: 14px; }
+  .hm-login-titlebar { font-size: 11px; gap: 7px; }
+  .hm-login-window-controls { gap: 3px; }
+  .hm-login-window-controls > span { width: 20px; height: 22px; }
+  .hm-login-brand h1 { font-size: 25px; }
+  .hm-login-footer { flex-wrap: wrap; }
+  .hm-login-footer > span { font-size: 9px; }
+  .hm-login-footer > span:first-child { flex: 1 0 auto; }
+}

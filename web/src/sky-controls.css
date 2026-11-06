@@ -1,0 +1,246 @@
+/* Button and wordmark treatments copied from 02-sky / shared/sky-theme.css.
+   The 8085 composition and artwork are preserved in this independent variant. */
+.sky86 {
+  --sky-panel:oklch(0.985 0.006 245);
+  --sky-luna:oklch(0.77 0.09 252);
+  --sky-deep:oklch(0.45 0.17 262);
+  --sky-accent:oklch(0.62 0.17 255);
+  --sky-gloss:linear-gradient(
+    180deg,
+    oklch(1 0 0) 0%,
+    oklch(0.96 0.025 245) 48%,
+    oklch(0.92 0.045 250) 52%,
+    oklch(0.95 0.03 248) 100%
+  );
+  --sky-gloss-active:linear-gradient(
+    180deg,
+    oklch(0.8 0.1 245) 0%,
+    oklch(0.62 0.17 255) 50%,
+    oklch(0.52 0.18 258) 52%,
+    oklch(0.6 0.16 252) 100%
+  );
+  --sky-font:Figtree, Arial, Helvetica, sans-serif;
+  font-family:var(--sky-font);
+}
+.sky86 .font-mono,
+.sky86 button,
+.sky86 input {
+  font-family:var(--sky-font);
+}
+.sky86 button {
+  cursor:pointer;
+}
+.sky86 button:focus-visible {
+  outline:2px solid #dce3ee;
+  outline-offset:2px;
+}
+.sky86 button:disabled {
+  cursor:default;
+  opacity:0.45;
+}
+.sky86 .luna-btn {
+  background:var(--sky-gloss) !important;
+  border:1px solid var(--sky-luna) !important;
+  border-radius:999px !important;
+  color:var(--sky-deep) !important;
+  box-shadow:inset 0 1px 0 white !important;
+  font-weight:600;
+  text-shadow:none;
+  transition:border-color 0.15s,
+    box-shadow 0.15s;
+}
+.sky86 .luna-btn:hover:not(:disabled) {
+  border-color:var(--sky-accent) !important;
+}
+.sky86 .luna-btn-active {
+  background:var(--sky-gloss-active) !important;
+  border:1px solid var(--sky-deep) !important;
+  color:white !important;
+  text-shadow:0 1px 0 oklch(0.3 0.15 262 / 0.5);
+}
+.sky86 .luna-btn:active:not(:disabled) {
+  box-shadow:inset 0 2px 4px #254a8710 !important;
+}
+.sky86 .hm-trading-header .hm-brand-wordmark {
+  color:var(--sky-panel) !important;
+  -webkit-text-stroke:1.5px var(--sky-deep);
+  paint-order:stroke fill;
+  text-shadow:0 2px 0 var(--sky-luna),
+    0 3px 8px oklch(0.45 0.17 262 / 0.35);
+  font:italic 900 25px/1 var(--sky-font) !important;
+  letter-spacing:-0.02em;
+}
+.sky86 .hm-trading-header .hm-brand-wordmark::after {
+  content:none;
+}
+.sky86 .hm-trading-header .hm-brand-sparkle {
+  color:#687080;
+  width:17px;
+  height:17px;
+  transform:translateY(-8px);
+  filter:drop-shadow(0 1px 1px #9e9e6066);
+}
+.sky86 .hm-brand-logo {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+}
+.sky86 .hm-trading-header nav {
+  margin-left:26px;
+  gap:4px;
+}
+.sky86 .hm-trading-header nav button {
+  padding:5px 12px;
+  font-size:12px;
+}
+.sky86 .hm-trading-header > button:last-child {
+  min-width:145px;
+  padding:6px 14px;
+}
+.sky86 .sky-direction-long,
+.sky86 .sky-direction-short {
+  border-radius:999px !important;
+  border:1px solid #dce3ee !important;
+  background:#ffffff !important;
+  box-shadow:inset 0 1px #ffffffb0;
+}
+.sky86 .sky-direction-long {
+  color:#2d9562 !important;
+}
+.sky86 .sky-direction-short {
+  color:#c85c67 !important;
+}
+.sky86 .sky-direction-long[aria-pressed="true"] {
+  color:#2d9562 !important;
+  border-color:#bcd7cb !important;
+  background:linear-gradient(#ffffff, #edf5f1 55%, #edf5f1 57%, #edf5f1) !important;
+}
+.sky86 .sky-direction-short[aria-pressed="true"] {
+  color:#c85c67 !important;
+  border-color:#e5c8cd !important;
+  background:linear-gradient(#ffffff, #fcf0f1 55%, #fcf0f1 57%, #fcf0f1) !important;
+}
+.sky86 .sky-buy,
+.sky86 .sky-sell {
+  border-radius:999px !important;
+  padding:9px 2px;
+  font-size:11px;
+  font-weight:800;
+  border:1px solid !important;
+  box-shadow:inset 0 1px #ffffffb0,
+    0 2px 4px #254a8710 !important;
+  text-shadow:0 1px #ffffffb0;
+}
+.sky86 .sky-buy {
+  color:#2d9562 !important;
+  border-color:#bcd7cb !important;
+  background:linear-gradient(#edf5f1, #edf5f1 48%, #edf5f1 50%, #edf5f1) !important;
+}
+.sky86 .sky-sell {
+  color:#c85c67 !important;
+  border-color:#e5c8cd !important;
+  background:linear-gradient(#fcf0f1, #fcf0f1 48%, #fcf0f1 50%, #fcf0f1) !important;
+}
+.sky86 .sky-buy:hover:not(:disabled),
+.sky86 .sky-sell:hover:not(:disabled) {
+  filter:brightness(1.035);
+}
+.sky86 .sky-buy:active:not(:disabled),
+.sky86 .sky-sell:active:not(:disabled) {
+  box-shadow:inset 0 2px 4px #254a8710 !important;
+}
+.sky86 .sky-leverage-presets {
+  grid-template-columns:repeat(6, minmax(0, 1fr));
+  gap:3px;
+}
+.sky86 .sky-leverage-presets button {
+  padding:4px 1px;
+  font-size:9px;
+}
+.sky86 .hm-range {
+  background:linear-gradient(90deg, #f4f7fc var(--fill, 50%), #ffffff var(--fill, 50%));
+}
+.sky86 .hm-range::-webkit-slider-thumb {
+  background:linear-gradient(#ffffff, #f4f7fc);
+  border:1px solid #dce3ee;
+  border-radius:4px;
+  box-shadow:inset 0 1px #ffffffb0;
+}
+.sky86 .hm-range::-moz-range-thumb {
+  background:linear-gradient(#ffffff, #f4f7fc);
+  border:1px solid #dce3ee;
+  border-radius:4px;
+  box-shadow:inset 0 1px #ffffffb0;
+}
+@media (max-width:1400px) {
+  .sky86 .hm-trading-header nav {
+    margin-left:8px;
+    gap:3px;
+  }
+  .sky86 .hm-trading-header nav button {
+    padding-left:9px;
+    padding-right:9px;
+  }
+}
+@media (max-width:540px) {
+  .sky86 .hm-trading-header .hm-brand-wordmark {
+    font-size:23px !important;
+  }
+}
+
+/* The same brand is also used by this variant's entry screen. */
+.hm-brand-logo {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+}
+.hm-brand-wordmark {
+  color:oklch(0.985 0.006 245);
+  -webkit-text-stroke:1.5px oklch(0.45 0.17 262);
+  paint-order:stroke fill;
+  text-shadow:0 2px oklch(0.77 0.09 252),
+    0 3px 8px #254a8710;
+  font:italic 900 25px/1 Figtree,
+    Arial,
+    sans-serif;
+  letter-spacing:-0.02em;
+}
+.hm-brand-sparkle {
+  width:17px;
+  height:17px;
+  color:#687080;
+  transform:translateY(-8px);
+}
+.sky86 .hm-trading-header .luna-btn {
+  background:var(--sky-gloss) !important;
+  border-color:var(--sky-luna) !important;
+  color:var(--sky-deep) !important;
+}
+.sky86 .hm-trading-header .luna-btn-active {
+  background:var(--sky-gloss-active) !important;
+  border-color:var(--sky-deep) !important;
+  color:white !important;
+}
+.sky86 .hm-market-row.is-selected {
+  background:var(--sky-gloss-active) !important;
+  border-color:var(--sky-luna) !important;
+  box-shadow:inset 0 1px #254a8710,
+    0 2px 4px #254a8710;
+}
+.sky86 .hm-market-row.is-selected span {
+  color:white !important;
+}
+@media (min-width:901px) and (max-width: 1500px) {
+  .sky86 .hm-col-chart > .hm-panel {
+    flex-wrap:wrap;
+    row-gap:7px;
+    min-height:102px;
+  }
+  .sky86 .hm-col-chart > .hm-panel > div:last-child {
+    flex-basis:100%;
+    justify-content:space-between;
+  }
+  .sky86 .hm-col-chart > .hm-panel > .flex-1 {
+    display:none;
+  }
+}

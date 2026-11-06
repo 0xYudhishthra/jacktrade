@@ -1,0 +1,234 @@
+{
+ "chainId": 4663,
+ "contracts": {
+  "Exchange": "0x698cf1a9220f89ccf6ee75269086288a623ede54",
+  "SessionKeyManager": "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29",
+  "JackTradeStaking": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
+ },
+ "token": {
+  "address": "0x10f1fd34d2b3b1b6e5a56b4e08e44d25d9df7a76",
+  "name": "JackTrade",
+  "symbol": "JACKTRADE",
+  "decimals": 18
+ },
+ "collateral": {
+  "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+  "symbol": "USDG",
+  "decimals": 6
+ },
+ "eip712": {
+  "domain": {
+   "name": "JackTrade Exchange",
+   "version": "1",
+   "chainId": 4663,
+   "verifyingContract": "0x698cf1a9220f89ccf6ee75269086288a623ede54"
+  },
+  "types": {
+   "Open": [
+    {
+     "name": "user",
+     "type": "address"
+    },
+    {
+     "name": "instrumentId",
+     "type": "uint32"
+    },
+    {
+     "name": "isLong",
+     "type": "bool"
+    },
+    {
+     "name": "margin",
+     "type": "uint256"
+    },
+    {
+     "name": "leverage",
+     "type": "uint256"
+    },
+    {
+     "name": "priceLimit",
+     "type": "uint256"
+    },
+    {
+     "name": "signedAt",
+     "type": "uint256"
+    },
+    {
+     "name": "nonce",
+     "type": "uint256"
+    }
+   ],
+   "Close": [
+    {
+     "name": "user",
+     "type": "address"
+    },
+    {
+     "name": "positionId",
+     "type": "uint256"
+    },
+    {
+     "name": "priceLimit",
+     "type": "uint256"
+    },
+    {
+     "name": "signedAt",
+     "type": "uint256"
+    },
+    {
+     "name": "nonce",
+     "type": "uint256"
+    }
+   ],
+   "Withdraw": [
+    {
+     "name": "user",
+     "type": "address"
+    },
+    {
+     "name": "to",
+     "type": "address"
+    },
+    {
+     "name": "amount",
+     "type": "uint256"
+    },
+    {
+     "name": "nonce",
+     "type": "uint256"
+    },
+    {
+     "name": "deadline",
+     "type": "uint256"
+    }
+   ]
+  }
+ },
+ "eip712Actions": {
+  "sessionKeys": {
+   "domain": {
+    "name": "JackTrade SessionKeyManager",
+    "version": "1",
+    "chainId": 4663,
+    "verifyingContract": "0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29"
+   },
+   "types": {
+    "RegisterSessionKey": [
+     {
+      "name": "user",
+      "type": "address"
+     },
+     {
+      "name": "key",
+      "type": "address"
+     },
+     {
+      "name": "expiry",
+      "type": "uint64"
+     },
+     {
+      "name": "epoch",
+      "type": "uint64"
+     },
+     {
+      "name": "nonce",
+      "type": "uint256"
+     },
+     {
+      "name": "deadline",
+      "type": "uint256"
+     }
+    ]
+   }
+  },
+  "staking": {
+   "domain": {
+    "name": "JackTrade Staking",
+    "version": "1",
+    "chainId": 4663,
+    "verifyingContract": "0xbe4fe6490c3feb50bfb347ac5ce641673e25d0bd"
+   },
+   "types": {
+    "Stake": [
+     {
+      "name": "user",
+      "type": "address"
+     },
+     {
+      "name": "amount",
+      "type": "uint256"
+     },
+     {
+      "name": "nonce",
+      "type": "uint256"
+     },
+     {
+      "name": "deadline",
+      "type": "uint256"
+     }
+    ],
+    "Unstake": [
+     {
+      "name": "user",
+      "type": "address"
+     },
+     {
+      "name": "amount",
+      "type": "uint256"
+     },
+     {
+      "name": "nonce",
+      "type": "uint256"
+     },
+     {
+      "name": "deadline",
+      "type": "uint256"
+     }
+    ],
+    "Claim": [
+     {
+      "name": "user",
+      "type": "address"
+     },
+     {
+      "name": "nonce",
+      "type": "uint256"
+     },
+     {
+      "name": "deadline",
+      "type": "uint256"
+     }
+    ]
+   }
+  }
+ },
+ "markets": [
+  {
+   "id": 0,
+   "name": "BTC/USD",
+   "maxLeverage": 0,
+   "maxConfBps": 0,
+   "minMargin": "0",
+   "minNotional": "0",
+   "maxNotional": "0",
+   "listed": false
+  },
+  {
+   "id": 1,
+   "name": "ETH/USD",
+   "maxLeverage": 0,
+   "maxConfBps": 0,
+   "minMargin": "0",
+   "minNotional": "0",
+   "maxNotional": "0",
+   "listed": false
+  }
+ ],
+ "limits": {
+  "intentTtl": 3600,
+  "maxIntentAge": 30,
+  "sessionKeyMaxDuration": 2592000
+ },
+ "chainTime": 1793074364,
+ "tradingPaused": false
+}

@@ -1,0 +1,416 @@
+/* Market and collateral logos (fetched from the logo APIs) with their text-glyph fallback. */
+.hm-market-logo {
+  display:block;
+  flex-shrink:0;
+  object-fit:contain;
+}
+.hm-market-glyph {
+  display:inline-grid;
+  flex-shrink:0;
+  place-items:center;
+  font-weight:700;
+  line-height:1;
+}
+.hm-collateral-logo {
+  display:block;
+  flex-shrink:0;
+  border-radius:50%;
+}
+
+/* Price-feed status follows the chart controls. */
+.pm-chart-feed-status {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.pm-feed-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  align-self:center;
+  padding:4px 8px;
+  border:1px solid currentColor;
+  border-radius:3px;
+  background:#ffffffcc;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  pointer-events:auto;
+}
+.pm-feed-badge i {
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+}
+.pm-feed-badge.is-live {
+  color:var(--terminal-status-up);
+}
+.pm-feed-badge.is-stale,
+.pm-feed-badge.is-wide {
+  color:var(--terminal-status-warning);
+}
+.pm-feed-badge.is-offline {
+  color:var(--terminal-status-down);
+}
+.pm-feed-badge.is-simulated,
+.pm-feed-badge.is-preview {
+  color:var(--terminal-status-warning);
+}
+
+/* Prices keep their normal color and only flash a slight green/red tint on a move. */
+.hm-flash-up {
+  animation:hm-flash-up 450ms ease-out;
+}
+.hm-flash-down {
+  animation:hm-flash-down 450ms ease-out;
+}
+@keyframes hm-flash-up {
+  from {
+    color:#2d9562;
+  }
+}
+@keyframes hm-flash-down {
+  from {
+    color:#c85c67;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hm-flash-up,
+  .hm-flash-down {
+    animation:none;
+  }
+}
+
+/* Leverage warms up subtly as it rises. --heat runs from 0 (10×) to 1 (1000×). */
+.hm-lev {
+  --lev-hue:calc(270 + var(--heat) * 55);
+  --lev-color:hsl(var(--lev-hue) 70% 76%);
+}
+.hm-nocturne .hm-lev .hm-focus-leverage-value output {
+  color:var(--lev-color);
+  text-shadow:0 0 calc(6px + var(--heat) * 12px) hsl(var(--lev-hue) 80% 65% / 0.45);
+  transform:scale(calc(1 + var(--heat) * 0.16));
+  transition:color 200ms,
+    transform 200ms;
+}
+.hm-nocturne .hm-lev .hm-focus-leverage-value output > span {
+  color:var(--lev-color);
+  opacity:0.6;
+}
+.hm-lev-number {
+  display:inline-block;
+  font-weight:inherit;
+  animation:hm-lev-pop 180ms ease-out;
+}
+.hm-lev-tier {
+  margin:12px 0 4px;
+  color:#687080;
+  font-size:11px;
+  line-height:1.2;
+  letter-spacing:0.08em;
+  text-align:center;
+  text-transform:uppercase;
+}
+.hm-nocturne .hm-lev .hm-range {
+  background:linear-gradient(90deg, #f4f7fc, var(--lev-color)) 0 0 / calc(var(--fill, 0%) + 0.1%) 100%
+      no-repeat,
+    #f4f7fc;
+  box-shadow:0 0 calc(var(--heat) * 8px) hsl(var(--lev-hue) 80% 65% / 0.35);
+}
+.hm-nocturne .hm-lev .hm-range::-webkit-slider-thumb {
+  border-color:var(--lev-color);
+}
+.hm-nocturne .hm-lev .hm-range::-moz-range-thumb {
+  border-color:var(--lev-color);
+}
+@keyframes hm-lev-pop {
+  from {
+    transform:scale(1.06);
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hm-lev-number {
+    animation:none;
+  }
+}
+
+/* Pyth confidence next to the feed badge:discreet, warm once it would block opens. */
+.pm-feed-conf {
+  align-self:center;
+  color:#687080;
+  font-size:10px;
+  letter-spacing:0.04em;
+  white-space:nowrap;
+  pointer-events:auto;
+}
+.pm-feed-conf.is-wide {
+  color:#687080;
+}
+
+/* Loading / error state over an empty candle chart. */
+.pm-chart-message {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  margin:0;
+  padding:0 24px;
+  color:#687080;
+  font-size:12px;
+  text-align:center;
+  pointer-events:none;
+}
+
+/* Tools menu:wider, readable, comfortable targets, clear focus. */
+.hm-nocturne .pm-tools-menu {
+  width:320px;
+  max-width:calc(100vw - 32px);
+  max-height:min(70vh, 560px);
+  padding:14px 16px;
+  color:#171923;
+}
+.hm-nocturne .pm-tools-menu fieldset + fieldset {
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid #dce3ee;
+}
+.hm-nocturne .pm-tools-menu legend {
+  margin-bottom:8px;
+  color:#687080;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.08em;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-type-options {
+  margin-bottom:6px;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-type-options .luna-btn {
+  flex:1;
+  min-height:34px;
+  font-size:12px;
+}
+.hm-nocturne .pm-chart-tool-option {
+  align-items:flex-start;
+  gap:10px;
+  min-height:40px;
+  padding:8px 4px;
+  border-radius:3px;
+  font-size:12px;
+}
+.hm-nocturne .pm-chart-tool-option:hover {
+  background:#ffffff08;
+}
+.hm-nocturne .pm-chart-tool-option input {
+  flex-shrink:0;
+  width:16px;
+  height:16px;
+  margin-top:1px;
+  accent-color:#254a87;
+}
+.hm-nocturne .pm-chart-tool-option input:focus-visible {
+  outline:2px solid #dce3ee;
+  outline-offset:2px;
+}
+.pm-chart-tool-option > span {
+  display:grid;
+  gap:3px;
+}
+.pm-chart-tool-option b {
+  color:#171923;
+  font-weight:500;
+}
+.pm-chart-tool-option small {
+  color:#687080;
+  font-size:11px;
+  line-height:1.35;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-market-stats {
+  font-size:12px;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-market-stats > div {
+  padding:6px 4px;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-market-stats dt {
+  color:#687080;
+}
+.hm-nocturne .pm-tools-menu .pm-chart-market-stats dd {
+  color:#171923;
+  font-variant-numeric:tabular-nums;
+}
+.pm-warn {
+  color:#687080 !important;
+}
+
+/* Keyboard focus on the charts. */
+.pm-integrated-chart canvas:focus-visible {
+  outline:2px solid #dce3ee;
+  outline-offset:-2px;
+}
+
+/* Open interest card over the chart:big split bar, amounts on both sides, capacity left. */
+.pm-chart-overlay > .pm-oi-card {
+  pointer-events:auto;
+}
+.pm-oi-card {
+  display:grid;
+  gap:10px;
+  width:min(380px, 100%);
+  margin-top:10px;
+  padding:12px 14px;
+  border:1px solid #dce3ee;
+  background:#fffffff2;
+  color:#171923;
+  font-size:12px;
+}
+.pm-oi-card header {
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.pm-oi-card header b {
+  color:#171923;
+  font-weight:600;
+}
+.pm-oi-card header span {
+  color:#687080;
+  font-size:11px;
+}
+.pm-oi-card header strong {
+  margin-left:auto;
+  color:#171923;
+  font-variant-numeric:tabular-nums;
+}
+.pm-oi-split {
+  display:flex;
+  gap:2px;
+  height:10px;
+}
+.pm-oi-split i {
+  border-radius:2px;
+}
+.pm-oi-split .is-long {
+  background:#edf5f1;
+}
+.pm-oi-split .is-short {
+  background:#fcf0f1;
+}
+.pm-oi-legend {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-variant-numeric:tabular-nums;
+}
+.pm-oi-capacity {
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding-top:8px;
+  border-top:1px solid #dce3ee;
+  color:#687080;
+  font-size:11px;
+}
+.pm-oi-capacity-bar {
+  height:6px;
+  border-radius:2px;
+  background:#f4f7fc;
+  overflow:hidden;
+}
+.pm-oi-capacity-bar i {
+  display:block;
+  height:100%;
+  background:#f4f7fc;
+}
+
+/* ===== Readability floor for the trade screen:nothing under 11px, labels at AA contrast. ===== */
+.hm-nocturne .pd-header-demo {
+  font-size:11px !important;
+}
+/* Chart header */
+.hm-nocturne .pm-floating-market-toggle > span:not(.pm-floating-market-coin):not(.pm-floating-market-symbol) {
+  font-size:12px !important;
+}
+.hm-nocturne .pm-floating-market-symbol {
+  font-size:12px !important;
+}
+.hm-nocturne .pm-feed-badge {
+  font-size:11px;
+}
+.hm-nocturne .pm-feed-conf {
+  color:#687080;
+  font-size:12px;
+}
+.hm-nocturne .pm-floating-market-stats dt {
+  color:#687080 !important;
+  font-size:11px !important;
+  letter-spacing:0.04em;
+}
+.hm-nocturne .pm-floating-market-stats dd {
+  font-size:13px !important;
+}
+.hm-nocturne .pm-chart-control-toggle {
+  min-height:36px;
+  font-size:12px !important;
+}
+/* Order ticket */
+.hm-nocturne .pm-ticket:is(.hm-focus-amount-top > label, .hm-focus-field-label) {
+  color:#687080 !important;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-ticket .hm-focus-quick button {
+  min-height:28px;
+  padding:4px 8px !important;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-ticket .hm-focus-available {
+  color:#687080 !important;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-ticket .hm-focus-leverage-stops button {
+  min-height:28px;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-ticket:is(.sky-direction-long, .sky-direction-short) {
+  font-size:13px !important;
+}
+.hm-nocturne .pm-ticket .hm-focus-order-summary > div {
+  font-size:13px !important;
+}
+.hm-nocturne .pm-ticket .hm-focus-order-summary dt {
+  color:#687080 !important;
+}
+/* Demo trades tape and feed */
+.hm-nocturne .pd-activity-pill {
+  font-size:12px !important;
+}
+.hm-nocturne .pd-activity-pill b {
+  font-size:12px !important;
+}
+.hm-nocturne .pd-activity-pause {
+  min-width:28px;
+  min-height:28px;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-feed {
+  font-size:13px !important;
+}
+.hm-nocturne .pm-feed > div > span {
+  color:#687080 !important;
+  font-size:11px !important;
+  letter-spacing:0.06em;
+}
+.hm-nocturne .pm-feed select {
+  min-height:32px;
+  font-size:12px !important;
+}
+.hm-nocturne .pm-feed a {
+  font-size:14px !important;
+}
+.hm-nocturne .pm-feed a > span {
+  font-size:12px !important;
+}
+.hm-nocturne .pm-feed small {
+  color:#687080 !important;
+  font-size:12px !important;
+}
