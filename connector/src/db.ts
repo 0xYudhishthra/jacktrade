@@ -46,6 +46,26 @@ export type Bet = {
   error: string | null;
 };
 
+export type TriggerStatus = "armed" | "firing" | "fired" | "failed" | "cancelled" | "expired";
+
+export type Trigger = {
+  id: string;
+  tokenHash: string;
+  wallet: string;
+  market: string;
+  condition: "above" | "below";
+  price: number;
+  side: "long" | "short";
+  marginUsd: number;
+  leverage: number;
+  status: TriggerStatus;
+  createdAt: number;
+  expiresAt: number;
+  firedAt: number | null;
+  betId: string | null;
+  error: string | null;
+};
+
 export class Store {
   private db: DatabaseSync;
 
@@ -92,6 +112,24 @@ export class Store {
         error TEXT
       );
       CREATE INDEX IF NOT EXISTS bets_wallet ON bets(wallet, opened_at);
+      CREATE TABLE IF NOT EXISTS triggers (
+        id TEXT PRIMARY KEY,
+        token_hash TEXT NOT NULL,
+        wallet TEXT NOT NULL,
+        market TEXT NOT NULL,
+        condition TEXT NOT NULL,
+        price REAL NOT NULL,
+        side TEXT NOT NULL,
+        margin_usd REAL NOT NULL,
+        leverage INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL,
+        fired_at INTEGER,
+        bet_id TEXT,
+        error TEXT
+      );
+      CREATE INDEX IF NOT EXISTS triggers_status ON triggers(status);
     `);
   }
 
@@ -192,6 +230,56 @@ export class Store {
       .all(wallet, sinceSec) as Record<string, any>[];
     return rows.map(toBet);
   }
+  insertTrigger(t: Trigger): void {
+    this.db
+      .prepare("INSERT INTO triggers VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(t.id, t.tokenHash, t.wallet, t.market, t.condition, t.price, t.side, t.marginUsd, t.leverage,
+        t.status, t.createdAt, t.expiresAt, t.firedAt, t.betId, t.error);
+  }
+
+  /** Atomically moves a trigger between states; returns false if it wasn't in `from`. */
+  transitionTrigger(id: string, from: string, patch: { status: string; firedAt?: number; betId?: string | null; error?: string | null }): boolean {
+    const r = this.db
+      .prepare("UPDATE triggers SET status = ?, fired_at = COALESCE(?, fired_at), bet_id = COALESCE(?, bet_id), error = COALESCE(?, error) WHERE id = ? AND status = ?")
+      .run(patch.status, patch.firedAt ?? null, patch.betId ?? null, patch.error ?? null, id, from);
+    return Number(r.changes) === 1;
+  }
+
+  armedTriggers(): Trigger[] {
+    return (this.db.prepare("SELECT * FROM triggers WHERE status = 'armed'").all() as Record<string, any>[]).map(toTrigger);
+  }
+
+  triggersByWallet(wallet: string): Trigger[] {
+    return (this.db
+      .prepare("SELECT * FROM triggers WHERE wallet = ? ORDER BY created_at DESC LIMIT 50")
+      .all(wallet) as Record<string, any>[]).map(toTrigger);
+  }
+
+  recentTriggers(limit: number): Trigger[] {
+    return (this.db
+      .prepare("SELECT * FROM triggers ORDER BY created_at DESC LIMIT ?")
+      .all(limit) as Record<string, any>[]).map(toTrigger);
+  }
+}
+
+function toTrigger(r: Record<string, any>): Trigger {
+  return {
+    id: r.id,
+    tokenHash: r.token_hash,
+    wallet: r.wallet,
+    market: r.market,
+    condition: r.condition,
+    price: r.price,
+    side: r.side,
+    marginUsd: r.margin_usd,
+    leverage: r.leverage,
+    status: r.status,
+    createdAt: r.created_at,
+    expiresAt: r.expires_at,
+    firedAt: r.fired_at,
+    betId: r.bet_id,
+    error: r.error,
+  };
 }
 
 function toBet(r: Record<string, any>): Bet {
