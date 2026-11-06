@@ -138,3 +138,25 @@ Configuración: cuenta gratis en healthchecks.io, un **check por servicio** (per
 - El owner corre `configure.ts`: mercados, feeds, y las wallets del relayer y de los keepers en `roles.relayers`.
 - Sin eso, todo arranca pero no se puede operar. El relayer rechaza todo y los keepers avisan "sin rol de relayer".
 - Plan de Railway: la prueba gratis no alcanza para tener todo prendido. Pasar a Hobby o Pro.
+
+## JackTrade instance (Railway project `jacktrade`, env `production`)
+
+Deployed with the CLI from `backend/` (`railway up . --path-as-root --service <svc> --detach`). No start command or
+config file is set: `scripts/start.sh` picks the service from `RAILWAY_SERVICE_NAME` (`jt-prices`, `jt-relayer`, ...).
+
+| Service | Public URL | Notes |
+| --- | --- | --- |
+| jt-prices | `https://jt-prices-production.up.railway.app` | `PORT=8080` |
+| jt-relayer | `https://jt-relayer-production.up.railway.app` | `PORT=8080`, `RELAYER_MIN_ETH=0.0001` |
+| jt-indexer | `https://jt-indexer-production.up.railway.app` | `PORT=8080`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `DATABASE_VIEWS_SCHEMA=jacktrade` |
+| jt-keepers | none | `KEEPER_MIN_ETH=0.00005`, `RELAYER_LIVE_URL=<jt-relayer>/live`, `INDEXER_STATUS_URL=<jt-indexer>/status` |
+| jt-liquidator | none | `LIQUIDATOR_MIN_ETH=0.00005` |
+| Postgres | none | Indexer database |
+
+All services: `NETWORK=mainnet`, `RPC_URL` (and `LOGS_RPC_URL` on indexer and liquidator) = public Robinhood Chain RPC,
+`TRUST_PROXY=1`. `HERMES_URL` / `HERMES_API_KEY` on prices, relayer, indexer and liquidator. Private keys exist only as
+Railway variables on their own service. Do not set `*_PORT` variables: they take precedence over `PORT` and the public
+domain would stop routing.
+
+To point the backend at a new deployment, replace `shared/src/generated/jacktrade.4663.ts` (addresses, ABIs, EIP-712
+domains and types, markets, `deployBlock`, `libraries.PnLMath`) and redeploy every service.
