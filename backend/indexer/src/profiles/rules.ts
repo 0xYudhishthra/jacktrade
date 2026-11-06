@@ -13,8 +13,8 @@ export const RESERVED = new Set([
   "security", "abuse", "api", "app", "www", "mail", "status", "docs", "blog", "news", "about", "terms", "privacy", "legal",
   "settings", "profile", "profiles", "user", "users", "u", "me", "account", "wallet", "login", "logout", "signup", "register",
   "null", "undefined", "anonymous", "unknown", "test", "owner", "guardian", "relayer", "keeper", "keepers", "liquidator",
-  "indexer", "oracle", "pyth", "exchange", "house", "thehouse", "jacktrade", "jack.trade", "jacktrade", "jacktrade",
-  "jacktradeexchange", "hm", "hmx", "robinhood", "usdg", "bot", "bots",
+  "indexer", "oracle", "pyth", "exchange", "house", "thehouse", "jacktrade", "jack.trade", "jack-trade", "jack_trade",
+  "jacktradeexchange", "jt", "hm", "hmx", "robinhood", "usdg", "bot", "bots",
 ]);
 
 export type UsernameCheck = { ok: true; username: string } | { ok: false; message: string };
@@ -26,7 +26,7 @@ export function checkUsername(raw: unknown): UsernameCheck {
   if (!USERNAME_RE.test(username)) {
     return { ok: false, message: "Username must be 3-24 characters: lowercase letters, numbers, dot, hyphen or underscore, starting with a letter or number." };
   }
-  if (RESERVED.has(username) || /^house[._-]?money/.test(username)) return { ok: false, message: "This username is reserved." };
+  if (RESERVED.has(username) || /^jack[._-]?trade/.test(username)) return { ok: false, message: "This username is reserved." };
   // Something that looks like an address could be used to impersonate another wallet.
   if (/^0x[0-9a-f]{4,}$/.test(username)) return { ok: false, message: "Usernames cannot look like a wallet address." };
   return { ok: true, username };

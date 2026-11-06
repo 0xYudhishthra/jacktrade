@@ -1,12 +1,14 @@
 import { concat, decodeAbiParameters, encodeAbiParameters, parseAbiParameters, type Hex, type PublicClient } from "viem";
 
+import { deployment } from "./network.js";
+
 /**
  * PnL de un cierre con la misma cuenta que el Exchange: se llama a `PnLMath.settle` desplegado (zona muerta, impacto
- * y redondeos incluidos), en vez de copiar la fórmula. La dirección de la librería sale de contracts/deployments/4663.json.
+ * y redondeos incluidos), en vez de copiar la fórmula. La dirección de la librería sale del config generado (libraries.PnLMath).
  * En una librería, el selector de una función con struct no sale de la firma con tupla: `settle` está en 0x422443f3
  * (sacado del bytecode desplegado).
  */
-export const PNLMATH_ADDRESS: Hex = "0x448033aa4bdef5df3156e17b445845b8dde82857";
+export const PNLMATH_ADDRESS: Hex = deployment.libraries.PnLMath as Hex;
 const SETTLE_SELECTOR: Hex = "0x422443f3";
 const BPS = 10_000n;
 

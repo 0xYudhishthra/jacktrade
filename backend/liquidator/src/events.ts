@@ -161,8 +161,8 @@ export function syncPositions(o: SyncOptions) {
  * En mainnet, LIQUIDATOR_FROM_BLOCK o, si no está, el bloque donde se desplegó el Exchange (búsqueda binaria con getCode,
  * necesita un RPC de archivo).
  */
-/** Bloque del deploy del Exchange en Robinhood Chain (contracts main d287db6). */
-export const EXCHANGE_DEPLOY_BLOCK = 96_115_700n;
+/** Exchange deploy block, from the generated deployment config (shared/src/generated). */
+export const EXCHANGE_DEPLOY_BLOCK = BigInt(deployment.deployBlock);
 
 export async function startBlock(client: Client, network: string): Promise<bigint> {
   const head = await client.getBlockNumber();

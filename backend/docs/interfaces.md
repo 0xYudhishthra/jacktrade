@@ -1,6 +1,6 @@
 # Interfaces entre piezas (día 2)
 
-Lo que comparten el relayer, el liquidador y el indexer, para poder hacerlos en paralelo. Todo sale de `main` de `jacktradeexchange/contracts`, que es lo desplegado (ABIs en `shared/src/generated`, regeneradas con `pnpm sync:exports`).
+Lo que comparten el relayer, el liquidador y el indexer, para poder hacerlos en paralelo. Todo sale de `main` de `jacktrade/contracts`, que es lo desplegado (ABIs en `shared/src/generated`, regeneradas con `pnpm sync:exports`).
 
 ```text
                  Hermes (Pyth)

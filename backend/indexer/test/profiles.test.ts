@@ -19,7 +19,7 @@ const noContract = { verifyTypedData: async () => false, verifyMessage: async ()
 test("username rules", () => {
   assert.deepEqual(checkUsername("House.Trader"), { ok: true, username: "house.trader" });
   for (const bad of ["ab", "a".repeat(25), "-abc", "has space", "émoji", "UPPER!"]) assert.equal(checkUsername(bad).ok, false, bad);
-  for (const reserved of ["admin", "jacktrade", "jack.trade", "jacktrade.fan", "jacktrade123", "support", "relayer", "0xabcdef12"]) assert.equal(checkUsername(reserved).ok, false, reserved);
+  for (const reserved of ["admin", "jacktrade", "jack.trade", "jack_trade.fan", "jacktrade123", "support", "relayer", "0xabcdef12"]) assert.equal(checkUsername(reserved).ok, false, reserved);
   assert.equal(checkUsername(42).ok, false);
 });
 

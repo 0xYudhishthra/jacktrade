@@ -22,7 +22,7 @@ pnpm check:contracts
 
 ## Contratos
 
-Las direcciones y ABIs salen de `main` de `jacktradeexchange/contracts` (lo desplegado). Para regenerarlas:
+Las direcciones y ABIs salen de `main` de `jacktrade/contracts` (lo desplegado). Para regenerarlas:
 
 ```sh
 pnpm sync:exports

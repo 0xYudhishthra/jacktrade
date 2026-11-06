@@ -1,5 +1,5 @@
 /**
- * Genera direcciones, ABIs y tipos EIP-712 desde `main` de jacktradeexchange/contracts (lo desplegado)
+ * Genera direcciones, ABIs y tipos EIP-712 desde `main` de jacktrade/contracts (lo desplegado)
  * y los escribe en shared/src/generated como módulos TS con `as const`, para que viem tipe las llamadas.
  *
  *   pnpm sync:exports
@@ -12,7 +12,8 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "n
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-const repo = process.env.CONTRACTS_REPO ?? "jacktradeexchange/contracts";
+const repo = process.env.CONTRACTS_REPO;
+if (!repo) throw new Error("Set CONTRACTS_REPO=<owner>/<repo> (the contracts repo that has scripts/export.ts)");
 const ref = process.env.CONTRACTS_REF ?? "main";
 const outDir = path.resolve("shared/src/generated");
 const dir = mkdtempSync(path.join(tmpdir(), "hm-contracts-"));
@@ -40,10 +41,10 @@ try {
 
   console.log("Instalando dependencias y compilando…");
   run("npm", ["ci", "--silent", "--no-audit", "--no-fund"]);
-  for (const chainId of ["4663", "31337"]) run("npx", ["hardhat", "run", "scripts/export.ts"], { CHAIN_ID: chainId });
+  for (const chainId of ["4663"]) run("npx", ["hardhat", "run", "scripts/export.ts"], { CHAIN_ID: chainId });
 
   const exportsDir = path.join(dir, "exports");
-  for (const file of readdirSync(exportsDir).filter((f) => /^jacktrade\.\d+\.json$/.test(f))) {
+  for (const file of readdirSync(exportsDir).filter((f) => /^(jacktrade)\.\d+\.json$/.test(f))) {
     // Se parsea y se vuelve a serializar: lo que se escribe como TypeScript es solo datos, nunca código.
     const json = JSON.stringify(JSON.parse(readFileSync(path.join(exportsDir, file), "utf8")), null, 2);
     const out = path.join(outDir, `jacktrade.${file.split(".")[1]}.ts`);

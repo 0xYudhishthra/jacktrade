@@ -3,6 +3,7 @@ import { activity, marketPoint, position, protocol, protocolPoint, queueEntry, s
 import type { Hono } from "hono";
 import { and, count, desc, eq, gt, gte, inArray, isNotNull, lt, or, sql, sum } from "ponder";
 import { formatUnits, getAddress, isAddress, type Hex } from "viem";
+import { deployment } from "@hm/shared";
 
 import { exposure, fillBuckets, INTERVALS, MAX_BUCKETS, parseSeries, strict, sumBuckets } from "../feeds/rules.js";
 import { WINDOWS, type Window } from "../leaderboard/rules.js";
@@ -149,7 +150,7 @@ export function feedRoutes(app: Hono<any>, o: FeedOptions) {
           notional: r.notional === null ? null : usd(r.notional),
           price: r.price === null ? null : px(r.price),
           amount: TOKEN_KINDS.has(kind) ? tok(r.amount) : usd(r.amount),
-          unit: TOKEN_KINDS.has(kind) ? "JACKTRADE" : "USDG",
+          unit: TOKEN_KINDS.has(kind) ? deployment.token.symbol : deployment.collateral.symbol,
           at: Number(r.timestamp),
           tx: r.tx,
         };
@@ -372,8 +373,8 @@ export function feedRoutes(app: Hono<any>, o: FeedOptions) {
     return c.json({
       token: {
         address: o.tokenAddress,
-        symbol: "JACKTRADE",
-        decimals: 18,
+        symbol: deployment.token.symbol,
+        decimals: deployment.token.decimals,
         totalSupply: tok(chainData.totalSupply),
         transfersEnabled: chainData.transfersEnabled,
         minted: tok(big(minted?.total)),

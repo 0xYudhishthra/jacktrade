@@ -87,7 +87,7 @@ check(bad === "InvalidSignature", `firma de otra cuenta se rechaza (${bad})`);
 // PnLMath no está en el export: se toma de deployments/<chainId>.json en main de contracts.
 const deployments = execFileSync("gh", [
   "api",
-  `repos/jacktradeexchange/contracts/contents/deployments/${deployment.chainId}.json?ref=main`,
+  `repos/${process.env.CONTRACTS_REPO ?? "jacktrade/contracts"}/contents/deployments/${deployment.chainId}.json?ref=main`,
   "-H",
   "Accept: application/vnd.github.raw",
 ]).toString();

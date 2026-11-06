@@ -18,7 +18,7 @@ VITE_API_URL=https://hmindexer-production.up.railway.app
 
 > `VITE_*` se hornea en el build: si cambia, hay que redeployar el front. La URL tiene que llevar `https://`.
 
-Documentación detallada en el repo `jacktradeexchange/backend`: `docs/precios-front.md`, `docs/intents-front.md`, `docs/api-front.md`, y el cliente de ejemplo `docs/examples/jacktrade-client.js`.
+Documentación detallada en el repo `jacktrade/backend`: `docs/precios-front.md`, `docs/intents-front.md`, `docs/api-front.md`, y el cliente de ejemplo `docs/examples/jacktrade-client.js`.
 
 **Principio:** el usuario **firma** y el relayer **manda y paga el gas**. El backend no puede mover plata de nadie sin su firma.
 

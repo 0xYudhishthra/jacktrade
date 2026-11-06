@@ -11,7 +11,8 @@ import { custom, http } from "viem";
 
 const network = process.env.NETWORK ?? "mainnet";
 if (network !== "mainnet" && network !== "fork") throw new Error(`NETWORK inválido: ${network}`);
-const DEPLOY_BLOCK = 96_115_700; // deploy de los contratos (2026-10-27) en Robinhood Chain: el primer evento es del bloque 96.115.702
+// First block to index (contracts deploy), from the generated deployment config.
+const DEPLOY_BLOCK = Number(deployment.deployBlock);
 
 async function forkBlock(rpc: string) {
   const res = await fetch(rpc, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "anvil_nodeInfo", params: [] }) });

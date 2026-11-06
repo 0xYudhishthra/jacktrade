@@ -1,4 +1,7 @@
-// Generado por pnpm sync:exports desde jacktradeexchange/contracts@main (deb2264). No editar.
+// Generado por pnpm sync:exports desde jacktrade/contracts@main (deb2264). No editar.
+// Single source of truth for the backend: addresses, ABIs, EIP-712 domains/types, markets, deployBlock (first block
+// to index, at or before the Exchange deploy) and libraries.PnLMath. To point the backend at a new deployment, replace
+// this file (keep those keys).
 export default {
   "chainId": 4663,
   "name": "Robinhood Chain",
@@ -16,6 +19,10 @@ export default {
     "decimals": 18
   },
   "pyth": "0x8250f4aF4B972684F7b336503E2D6dFeDeB1487a",
+  "deployBlock": 96115700,
+  "libraries": {
+    "PnLMath": "0x448033aa4bdef5df3156e17b445845b8dde82857"
+  },
   "markets": [
     {
       "id": 0,
