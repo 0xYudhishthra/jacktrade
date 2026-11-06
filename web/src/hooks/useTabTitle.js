@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 
-const AWAY_MS = 60_000; // a new plea every minute
+const AWAY_MS = 15_000; // Jack says something new every 15 s (browsers may slow this down in background tabs)
+// Jack, the mascot, talking from the tab while you're away. Short: tab titles get cut off fast.
 const PLEAS = [
-  (coin) => `🥺 come back… · ${coin}`,
-  () => "(╥﹏╥) the chart misses you",
-  (coin) => `👀 ${coin} moved. just saying`,
-  () => "🥹 your leverage is lonely",
-  () => "(｡•́︿•̀｡) one more trade?",
-  () => "😢 we kept your seat warm",
-  () => "🕯️ the house is waiting…",
-  (coin) => `🥺 ${coin} asked about you`,
+  () => "Jack: hey, come back 👋",
+  () => "Jack misses you",
+  (coin) => `Jack: psst, ${coin} moved`,
+  () => "Jack: you still there?",
+  () => "Jack saved your spot",
+  () => "Jack: it's quiet without you",
+  (coin) => `Jack: ${coin} did a thing 👀`,
+  () => "Jack: come say hi",
+  () => "Jack is waiting…",
+  () => "Jack: I'll be right here",
 ];
 
 // The tab shows the watched market's price like a ticker. While the tab is hidden it begs the
-// viewer to come back instead, with a new message every minute.
+// viewer to come back instead, in Jack's voice, with a new line every few seconds.
 export function useTabTitle(symbol, price) {
   const [away, setAway] = useState(() => document.hidden);
   const [plea, setPlea] = useState(0);
@@ -38,7 +41,7 @@ export function useTabTitle(symbol, price) {
       return;
     }
     if (!Number.isFinite(price)) {
-      document.title = `${coin} · jacktrade`;
+      document.title = `${coin} · JackTrade`;
       return;
     }
     const digits = price < 1 ? 4 : 2;
@@ -46,6 +49,6 @@ export function useTabTitle(symbol, price) {
       minimumFractionDigits: digits,
       maximumFractionDigits: digits,
     });
-    document.title = `${formatted} ${coin} · jacktrade`;
+    document.title = `${formatted} ${coin} · JackTrade`;
   }, [away, plea, price, coin]);
 }
