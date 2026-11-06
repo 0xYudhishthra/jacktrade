@@ -12,3 +12,5 @@ cache/
 broadcast/
 .cre/
 tmp/
+# ops wallet key backups (never commit)
+*.keys.env
