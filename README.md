@@ -19,7 +19,7 @@ The research happens in one place and the trade happens somewhere else.
 
 JackTrade puts the trade where the research already happens. It's a **Grok connector**: add it once at grok.com → Connectors, and Grok can check the house, quote a leveraged bet, place it onchain, track it and cash out, all in the same conversation.
 
-Picture a retail trader in Kuala Lumpur. US stock tokens are available to them onchain on Robinhood Chain, but leverage isn't. They ask Grok what this week's headlines mean for Tesla, and Grok answers with the posts and news behind its view. They say "bet $20 long TSLA at 50x". Grok checks that the house is good for it, quotes the liquidation price, and places the bet on JackTrade in seconds.
+Picture a retail trader in Kuala Lumpur. US stock tokens trade onchain on Robinhood Chain, but there's no simple way to put leverage on them. They ask Grok what this week's headlines mean for Tesla, and Grok answers with the posts and news behind its view. They say "bet $20 long TSLA at 50x". Grok checks that the house is good for it, quotes the liquidation price, and places the bet on JackTrade in seconds.
 
 - **The trader** bets against the house with leverage, from the chat. Grok's key can open and close bets but can **never withdraw**, and the trader sets its limits.
 - **Followers** see every Grok bet in a public feed and can **make it real**: copy the call into the real stock token with one Definitive Flash order, take-profit and stop-loss attached.
@@ -49,3 +49,31 @@ points earned     = notional × 10 / 100                     (win or lose)
 | Key storage | Agent keys are generated server-side and stored **AES-256-GCM encrypted**; connector URL tokens are stored hashed. |
 | Grok betting without being asked | The connector instructs Grok to quote first and get explicit confirmation before `place_bet`. |
 | Can the house pay? | `house_status` returns the live bankroll, payout queue and the latest **Chainlink-attested** Proof of House. |
+
+## Integrations
+
+| Component | What it does | Where |
+|-----------|--------------|-------|
+| **Grok (xAI) connectors** | Grok calls JackTrade's tools over MCP: `list_markets`, `house_status`, `quote_bet`, `place_bet`, `my_bets`, `cash_out`, `my_points`, `make_it_real` | [`connector/src/tools.ts`](connector/src/tools.ts) |
+| **Definitive Flash** | "Make it real": a long bet becomes a `market` order with an `attachedBracket` (take-profit / stop-loss); a short becomes a `limit` buy, on the real Robinhood Chain token | [`web/src/pages/Real.jsx`](web/src/pages/Real.jsx) · proxy in [`connector/src/server.ts`](connector/src/server.ts) |
+| **Chainlink CRE** | Proof of House: reads the house's bankroll and payout queue from Robinhood Chain + open interest from the indexer → DON consensus → `HouseAttestation` onchain | [`cre/proof-of-house`](cre/proof-of-house) · [`cre/contracts`](cre/contracts) |
+| **JackTrade exchange** (pre-existing) | Bet-against-the-house contracts, relayer and indexer on Robinhood Chain mainnet | [`PRE-EXISTING.md`](PRE-EXISTING.md) |
+
+## Architecture
+
+```mermaid
+flowchart TB
+    USER["Trader in Grok"] -->|"what does the news mean for TSLA?<br/>bet $20 long at 50x"| GROK["Grok"]
+    GROK -->|"MCP tools over HTTPS"| CONN["JackTrade connector<br/>(remote MCP server)"]
+    CONN -->|"signed Open / Close intent<br/>(agent session key)"| RELAYER["JackTrade relayer"]
+    RELAYER --> EXCHANGE["JackTrade Exchange<br/>Robinhood Chain mainnet"]
+    EXCHANGE --> INDEXER["Indexer: positions, history, volume"]
+    INDEXER --> CONN
+    CONN -->|"reads latest()"| ATTEST["HouseAttestation<br/>Ethereum Sepolia"]
+    CRE["Chainlink CRE<br/>Proof of House workflow"] -->|"HTTP JSON-RPC reads"| EXCHANGE
+    CRE -->|"HTTP"| INDEXER
+    CRE -->|"consensus report → forwarder → onReport"| ATTEST
+    FOLLOWER["Follower (web app)"] -->|"Make it real"| CONN
+    CONN -->|"Flash proxy: quote / order"| FLASH["Definitive Flash"]
+    FLASH -->|"market + TP/SL bracket, or limit"| TOKEN["Real token on Robinhood Chain<br/>TSLA · NVDA · WETH"]
+```
