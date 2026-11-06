@@ -1,0 +1,20 @@
+# One service: the Grok connector (MCP + REST) also serves the built web app.
+
+FROM oven/bun:1 AS web
+WORKDIR /app/web
+COPY web/package.json web/bun.lock ./
+RUN bun install --frozen-lockfile
+COPY web/ ./
+RUN bun run build
+
+FROM node:24-slim
+ENV NODE_ENV=production
+WORKDIR /app/connector
+COPY connector/package.json connector/package-lock.json ./
+RUN npm ci --omit=dev --no-audit --no-fund
+COPY connector/src ./src
+COPY --from=web /app/web/dist /app/web/dist
+ENV WEB_DIST=/app/web/dist \
+    DB_PATH=/data/connector.db
+EXPOSE 8787
+CMD ["node", "src/server.ts"]

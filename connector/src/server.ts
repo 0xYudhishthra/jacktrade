@@ -1,5 +1,7 @@
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import cors from "cors";
+import { existsSync } from "node:fs";
+import { join, resolve } from "node:path";
 import express, { type Request, type Response } from "express";
 import { createPublicClient, getAddress, http, isAddress, parseAbi } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
@@ -160,6 +162,14 @@ app.post("/mcp/:token", (req, res) => {
 // Stateless server: no SSE stream or session to resume.
 app.get("/mcp/:token", (_req, res) => void res.status(405).set("allow", "POST").end());
 app.delete("/mcp/:token", (_req, res) => void res.status(405).set("allow", "POST").end());
+
+// ---------------------------------------------------------------- web app (single-page, same origin)
+
+const webDist = resolve(config.webDist);
+if (existsSync(join(webDist, "index.html"))) {
+  app.use(express.static(webDist, { index: false, maxAge: "1h" }));
+  app.get(/^\/(?!api\/|mcp\/|health$).*/, (_req, res) => res.sendFile(join(webDist, "index.html")));
+}
 
 app.listen(config.port, () => {
   console.log(`JackTrade for Grok connector on :${config.port}`);

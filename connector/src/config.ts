@@ -4,10 +4,14 @@ function trim(url: string): string {
   return url.replace(/\/+$/, "");
 }
 
+const publicUrl = trim(env.PUBLIC_URL ?? "http://localhost:8787");
+
 export const config = {
   port: Number(env.PORT ?? 8787),
-  publicUrl: trim(env.PUBLIC_URL ?? "http://localhost:8787"),
-  webUrl: trim(env.WEB_URL ?? "http://localhost:5173"),
+  publicUrl,
+  /** Where the web app lives. Defaults to this server, which serves the built app from WEB_DIST. */
+  webUrl: trim(env.WEB_URL ?? publicUrl),
+  webDist: env.WEB_DIST ?? "../web/dist",
   serverSecret: env.SERVER_SECRET ?? "",
   dbPath: env.DB_PATH ?? "./data/connector.db",
   relayerUrl: trim(env.RELAYER_URL ?? "https://hmrelayer-production.up.railway.app"),

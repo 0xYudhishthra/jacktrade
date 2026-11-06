@@ -2,7 +2,9 @@ const env = import.meta.env;
 
 const trimSlash = (s) => (s || "").trim().replace(/\/+$/, "");
 
-export const CONNECTOR_URL = trimSlash(env.VITE_CONNECTOR_URL) || "http://localhost:8787";
+// In production the connector serves this app, so it lives on the same origin.
+export const CONNECTOR_URL =
+  trimSlash(env.VITE_CONNECTOR_URL) || (env.DEV ? "http://localhost:8787" : window.location.origin);
 export const RELAYER_URL = trimSlash(env.VITE_RELAYER_URL) || "https://hmrelayer-production.up.railway.app";
 export const INDEXER_URL = trimSlash(env.VITE_INDEXER_URL) || "https://hmindexer-production.up.railway.app";
 export const PRICES_URL = trimSlash(env.VITE_PRICES_URL) || "https://hmprices-production.up.railway.app";
