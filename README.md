@@ -156,7 +156,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
 | Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified through the hosted proxy | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
 | JackTradePoints contract | **Live on Robinhood Chain** · 19 tests including a fuzz test | [`contracts`](contracts) |
-| Points sync job | **Built** | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
+| Points sync job | **Live** · credited 215 JTP onchain for a test wallet's $2,150 of notional | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
 | Trading UI with Grok pages | **Built** · build, 22 unit tests and the Docker image pass | [`web`](web) |
 | Fresh exchange deployment on Robinhood Chain | **Live** · 92 contract tests pass, deployed and configured (BTC, ETH, SPY, TSLA) from block 107978288 | see Deployments |
 | New backend (prices, relayer, Ponder indexer) | In progress | [`backend`](backend) |
