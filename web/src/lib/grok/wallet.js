@@ -55,7 +55,9 @@ export async function sendAndWait(w, tx, onHash) {
 export async function signTypedDataJson(w, typedDataJson) {
   requireWallet(w);
   const parsed = JSON.parse(typedDataJson);
-  const { EIP712Domain: _ignored, ...types } = parsed.types || {};
+  // viem derives EIP712Domain from `domain`; passing it in `types` too makes it reject the payload.
+  const types = { ...(parsed.types || {}) };
+  delete types.EIP712Domain;
   const domain = { ...parsed.domain };
   if (domain.chainId !== undefined) domain.chainId = Number(domain.chainId);
   await ensureChain(w);
