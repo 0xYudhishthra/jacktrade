@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Shell, FilterSelect, useProductUI } from '@/components/product/ProductUI';
+import { PageHead } from '@/components/grok/GrokUI';
 import MarketIcon from '@/components/product/MarketIcon';
 import { marketBySymbol } from '@/lib/mockMarkets';
 import { StatRows } from '@/components/product/DashboardChart';
@@ -92,36 +93,39 @@ export default function Ranking() {
   const emptyText=status==='loading'?'Loading leaderboard…':needle?'No matching traders.':trades?(type==='liquidated'?'No liquidated positions in this period.':'No closed positions in this period.'):category.empty||'No trades in this period yet.';
   const columns=trades?11:type==='stakers'?8:10;
 
-  return <Shell dashboard="leaderboard" title="Leaderboard"><section className="jt-panel pm-ranking-board ds-ranking" aria-label="Leaderboard standings">
-    <div className="ds-ranking-toolbar">
+  return <Shell><div className="jt-page jt-page-wide">
+    <PageHead title="Leaderboard" aside={<button type="button" className="jt-btn-ghost" onClick={()=>setModal({type:'username'})}>Set your username</button>}>
+      Who's up, who's out. Straight from onchain data on Robinhood Chain.
+    </PageHead>
+    <section className="jt-table-wrap jt-ranking ds-ranking" aria-label="Leaderboard standings">
+    <div className="jt-table-head jt-ranking-toolbar">
       <div className="ds-view-switch" role="group" aria-label="Leaderboard view"><button aria-pressed={view==='accounts'} onClick={()=>{setView('accounts');reset();}}>Accounts</button><button aria-pressed={view==='positions'} disabled={type==='stakers'} onClick={()=>{setView('positions');reset();}}>Positions</button></div>
       <FilterSelect label="Ranking category" value={type} onChange={chooseType} items={[["winners","Top traders"],["liquidated","Liquidated"],["stakers","House owners"]]}/>
       {type!=='stakers'&&<FilterSelect label="Ranking period" value={period} onChange={v=>{setPeriod(v);reset();}} items={[["1d","24H"],["7d","7D"],["30d","30D"],["all","All"]]}/>}
       <input className="pm-search" aria-label="Search traders" placeholder={trades?"Search name or asset":"Search name or address"} maxLength={42} value={search} onChange={e=>setSearch(e.target.value)}/>
-      <button className="luna-btn ds-claim-name" onClick={()=>setModal({type:'username'})}>Claim username ↗</button>
     </div>
-    {status==='error'?<div className="pm-empty" role="alert">The leaderboard could not be loaded. {error} <button className="luna-btn" onClick={()=>setAttempt(attempt+1)}>Retry</button></div>:<>
-    <div className="pm-table-scroll"><table className="pm-table ds-ranking-table"><thead><tr>{heading('#','rank')}{heading('User','user')}
+    {status==='error'?<div className="jt-empty" role="alert"><strong>The leaderboard didn't load</strong><span>{error}</span><button type="button" className="jt-btn-ghost" onClick={()=>setAttempt(attempt+1)}>Try again</button></div>:<>
+    <div className="jt-table-scroll"><table className="jt-table jt-ranking-table"><thead><tr>{heading('#','rank')}{heading('User','user')}
       {trades?<><th>Asset</th>{heading('Notional','notional')}<th>Entry → exit</th>{heading('PnL','pnl')}{heading('Return','roi')}{heading('Margin','margin')}{heading('Duration','duration')}{heading('Closed','closedAt')}</>
       :type==='stakers'?<>{heading('HOUSE staked','staked')}{heading('Staking rewards','stakingRewards')}{heading('HOUSE earned','minted')}{heading('Trades','trades')}{heading('Last active','lastActive')}</>
       :<>{heading('Volume','volume')}{heading('PnL','pnl')}{heading('Return','roi')}{heading('Trades','trades')}{heading('Win rate','winRate')}{type==='liquidated'?heading('Liquidations','liquidations'):<th>Margin</th>}</>}
       <th>Details</th></tr></thead>
     <tbody>{status==='ready'&&rows.map((t,i)=>{const rank=rankOf(t,i),link=profileLink(t);return <Fragment key={t.id}>
-      <tr className={typeof rank==='number'&&rank<=3?`ds-rank-${rank}`:undefined} tabIndex={0} onClick={e=>{if(!e.target.closest("a,button"))setExpanded(expanded===t.id?null:t.id);}} onKeyDown={e=>{if(e.target===e.currentTarget&&["Enter"," "].includes(e.key)){e.preventDefault();setExpanded(expanded===t.id?null:t.id);}}}><td><span className="ds-rank-medal">{rank}</span></td><td><Link to={link.to} params={link.params}><strong>{t.name}</strong></Link>{t.user===me&&<small> YOU</small>}</td>
+      <tr className={t.user===me?'is-me':undefined} tabIndex={0} onClick={e=>{if(!e.target.closest("a,button"))setExpanded(expanded===t.id?null:t.id);}} onKeyDown={e=>{if(e.target===e.currentTarget&&["Enter"," "].includes(e.key)){e.preventDefault();setExpanded(expanded===t.id?null:t.id);}}}><td><span className={`jt-rank ${typeof rank==='number'&&rank<=3?'is-top':''}`}>{rank}</span></td><td><Link className="jt-trader" to={link.to} params={link.params}>{t.username?`@${t.username}`:t.name}</Link>{t.user===me&&<span className="jt-you">You</span>}</td>
         {trades?<><td><span className="ds-asset-cell"><MarketIcon market={marketBySymbol(`${t.symbol}-PERP`)??{symbol:t.symbol,glyph:t.symbol[0]}} size={16}/><strong>{t.symbol}</strong></span> <small className={t.side==='long'?'pm-up':'pm-down'}>{t.leverage}× {t.side.toUpperCase()}</small></td><td>${compact(t.notional)}</td><td>{money(t.entry)} <span className="ds-arrow">→</span> {money(t.exit)}</td>
           <td className={toneOf(t.pnl)}><strong>{signed(t.pnl)}</strong>{t.liquidated&&<small className="pm-down">LIQUIDATED</small>}</td><td className={toneOf(t.roi)}>{pct(t.roi)}</td><td>${money(t.margin)}</td><td>{duration(t.duration)}</td><td>{ago(t.closedAt)}</td></>
         :type==='stakers'?<><td><strong>{compact(t.staked)}</strong></td><td>${money(t.stakingRewards)}</td><td>{compact(t.minted)}</td><td>{t.trades}</td><td>{ago(t.lastActive)}</td></>
         :<><td>${compact(t.volume)}</td><td className={toneOf(t.pnl)}><strong>{signed(t.pnl)}</strong></td><td className={toneOf(t.roi)}>{pct(t.roi)}</td><td>{t.trades}</td><td>{t.winRate==null?'–':t.winRate.toFixed(0)+'%'}</td><td>{type==='liquidated'?t.liquidations:'$'+money(t.margin)}</td></>}
-        <td><button className="ds-detail-button" aria-label={`Details for ${t.name}${trades?' '+t.symbol+' '+t.leverage+'x':''}`} aria-expanded={expanded===t.id} onClick={()=>setExpanded(expanded===t.id?null:t.id)}>{expanded===t.id?'−':'+'}</button></td>
+        <td><button type="button" className="jt-expand" aria-label={`Details for ${t.name}${trades?' '+t.symbol+' '+t.leverage+'x':''}`} aria-expanded={expanded===t.id} onClick={()=>setExpanded(expanded===t.id?null:t.id)}>{expanded===t.id?'−':'+'}</button></td>
       </tr>
       {expanded===t.id&&<tr className="ds-expanded-row"><td colSpan={columns}><div className="ds-rank-detail"><StatRows rows={trades
         ?[["Market",t.market],["Direction",t.side.toUpperCase()],["Leverage",t.leverage+'×'],["Margin",'$'+money(t.margin)],["Entry",'$'+money(t.entry)],["Exit",'$'+money(t.exit)],["Notional",'$'+money(t.notional)],["PnL",signed(t.pnl),t.pnl>=0?'up':'down'],["Return on margin",pct(t.roi),t.roi>=0?'up':'down'],["Duration",duration(t.duration)],["Opened",new Date(t.openedAt*1000).toLocaleString()],["Closed",new Date(t.closedAt*1000).toLocaleString()],["Outcome",t.liquidated?'Liquidated':'Closed']]
         :[["Account",shortAddress(t.user)],["Rank by PnL",t.rank??'–'],["Closed trades",t.trades],["Wins",t.wins],["Liquidations",t.liquidations],["Closed margin",'$'+money(t.margin)],["Realized PnL (all time)",signed(t.realizedPnl),t.realizedPnl>=0?'up':'down'],["Unrealized PnL (est.)",signed(t.unrealizedPnl),t.unrealizedPnl==null?undefined:t.unrealizedPnl>=0?'up':'down'],["Open notional",'$'+money(t.openNotional)],["Queued",'$'+money(t.queued)],["HOUSE staked",compact(t.staked)],["Staking rewards",'$'+money(t.stakingRewards)],["HOUSE earned",compact(t.minted)],["Last active",t.lastActive?new Date(t.lastActive*1000).toLocaleString():'–']]}/>
-        <div><Link className="luna-btn" to={link.to} params={link.params}>View portfolio ↗</Link><button className="luna-btn" onClick={()=>share(t)}>Share ↗</button></div></div></td></tr>}
-    </Fragment>;})}</tbody></table>{(status!=='ready'||!rows.length)&&<div className="pm-empty">{emptyText}</div>}</div>
-    <div className="ds-pagination">
+        <div className="jt-detail-actions"><Link className="jt-btn-ghost" to={link.to} params={link.params}>View portfolio</Link><button type="button" className="jt-btn-ghost" onClick={()=>share(t)}>Share</button></div></div></td></tr>}
+    </Fragment>;})}</tbody></table>{(status!=='ready'||!rows.length)&&<div className="jt-empty">{status==='ready'&&<img src="/brand/jack-256.webp" alt=""/>}<span>{emptyText}</span></div>}</div>
+    <div className="jt-table-foot">
       <span>{trades?`${rows.length} positions · top 15 by PnL`:summary?`${plural(type==='winners'?data.count:accounts.length+page*PAGE_SIZE,'account',more&&type!=='winners')} · ${plural(summary.trades,'closed trade')} · $${compact(Number(summary.volume))} volume`:'–'}</span>
-      {!trades&&<><button disabled={!page||status==='loading'} onClick={()=>{setPage(page-1);setExpanded(null);}}>← Previous</button><span>{page+1} / {totalPages}</span><button disabled={!more||status==='loading'} onClick={()=>{setPage(page+1);setExpanded(null);}}>Next →</button></>}
+      {!trades&&<><div className="jt-pager"><button type="button" className="jt-btn-ghost" disabled={!page||status==='loading'} onClick={()=>{setPage(page-1);setExpanded(null);}}>Previous</button><span>{page+1} / {totalPages}</span><button type="button" className="jt-btn-ghost" disabled={!more||status==='loading'} onClick={()=>{setPage(page+1);setExpanded(null);}}>Next</button></div></>}
     </div></>}
-  </section></Shell>;
+  </section></div></Shell>;
 }
