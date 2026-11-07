@@ -116,7 +116,11 @@ export async function placeRealOrder(input: RealOrderInput, user: User, agentKey
     funderAddress: me,
   };
   const probe = await flashApi("/quote", base);
-  const price = Number(qty) / Number(probe.to.amount);
+  // Use Flash's market price for the token (notional / amount), not what this order pays:
+  // on small orders fees and slippage push the effective price well above the market, and a
+  // stop-loss set from it would trigger the moment the order fills.
+  const price = Number(probe.to.notional) / Number(probe.to.amount);
+  if (!(price > 0)) throw new BetError("Flash didn't return a market price for that token.");
   const fmt = (n: number) => n.toFixed(price >= 100 ? 2 : 4);
 
   let body: Record<string, unknown>;
@@ -179,7 +183,8 @@ export async function placeRealOrder(input: RealOrderInput, user: User, agentKey
     const d = await flashApi(`/orders/${placed.orderId}?funderAddress=${me}`).catch(() => null);
     const o = d?.order ?? d;
     status = o?.status ?? status;
-    fillTx = o?.fills?.find((f: any) => f.transactionId)?.transactionId ?? fillTx;
+    const fills = (d?.fills ?? o?.fills ?? []) as any[];
+    fillTx = fills.find((f) => f.transactionId)?.transactionId ?? fillTx;
     if (/FILLED|CANCEL|FAIL|EXPIRED/i.test(status)) break;
   }
   return {
@@ -189,7 +194,7 @@ export async function placeRealOrder(input: RealOrderInput, user: User, agentKey
     plan,
     spent: `${qty} USDG`,
     token: input.target,
-    tokenPriceUsd: Number(fmt(price)),
+    marketPriceUsd: Number(fmt(price)),
     fillTransaction: fillTx,
     approvals,
     wallet: me,
