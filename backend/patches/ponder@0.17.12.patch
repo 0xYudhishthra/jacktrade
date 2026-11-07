@@ -1,0 +1,62 @@
+diff --git a/dist/esm/rpc/index.js b/dist/esm/rpc/index.js
+index 04f280f54d91cfdce126f560cbbb568e28cfca1a..773d3870bf6788cfe39579514774e5631c583794 100644
+--- a/dist/esm/rpc/index.js
++++ b/dist/esm/rpc/index.js
+@@ -24,8 +24,8 @@ const LATENCY_WINDOW_SIZE = 500;
+ const LATENCY_HURDLE_RATE = 0.1;
+ /** Exploration rate. */
+ const EPSILON = 0.1;
+-const INITIAL_MAX_RPS = 20;
+-const MIN_RPS = 3;
++const INITIAL_MAX_RPS = 60;
++const MIN_RPS = 15;
+ const MAX_RPS = 500;
+ const RPS_INCREASE_FACTOR = 1.05;
+ const RPS_DECREASE_FACTOR = 0.95;
+@@ -519,7 +519,14 @@ export const createRpc = ({ common, chain, concurrency = 25, }) => {
+                             chain_id: chain.id,
+                             polling_interval: chain.pollingInterval,
+                         });
++                        // JackTrade patch: poll only when the previous head has been handled. Otherwise heads pile up in
++                        // the live-indexing buffer and each one only advances the few blocks since the previous poll, so on
++                        // a fast chain (Robinhood Chain, ~10 blocks/s) the indexer can never catch up.
++                        let polling = false;
+                         interval = setInterval(async () => {
++                            if (polling)
++                                return;
++                            polling = true;
+                             try {
+                                 const block = await eth_getBlockByNumber(rpc, ["latest", true]);
+                                 common.logger.trace({
+@@ -530,11 +537,17 @@ export const createRpc = ({ common, chain, concurrency = 25, }) => {
+                                     block_hash: block.hash,
+                                 });
+                                 // Note: `onBlock` should never throw.
+-                                await onBlock(block);
++                                // Capped at 30 s so a head that is never acknowledged can't stop polling for good.
++                                let cap;
++                                await Promise.race([onBlock(block), new Promise((resolve) => { cap = setTimeout(resolve, 30_000); })]);
++                                clearTimeout(cap);
+                             }
+                             catch (error) {
+                                 onError(error);
+                             }
++                            finally {
++                                polling = false;
++                            }
+                         }, chain.pollingInterval);
+                         common.shutdown.add(() => {
+                             clearInterval(interval);
+diff --git a/dist/esm/sync-realtime/index.js b/dist/esm/sync-realtime/index.js
+index 1d095443d10214e541a636d4e313cffec40fcd90..3cdd394e9eb5c464a3b065a07915e308ebb8c761 100644
+--- a/dist/esm/sync-realtime/index.js
++++ b/dist/esm/sync-realtime/index.js
+@@ -8,7 +8,7 @@ import { range } from '../utils/range.js';
+ import { startClock } from '../utils/timer.js';
+ import { isFilterInBloom, isInBloom, zeroLogsBloom } from "./bloom.js";
+ const MAX_LATEST_BLOCK_ATTEMPT_MS = 10 * 60 * 1000; // 10 minutes
+-const MAX_QUEUED_BLOCKS = 50;
++const MAX_QUEUED_BLOCKS = 250;
+ export const createRealtimeSync = (args) => {
+     let isBlockReceipts = true;
+     let finalizedBlock = args.syncProgress.finalized;

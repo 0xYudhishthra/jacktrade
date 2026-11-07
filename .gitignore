@@ -19,3 +19,4 @@ tmp/
 # Local key backups (never commit)
 *.keys.env
 *.key
+# ops wallet key backups (never commit)

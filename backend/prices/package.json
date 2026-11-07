@@ -1,0 +1,16 @@
+{
+  "name": "@hm/prices",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hm/shared": "workspace:*",
+    "viem": "^2.57.7",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.2"
+  }
+}
