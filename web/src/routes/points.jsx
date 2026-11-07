@@ -2,15 +2,17 @@
 // 10 points per $100 of notional (margin × leverage), win or lose, computed by the connector from onchain history.
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Shell, Panel, Metric } from "@/components/product/ProductUI";
+import { Shell } from "@/components/product/ProductUI";
 import { useTradingSession } from "@/hooks/useTradingSession";
+import { useProductUI } from "@/components/product/ProductUI";
 import { getPoints, getPointsLeaderboard } from "@/lib/grok/api";
-import { ErrorBox, short } from "@/components/grok/GrokUI";
+import { ErrorBox, PageHead, short } from "@/components/grok/GrokUI";
 
 const fmt = (n) => Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
 export default function PointsPage() {
   const { walletAddress, walletConnected } = useTradingSession();
+  const { setModal } = useProductUI();
   const account = walletConnected ? walletAddress : null;
   const me = account?.toLowerCase();
   const [mine, setMine] = useState(null);
@@ -43,67 +45,105 @@ export default function PointsPage() {
   }, [account]);
 
   return (
-    <Shell
-      title="JackTrade Points"
-      kicker="JACKTRADE / POINTS"
-      subtitle="Every bet earns 10 points per $100 of notional (margin × leverage), win or lose. Points come from onchain trade history, so anyone can recompute them."
-    >
-      <div className="jt-grok">
-        <Panel title="Your points">
-          {account && mine ? (
-            <div className="jt-metrics">
-              <Metric label="Points" value={fmt(mine.points)} />
-              <Metric label="Notional traded" value={`$${fmt(mine.notionalUsd)}`} />
-              <Metric label="Trades" value={fmt(mine.trades)} />
+    <Shell>
+      <div className="jt-page">
+        <PageHead title="Points">Every trade earns 10 points per $100 of position size, win or lose.</PageHead>
+
+        {account ? (
+          <div className="jt-stats">
+            <div className="jt-stat is-lead">
+              <span>Your points</span>
+              <strong>{mine ? fmt(mine.points) : "…"}</strong>
             </div>
-          ) : account ? (
-            <p className="jt-muted">Loading your points…</p>
-          ) : (
-            <p className="jt-muted">Connect your wallet to see your points.</p>
-          )}
-          <p className="jt-small jt-muted">
-            A $20 bet at 50× is $1,000 of notional and earns 100 points. Bets Grok places for you count too:{" "}
-            <Link to="/grok">connect Grok</Link>.
-          </p>
-        </Panel>
-        <Panel title="Leaderboard">
-          <ErrorBox error={err} />
-          {rows === null ? (
-            <div className="pm-empty">Loading leaderboard…</div>
-          ) : rows.length === 0 ? (
-            !err && <div className="pm-empty">No trades yet.</div>
-          ) : (
-            <div className="pm-table-scroll">
-              <table className="pm-table">
+            <div className="jt-stat">
+              <span>Volume traded</span>
+              <strong>{mine ? `$${fmt(mine.notionalUsd)}` : "…"}</strong>
+            </div>
+            <div className="jt-stat">
+              <span>Trades</span>
+              <strong>{mine ? fmt(mine.trades) : "…"}</strong>
+            </div>
+          </div>
+        ) : (
+          <div className="jt-card-plain jt-points-cta">
+            <img src="/brand/jack-256.webp" alt="" width="48" height="48" />
+            <div>
+              <h3>See your points</h3>
+              <p>Connect your wallet to see where you stand.</p>
+            </div>
+            <button className="jt-btn" type="button" onClick={() => setModal({ type: "wallet" })}>
+              Connect wallet
+            </button>
+          </div>
+        )}
+
+        <div className="jt-split jt-points-split">
+          <section className="jt-table-wrap" aria-labelledby="jt-points-board">
+            <div className="jt-table-head">
+              <h2 id="jt-points-board">Leaderboard</h2>
+            </div>
+            <ErrorBox error={err} />
+            {rows === null ? (
+              <div className="jt-empty">Loading…</div>
+            ) : rows.length === 0 ? (
+              !err && (
+                <div className="jt-empty">
+                  <img src="/brand/jack-256.webp" alt="" />
+                  <strong>No trades yet</strong>
+                  <span>The first trade puts you at the top.</span>
+                </div>
+              )
+            ) : (
+              <table className="jt-table">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Trader</th>
-                    <th>Notional</th>
-                    <th>Trades</th>
-                    <th>Points</th>
+                    <th className="is-num">Volume</th>
+                    <th className="is-num">Trades</th>
+                    <th className="is-num">Points</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r, i) => (
-                    <tr key={r.wallet}>
-                      <td>{r.rank ?? i + 1}</td>
-                      <td className="jt-mono">
-                        {r.username || short(r.wallet)}
-                        {r.wallet?.toLowerCase() === me && <small> YOU</small>}
-                      </td>
-                      <td>${fmt(r.notionalUsd)}</td>
-                      <td>{r.trades ?? "–"}</td>
-                      <td>
-                        <strong>{fmt(r.points)}</strong>
-                      </td>
-                    </tr>
-                  ))}
+                  {rows.map((r, i) => {
+                    const rank = r.rank ?? i + 1;
+                    const isMe = r.wallet?.toLowerCase() === me;
+                    return (
+                      <tr key={r.wallet} className={isMe ? "is-me" : undefined}>
+                        <td>
+                          <span className={`jt-rank ${rank <= 3 ? "is-top" : ""}`}>{rank}</span>
+                        </td>
+                        <td>
+                          {r.username ? `@${r.username}` : <span className="jt-mono">{short(r.wallet)}</span>}
+                          {isMe && <span className="jt-you">You</span>}
+                        </td>
+                        <td className="is-num">${fmt(r.notionalUsd)}</td>
+                        <td className="is-num">{r.trades ?? "–"}</td>
+                        <td className="is-num jt-strong">{fmt(r.points)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
+            )}
+          </section>
+
+          <aside className="jt-aside">
+            <div className="jt-card-plain">
+              <h3>How points work</h3>
+              <p>Position size is margin × leverage. Every $100 of it earns 10 points, whether the trade wins or loses.</p>
+              <div className="jt-example">
+                <span>$20 at 50×</span>
+                <span>$1,000 position</span>
+                <strong>100 points</strong>
+              </div>
+              <p>
+                Points come straight from onchain trade history, so anyone can recompute them. Trades your AI agent places
+                count too: <Link to="/grok">connect Grok</Link>.
+              </p>
             </div>
-          )}
-        </Panel>
+          </aside>
+        </div>
       </div>
     </Shell>
   );

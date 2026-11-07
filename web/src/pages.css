@@ -151,3 +151,18 @@ body.jt-dark .jt-empty strong {color:var(--p-text);font-size:15px;}
   body.jt-dark .jt-table :is(th,td) {padding-left:12px;padding-right:12px;}
 }
 body.jt-dark .jt-step-hint {margin-top:4px!important;font-size:13.5px;color:var(--p-faint);}
+
+/* Points */
+body.jt-dark .jt-points-cta {grid-template-columns:auto 1fr auto;align-items:center;gap:16px;}
+body.jt-dark .jt-points-cta img {transform:rotate(-8deg);}
+body.jt-dark .jt-points-split {margin-top:24px;}
+body.jt-dark .jt-page .jt-strong {color:var(--p-text);font-weight:600;}
+body.jt-dark .jt-example {display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:12px 14px;border-radius:12px;background:var(--p-raised);font:500 13px/1.2 'JetBrains Mono',ui-monospace,monospace;color:var(--p-muted);}
+body.jt-dark .jt-example span {white-space:nowrap;}
+body.jt-dark .jt-example span::after {content:"→";margin-left:8px;color:var(--p-faint);}
+body.jt-dark .jt-example strong {white-space:nowrap;}
+body.jt-dark .jt-example strong {color:var(--p-text);font-weight:600;}
+@media (max-width:640px) {
+  body.jt-dark .jt-points-cta {grid-template-columns:auto 1fr;}
+  body.jt-dark .jt-points-cta .jt-btn {grid-column:1/-1;}
+}
