@@ -17,10 +17,13 @@ the house takes the other side. This project adds an agent rail on top of it:
 2. **Web app.** Connect Grok (wallet → approve Grok's trading key → set limits → copy
    connector URL), a public feed of bets placed by Grok, and **Make it real**: copy a
    Grok bet into the real stock token with a Definitive Flash advanced order.
-3. **Proof of House (Chainlink CRE).** A workflow that reads the house's bankroll and
-   payout queue from Robinhood Chain and JackTrade's indexer, then writes an
-   attestation to a consumer contract. Grok's `house_status` tool reads it, so Grok
-   can say whether the house is good for a bet before placing it.
+3. **Conditional bets.** Grok can arm a bet that fires when a price crosses a level
+   ("short TSLA 20x with $20 if it drops below $350"), so it acts while the user is away.
+4. **JackTrade Points.** 10 points per $100 of notional, win or lose, recorded onchain by
+   the JackTradePoints contract. Losses no longer mint a lose-to-earn token.
+5. **Fresh deployment.** The exchange is redeployed on Robinhood Chain with the new points
+   logic and JackTrade signing domains, with its own backend (prices, relayer, Ponder
+   indexer) on Railway.
 
 ## Safety model
 
@@ -52,7 +55,7 @@ Signing rules (from the live relayer):
   `nonce` is a random uint256. `user` is the wallet, signed by the session key.
 - `Close{user, positionId, priceLimit, signedAt, nonce}`; `priceLimit` is min exit for
   longs, max exit for shorts.
-- Market minimums from `/config`: `minMargin` 10 USDG, `minNotional` 20 USDG.
+- Market minimums come from `/config` (currently `minMargin` 1 USDG, `minNotional` 2 USDG).
 
 MCP endpoint: `POST|GET|DELETE /mcp/:token` (Streamable HTTP, stateless).
 
@@ -61,12 +64,15 @@ MCP tools:
 | Tool | Input | Output |
 | --- | --- | --- |
 | `list_markets` | none | markets with live price, max leverage, open/closed |
-| `house_status` | none | bankroll, payout queue, open interest, latest Chainlink attestation |
+| `house_status` | none | bankroll, payout queue, open interest |
 | `quote_bet` | `market, side, margin_usd, leverage` | entry, notional, liquidation price, cap check, house warning |
 | `place_bet` | `market, side, margin_usd, leverage, max_slippage_pct?` | position id, fill price, tx link |
 | `my_bets` | none | open positions with PnL and liquidation price |
 | `cash_out` | `position_id` | exit price, tx link |
-| `make_it_real` | `position_id?, market?` | link to the web app to buy the real token via Flash |
+| `set_trigger` | `market, condition, price, side, margin_usd, leverage, expires_in_hours?` | armed trigger id |
+| `list_triggers` / `cancel_trigger` | none / `trigger_id` | the user's conditional bets |
+| `my_points` | none | points, notional, leaderboard |
+| `make_it_real` | `bet_id` | link to the web app to buy the real token via Flash |
 
 REST for the web app:
 - `POST /api/connect/start` `{wallet}` → `{pendingId, agentAddress, expiry}`
@@ -77,35 +83,31 @@ REST for the web app:
   thin proxies to Flash that keep the API key server-side.
 - `GET /health`
 
-Storage: SQLite (`node:sqlite`), tables `users` and `bets`.
+Storage: SQLite (`node:sqlite`), tables `users`, `bets` and `triggers`. A watcher checks prices
+every 3 seconds and fires armed triggers through the same caps and signing path, and a sync
+job credits points onchain every minute.
 
-### web/ (Vite + React + viem)
+### web/ (JackTrade trading UI + Grok pages)
 
-- `/` Connect Grok: connect wallet (EOA), check JackTrade balance, sign
-  `RegisterSessionKey` for the agent key (relayed gasless via `POST {RELAYER}/action`),
-  set caps, copy the MCP URL with Grok setup steps.
-- `/bets` Grok bets feed with live PnL.
-- `/real/:betId` Make it real: Flash quote → approve/sign → order → status, with a
-  bracket (take-profit / stop-loss) derived from the bet. Long bet → market buy with
-  attached bracket. Short bet → limit buy at the short's target.
+- `/grok` Connect Grok: connect wallet, check balance, sign `RegisterSessionKey` for the
+  agent key (relayed gasless via `POST {RELAYER}/action`), set caps, copy the MCP URL.
+- `/grok/bets` Grok bets feed with live PnL, plus "via Grok" badges in the trade views.
+- `/points` points and leaderboard.
+- `/real/$id` Make it real: Flash quote → approve/sign → order → status, with a bracket
+  (take-profit / stop-loss) derived from the bet. Long bet → market buy with attached
+  bracket. Short bet → limit buy at the short's target.
 
-### cre/ (Chainlink CRE, TypeScript workflow + Foundry contract)
+### contracts/ (JackTradePoints)
 
-- Trigger: cron.
-- HTTP: Robinhood Chain JSON-RPC `eth_call` for the Exchange's bankroll and queue
-  getters; JackTrade indexer `/api/house` for open interest and stress numbers.
-- Consensus: median / identical aggregation.
-- EVM write: `HouseAttestation` consumer on a CRE-supported testnet (Robinhood Chain is
-  not supported by CRE), storing `{bankroll, queued, openInterest, observedAt}`.
-- Verified with `cre workflow simulate --broadcast`.
+Non-transferable ERC-20-style points (JTP). The syncer credits each trader's cumulative
+notional; it only ever increases. 10 points per $100 of notional.
 
 ## Demo (≤ 4 min)
 
-1. Hook in Grok. 2. Connect Grok (sped up). 3. Grok analysis → `house_status` →
-`quote_bet` → `place_bet` → tx on Robinhood Chain. 4. Bet shows in the feed. 5. A
-follower clicks Make it real → Flash order lands onchain. 6. CRE simulation writes
-Proof of House; contract value matches what Grok quoted. 7. Close.
+See `docs/demo-runbook.md`. Hook, Connect Grok, Grok analysis → quote → bet onchain, a
+conditional bet, the bet in the app with points, Make it real with Flash, cash out.
 
 ## Out of scope
 
-ENS, CCIP, Grok placing Flash orders from a server-held wallet, OAuth for the connector.
+ENS, Chainlink (dropped to focus on Definitive Flash), Grok placing Flash orders from a
+server-held wallet, OAuth for the connector.

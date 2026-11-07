@@ -6,11 +6,10 @@ dist/
 *.db
 *.db-*
 .DS_Store
-# foundry / cre
+# foundry
 out/
 cache/
 broadcast/
-.cre/
 tmp/
 
 # Claude Code worktrees
