@@ -9,7 +9,7 @@ import { connectFinish, connectStart, getAccount, getAction, getRelayerConfig, p
 import { SESSION_KEY_MANAGER_ABI } from "@/lib/grok/config";
 import { ensureChain, errMsg, publicClient, useGrokWallet } from "@/lib/grok/wallet";
 
-const MIN_BALANCE = 10; // market minMargin is 10 USDG
+const MIN_BALANCE = 1; // market minMargin is 1 USDG
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function randomUint256() {
@@ -59,7 +59,7 @@ export default function GrokPage() {
   const [regErr, setRegErr] = useState("");
   const [regBusy, setRegBusy] = useState(false);
 
-  const [caps, setCaps] = useState({ maxMarginUsd: "25", maxLeverage: "100", dailyLossUsd: "50" });
+  const [caps, setCaps] = useState({ maxMarginUsd: "5", maxLeverage: "100", dailyLossUsd: "5" });
   const [finishBusy, setFinishBusy] = useState(false);
   const [finishErr, setFinishErr] = useState("");
   const [mcpUrl, setMcpUrl] = useState("");
@@ -356,7 +356,7 @@ export default function GrokPage() {
           <form className="jt-form" onSubmit={finish}>
             <label>
               <span>Max margin per bet (USD)</span>
-              <input className="jt-input" type="number" min="10" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={!!mcpUrl} />
+              <input className="jt-input" type="number" min="1" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={!!mcpUrl} />
             </label>
             <label>
               <span>Max leverage (×)</span>
@@ -403,8 +403,8 @@ export default function GrokPage() {
           </p>
         </Step>
 
-        <section className="hm-panel pm-panel jt-tools">
-          <div className="pm-panel-heading hm-panel-bar">
+        <section className="jt-panel pm-panel jt-tools">
+          <div className="pm-panel-heading jt-panel-bar">
             <h2>What Grok can do</h2>
           </div>
           <div className="pm-panel-body">
@@ -420,8 +420,8 @@ export default function GrokPage() {
         </section>
 
         {account && (
-          <section className="hm-panel pm-panel jt-revoke">
-            <div className="pm-panel-heading hm-panel-bar">
+          <section className="jt-panel pm-panel jt-revoke">
+            <div className="pm-panel-heading jt-panel-bar">
               <h2>Revoke Grok's key</h2>
             </div>
             <div className="pm-panel-body">

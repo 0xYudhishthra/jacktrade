@@ -152,14 +152,14 @@ function MoreMenu() {
       <button
         ref={toggle}
         type="button"
-        className="hm-nav-tab pm-nav pm-more-toggle"
+        className="jt-nav-tab pm-nav pm-more-toggle"
         aria-label="More"
         aria-expanded={open}
         aria-controls="header-more-links"
         data-active={pathname === "/help" || pathname === "/docs" || pathname === "/bets" ? "true" : undefined}
         onClick={() => setOpen(!open)}
       >
-        <span className="hm-nav-en">
+        <span className="jt-nav-en">
           {{ en: "More", es: "Más", pt: "Mais", zh: "更多" }[language]}
         </span>
         <ChevronDown size={11} />
@@ -291,10 +291,10 @@ export function Shell({ children, title, kicker, subtitle, action, trade = false
     ] || title;
   return (
     <div
-      className={`hm-workstation sky86 hm-focus pm-workstation ${trade ? "pd-trade" : ""} relative min-h-screen overflow-x-hidden`}
+      className={`jt-workstation sky86 jt-focus pm-workstation ${trade ? "pd-trade" : ""} relative min-h-screen overflow-x-hidden`}
     >
-      <main className="hm-stage">
-        <div className="hm-app-window">
+      <main className="jt-stage">
+        <div className="jt-app-window">
           <Header />
           <IndexerLagNotice />
           {dashboard && dashboard !== "public-profile" && <h1 className="sr-only">{pageTitle}</h1>}
@@ -340,14 +340,14 @@ export function Panel({ title, aside, children, className = "", collapsible = fa
   );
   if (collapsible)
     return (
-      <details className={`hm-panel pm-panel pm-panel-disclosure ${className}`}>
-        <summary className="pm-panel-heading hm-panel-bar">{heading}</summary>
+      <details className={`jt-panel pm-panel pm-panel-disclosure ${className}`}>
+        <summary className="pm-panel-heading jt-panel-bar">{heading}</summary>
         <div className="pm-panel-body">{children}</div>
       </details>
     );
   return (
-    <section className={`hm-panel pm-panel ${className}`}>
-      <div className="pm-panel-heading hm-panel-bar">{heading}</div>
+    <section className={`jt-panel pm-panel ${className}`}>
+      <div className="pm-panel-heading jt-panel-bar">{heading}</div>
       <div className="pm-panel-body">{children}</div>
     </section>
   );

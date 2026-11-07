@@ -22,7 +22,7 @@ function BetCard({ bet, prices }) {
   const closed = bet.closedAt || /closed|liquidated|cashed/i.test(bet.status || "");
   const pnl = closed ? (bet.pnlUsd != null ? Number(bet.pnlUsd) : null) : livePnl(bet, prices);
   return (
-    <article className="hm-panel jt-bet">
+    <article className="jt-panel jt-bet">
       <div className="jt-bet-top">
         <GrokBadge />
         <span className={`jt-side ${long ? "pm-up" : "pm-down"}`}>{long ? "LONG" : "SHORT"}</span>
