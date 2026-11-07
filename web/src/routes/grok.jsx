@@ -41,6 +41,9 @@ const TOOLS = [
   ["place_bet", "Opens the bet, only after you confirm"],
   ["my_bets", "Open bets with live PnL"],
   ["cash_out", "Closes a bet at the current price"],
+  ["set_trigger", "Trades for you when the price crosses a level"],
+  ["list_triggers", "Your armed and fired conditional trades"],
+  ["cancel_trigger", "Disarms a conditional trade"],
   ["make_it_real", "Link to buy the real token"],
   ["my_points", "Your JackTrade Points"],
 ];
