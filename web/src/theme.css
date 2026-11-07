@@ -166,12 +166,38 @@ html[data-theme="dark"] body.jt-dark.dream-exe.pd-base.hm-nocturne {
   & .pm-floating-market-stats strong {color:var(--jt-ivory)!important;font-family:var(--jt-mono);}
   & .pm-floating-market-stats {background:#0d0d0ce6!important;border-color:var(--jt-line-strong)!important;color:var(--jt-muted)!important;}
 
-  & :is(.pm-workstation input:not([type="range"]):not([type="checkbox"]),.pm-modal input:not([type="checkbox"]),.hm-focus-amount) {
+  & :is(.pm-workstation input:not([type="range"]):not([type="checkbox"]),.pm-modal input:not([type="checkbox"])) {
     background:#080808!important;border-color:var(--jt-line-strong)!important;color:var(--jt-ivory)!important;
   }
   & :is(.pm-workstation,.pm-modal) input:focus {border-color:var(--jt-gold)!important;box-shadow:0 0 0 3px #e9e4d81a!important;}
-  & .hm-focus-currency {background:#151514!important;border-color:var(--jt-line-strong)!important;color:var(--jt-ivory)!important;}
-  & :is(.hm-focus-field-label,.hm-focus-available) {color:var(--jt-muted)!important;letter-spacing:.14em;}
+  /* Margin: one field. Token chip on the left, the amount on the right, the balance underneath. */
+  & .hm-focus-amount {background:none!important;}
+  & .hm-focus-amount-input {
+    display:flex!important;align-items:center;gap:10px;
+    height:56px;padding:0 16px 0 8px!important;
+    background:#111110!important;border:1px solid var(--jt-line-strong)!important;border-radius:12px!important;
+    box-shadow:none!important;transition:border-color .15s;
+  }
+  & .hm-focus-amount-input:hover {border-color:#3d3b37!important;}
+  & .hm-focus-amount-input:focus-within {border-color:#8d887e!important;}
+  & .hm-focus-amount-input input#product-margin {
+    flex:1;min-width:0;height:100%;
+    background:transparent!important;border:0!important;box-shadow:none!important;outline:none;
+    text-align:right;color:var(--jt-ivory)!important;
+    font:500 26px/1 var(--jt-mono)!important;letter-spacing:-.02em;
+  }
+  & .hm-focus-amount-input input#product-margin::placeholder {color:#4a4844;}
+  & .hm-focus-currency {
+    display:inline-flex!important;align-items:center;gap:7px;height:38px;padding:0 12px 0 8px!important;
+    background:#1a1a18!important;border:1px solid var(--jt-line-strong)!important;border-radius:9px!important;
+    color:var(--jt-ivory)!important;font:600 14px/1 Inter,system-ui,sans-serif!important;box-shadow:none!important;
+  }
+  & .hm-focus-available {
+    margin:8px 2px 0!important;text-align:right;
+    font:400 12px/1.3 Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;
+    color:var(--jt-faint)!important;
+  }
+  & .hm-focus-field-label {color:var(--jt-muted)!important;letter-spacing:.14em;}
 
   /* ------------------------------------------------- long / short -- */
   & .hm-focus-direction button {
