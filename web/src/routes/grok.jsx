@@ -9,7 +9,7 @@ import { connectFinish, connectStart, getAccount, getAction, getRelayerConfig, p
 import { SESSION_KEY_MANAGER_ABI } from "@/lib/grok/config";
 import { ensureChain, errMsg, publicClient, useGrokWallet } from "@/lib/grok/wallet";
 
-const MIN_BALANCE = 10; // market minMargin is 10 USDG
+const MIN_BALANCE = 1; // market minMargin is 1 USDG
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function randomUint256() {
@@ -59,7 +59,7 @@ export default function GrokPage() {
   const [regErr, setRegErr] = useState("");
   const [regBusy, setRegBusy] = useState(false);
 
-  const [caps, setCaps] = useState({ maxMarginUsd: "25", maxLeverage: "100", dailyLossUsd: "50" });
+  const [caps, setCaps] = useState({ maxMarginUsd: "5", maxLeverage: "100", dailyLossUsd: "5" });
   const [finishBusy, setFinishBusy] = useState(false);
   const [finishErr, setFinishErr] = useState("");
   const [mcpUrl, setMcpUrl] = useState("");
@@ -355,7 +355,7 @@ export default function GrokPage() {
                   <span>Max per trade</span>
                   <span className="jt-affix">
                     <i>$</i>
-                    <input type="number" min="10" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={Boolean(mcpUrl)} />
+                    <input type="number" min="1" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={Boolean(mcpUrl)} />
                   </span>
                 </label>
                 <label>
