@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Shell } from "@/components/product/ProductUI";
-import { GrokBadge, Note, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
+import { GrokBadge, Note, PageHead, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
 import { getBets } from "@/lib/grok/api";
 import { useLivePrices } from "@/hooks/useLivePrices";
 import { isLong, marketSymbol } from "@/lib/grok/bets";
@@ -48,7 +48,7 @@ function BetCard({ bet, prices }) {
           {bet.positionId != null ? ` · #${bet.positionId}` : ""}
         </span>
         {bet.txHash && <TxHash hash={bet.txHash} />}
-        <Link className="luna-btn" to="/real/$id" params={{ id: String(bet.id) }}>
+        <Link className="jt-btn-ghost" to="/real/$id" params={{ id: String(bet.id) }}>
           Make it real
         </Link>
       </div>
@@ -86,19 +86,18 @@ export default function BetsPage() {
   }, []);
 
   return (
-    <Shell
-      title="Agent bets"
-      kicker="JACKTRADE / AGENTS"
-      subtitle="Live bets placed by Grok and other AI agents through the JackTrade connector. Updates every 5 seconds."
-    >
-      <div className="jt-grok">
+    <Shell>
+      <div className="jt-page">
+        <PageHead title="Agent bets">Live trades placed by Grok and other AI agents. Updates every few seconds.</PageHead>
         {error && <Note>Feed unavailable ({error}). Retrying every 5 s.</Note>}
         {bets === null ? (
-          <div className="pm-empty">Loading bets…</div>
+          <div className="jt-card-plain jt-empty">Loading…</div>
         ) : bets.length === 0 ? (
-          <div className="pm-empty">
-            No agent bets yet. Once someone tells Grok to place a bet, it shows up here within seconds.{" "}
-            <Link to="/grok">Connect Grok</Link> to place the first one.
+          <div className="jt-card-plain jt-empty">
+            <img src="/brand/jack-256.webp" alt="" />
+            <strong>No agent trades yet</strong>
+            <span>When someone tells Grok to trade, it shows up here within seconds.</span>
+            <Link to="/grok" className="jt-btn">Connect Grok</Link>
           </div>
         ) : (
           <div className="jt-bets">

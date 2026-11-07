@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { erc20Abi, formatUnits } from "viem";
 import { Shell, Panel } from "@/components/product/ProductUI";
-import { ErrorBox, Note, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
+import { ErrorBox, Note, PageHead, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
 import { flashOrder, flashOrderDetail, flashOrders, flashQuote, getBet } from "@/lib/grok/api";
 import { FLASH_CHAIN, NATIVE_SENTINEL, TOKENS } from "@/lib/grok/config";
 import { errMsg, publicClient, sendAndWait, signTypedDataJson, useGrokWallet } from "@/lib/grok/wallet";
@@ -389,12 +389,9 @@ export default function RealPage() {
     : [];
 
   return (
-    <Shell
-      title="Make it real"
-      kicker="JACKTRADE / AGENTS"
-      subtitle="Copy an agent's bet into the real token on Robinhood Chain with a Definitive Flash order. Your wallet, your tokens."
-    >
-      <div className="jt-grok">
+    <Shell>
+      <div className="jt-page jt-page-narrow">
+        <PageHead title="Make it real">Copy an agent's trade into the real token on Robinhood Chain. Your wallet, your tokens.</PageHead>
         <p className="jt-small">
           <Link to="/bets">← Agent bets</Link>
         </p>
@@ -461,7 +458,7 @@ export default function RealPage() {
           <div className="jt-row">
             <span className="jt-muted">{target.symbol} now</span>
             <strong className="jt-mono">{refPrice ? `$${fmtPrice(refPrice)}` : priceErr ? "–" : "…"}</strong>
-            <button className="luna-btn" type="button" onClick={loadPrice}>
+            <button className="jt-btn-ghost" type="button" onClick={loadPrice}>
               Refresh
             </button>
             <span className="jt-small jt-muted">
@@ -499,12 +496,12 @@ export default function RealPage() {
           )}
 
           {!account ? (
-            <button className="luna-btn luna-btn-active" type="button" onClick={wallet.connect}>
+            <button className="jt-btn" type="button" onClick={wallet.connect}>
               Connect wallet
             </button>
           ) : (
             <div className="jt-row">
-              <button className="luna-btn luna-btn-active" type="button" onClick={getQuote} disabled={quoteBusy || execBusy}>
+              <button className="jt-btn" type="button" onClick={getQuote} disabled={quoteBusy || execBusy}>
                 {quoteBusy ? "Quoting…" : quote ? "Re-quote" : "Get Flash quote"}
               </button>
               {balances && (
@@ -547,7 +544,7 @@ export default function RealPage() {
                 )}
               </dl>
               <p className="jt-small jt-muted">Wallet prompts: {prompts.join(" → ")}</p>
-              <button className="luna-btn luna-btn-active" type="button" onClick={execute} disabled={execBusy}>
+              <button className="jt-btn" type="button" onClick={execute} disabled={execBusy}>
                 {execBusy ? "Follow your wallet…" : "Place order"}
               </button>
             </div>
