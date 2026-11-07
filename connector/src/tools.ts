@@ -177,19 +177,37 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
     async () => {
       try {
         const open = await up.positions(user.wallet);
-        return ok(
-          open.map((p) => ({
-            positionId: p.id,
-            market: p.market,
-            side: p.side,
-            leverage: p.leverage,
-            marginUsd: Number(p.margin),
-            entryPrice: Number(p.entryPrice),
-            markPrice: p.markPrice ? Number(p.markPrice) : null,
-            liquidationPrice: p.liquidationPrice ? Number(p.liquidationPrice) : null,
-            pnlUsd: p.pnl ? Number(p.pnl) : null,
-          })),
-        );
+        const rows = open.map((p) => ({
+          positionId: p.id,
+          market: p.market,
+          side: p.side,
+          leverage: p.leverage,
+          marginUsd: Number(p.margin),
+          entryPrice: Number(p.entryPrice),
+          markPrice: p.markPrice ? Number(p.markPrice) : null,
+          liquidationPrice: p.liquidationPrice ? Number(p.liquidationPrice) : null,
+          pnlUsd: p.pnl ? Number(p.pnl) : null,
+          status: "open",
+        }));
+        // The indexer trails the chain by a few seconds: include bets this connector just placed.
+        const seen = new Set(rows.map((r) => r.positionId));
+        const recent = Math.floor(Date.now() / 1000) - 120;
+        for (const b of store.betsByWallet(user.wallet, recent)) {
+          if (b.status !== "open" || !b.positionId || seen.has(b.positionId)) continue;
+          rows.push({
+            positionId: b.positionId,
+            market: b.market,
+            side: b.side,
+            leverage: b.leverage,
+            marginUsd: b.marginUsd,
+            entryPrice: b.entryPrice ?? 0,
+            markPrice: null,
+            liquidationPrice: b.liquidationPrice,
+            pnlUsd: null,
+            status: "confirming",
+          });
+        }
+        return ok(rows);
       } catch (e) {
         return fail(e);
       }
