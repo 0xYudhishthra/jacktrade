@@ -144,6 +144,7 @@ Points come from the exchange's onchain trade history (via the indexer), so anyo
 | Conditional trades (`set_trigger`) | **Built** | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
 | Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
 | Agent bets feed | **Built** | [`web/src/routes/bets.jsx`](web/src/routes/bets.jsx) |
+| Grok places Flash orders itself (`make_it_real`, `agent_wallet`, `my_flash_orders`, `send_to_my_wallet`) | **Verified live on mainnet** · Grok's own wallet bought 0.00254 TSLA for 1 USDG, TP $373.24 / SL $351.71 active, tx `0x50aad224…3b60` | [`connector/src/flash.ts`](connector/src/flash.ts) |
 | Make it real (Definitive Flash market + bracket, limit) | **Verified live on mainnet** · 0.5 USDG bought 0.00132 TSLA stock token via Uniswap V4, take-profit / stop-loss bracket active | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) · [`connector/test/flash.live.ts`](connector/test/flash.live.ts) |
 | JackTrade Points (connector + leaderboard) | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
 | JackTradePoints contract | **Live on Robinhood Chain** · 19 Foundry tests | [`contracts`](contracts) |
