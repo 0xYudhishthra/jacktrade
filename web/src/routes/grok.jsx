@@ -4,12 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { getAddress, isAddress } from "viem";
 import { Shell } from "@/components/product/ProductUI";
-import { CopyButton, ErrorBox, Note, Step, TxHash, fmtUsd, short } from "@/components/grok/GrokUI";
+import { CopyButton, ErrorBox, Note, PageHead, Step, TxHash, fmtUsd, short } from "@/components/grok/GrokUI";
 import { connectFinish, connectStart, getAccount, getAction, getRelayerConfig, postAction } from "@/lib/grok/api";
 import { SESSION_KEY_MANAGER_ABI } from "@/lib/grok/config";
 import { ensureChain, errMsg, publicClient, useGrokWallet } from "@/lib/grok/wallet";
 
-const MIN_BALANCE = 1; // market minMargin is 1 USDG
+const MIN_BALANCE = 10; // market minMargin is 10 USDG
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function randomUint256() {
@@ -59,7 +59,7 @@ export default function GrokPage() {
   const [regErr, setRegErr] = useState("");
   const [regBusy, setRegBusy] = useState(false);
 
-  const [caps, setCaps] = useState({ maxMarginUsd: "5", maxLeverage: "100", dailyLossUsd: "5" });
+  const [caps, setCaps] = useState({ maxMarginUsd: "25", maxLeverage: "100", dailyLossUsd: "50" });
   const [finishBusy, setFinishBusy] = useState(false);
   const [finishErr, setFinishErr] = useState("");
   const [mcpUrl, setMcpUrl] = useState("");
@@ -278,173 +278,179 @@ export default function GrokPage() {
   const s5 = mcpUrl ? "active" : "todo";
 
   return (
-    <Shell
-      title="Connect Grok"
-      kicker="JACKTRADE / AGENTS"
-      subtitle="Add JackTrade to Grok once. Then ask Grok what the news means for a market and tell it to trade: it checks the house, quotes the bet and places it onchain, in the same chat."
-    >
-      <div className="jt-grok jt-agent-page">
-        <p className="jt-safety">
-          Grok's key can open and close bets. It can never withdraw your money, and you can revoke it any time.
-        </p>
+    <Shell>
+      <div className="jt-page">
+        <PageHead title="Trade from Grok">
+          Connect JackTrade to Grok once. Then ask it what the news means for a market and tell it to trade, right in the
+          chat.
+        </PageHead>
 
-        <Step n={1} title="Connect your wallet" state={s1}>
-          {!account ? (
-            <button className="luna-btn luna-btn-active jt-cta" type="button" onClick={wallet.connect}>
-              Connect wallet
-            </button>
-          ) : (
-            <p>
-              Connected as <span className="jt-mono">{short(account, 6)}</span> on Robinhood Chain.
-            </p>
-          )}
-        </Step>
-
-        <Step n={2} title="Check your balance" state={s2}>
-          {balance === null && !balanceErr && <p className="jt-muted">Loading balance…</p>}
-          {balance !== null && (
-            <div className="jt-row">
-              <span>
-                Balance <strong className="jt-mono">{fmtUsd(balance)}</strong>
-              </span>
-              <button className="luna-btn" type="button" onClick={loadBalance}>
-                Refresh
-              </button>
-              {lowBalance && (
-                <button className="luna-btn" type="button" onClick={wallet.deposit}>
-                  Deposit
+        <div className="jt-split">
+          <ol className="jt-steps">
+            <Step n={1} title="Connect your wallet" state={s1}>
+              {!account ? (
+                <button className="jt-btn" type="button" onClick={wallet.connect}>
+                  Connect wallet
                 </button>
-              )}
-            </div>
-          )}
-          {lowBalance && (
-            <Note>
-              {balance === 0 ? "Your balance is empty." : `Bets need at least $${MIN_BALANCE} of margin.`} Deposit USDG,
-              then hit Refresh. You can still connect Grok now.
-            </Note>
-          )}
-          <ErrorBox error={balanceErr} />
-        </Step>
-
-        <Step n={3} title="Approve Grok's trading key" state={s3}>
-          <p>
-            We create a dedicated key for Grok. You sign once (no gas) to register it with the exchange's
-            SessionKeyManager. The key can open and close bets for you. It can't withdraw.
-          </p>
-          {pending?.agentAddress && (
-            <p className="jt-small">
-              Grok's key <span className="jt-mono">{short(pending.agentAddress, 6)}</span>
-              {pending.expiry && <> · expires {new Date(Number(pending.expiry) * 1000).toLocaleString()}</>}
-            </p>
-          )}
-          {!registered && (
-            <button className="luna-btn luna-btn-active" type="button" onClick={registerKey} disabled={regBusy || s1 !== "done"}>
-              {regBusy ? "Working…" : regErr ? "Try again" : "Approve Grok's key"}
-            </button>
-          )}
-          {regStatus && <p className={registered ? "jt-ok" : "jt-muted"}>{regStatus}</p>}
-          {regTx && (
-            <p className="jt-small">
-              Relayer tx: <TxHash hash={regTx} />
-            </p>
-          )}
-          <ErrorBox error={regErr} />
-        </Step>
-
-        <Step n={4} title="Set Grok's limits" state={s4}>
-          <p className="jt-muted">The connector checks these before signing every bet Grok places.</p>
-          <form className="jt-form" onSubmit={finish}>
-            <label>
-              <span>Max margin per bet (USD)</span>
-              <input className="jt-input" type="number" min="1" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={!!mcpUrl} />
-            </label>
-            <label>
-              <span>Max leverage (×)</span>
-              <input className="jt-input" type="number" min="1" step="1" value={caps.maxLeverage} onChange={(e) => setCaps({ ...caps, maxLeverage: e.target.value })} disabled={!!mcpUrl} />
-            </label>
-            <label>
-              <span>Daily loss limit (USD)</span>
-              <input className="jt-input" type="number" min="1" step="1" value={caps.dailyLossUsd} onChange={(e) => setCaps({ ...caps, dailyLossUsd: e.target.value })} disabled={!!mcpUrl} />
-            </label>
-            {!mcpUrl && (
-              <button className="luna-btn luna-btn-active" type="submit" disabled={finishBusy || !registered}>
-                {finishBusy ? "Saving…" : "Save limits and get my Grok link"}
-              </button>
-            )}
-          </form>
-          <ErrorBox error={finishErr} />
-        </Step>
-
-        <Step n={5} title="Add JackTrade to Grok" state={s5}>
-          <p>Your private connector URL. Treat it like a password: anyone with it can trade with Grok's key.</p>
-          <div className="jt-copy">
-            <code className="jt-mono jt-selectable">{mcpUrl}</code>
-            <CopyButton text={mcpUrl} label="Copy URL" />
-          </div>
-          <ol className="jt-howto">
-            <li>
-              Open{" "}
-              <a href="https://grok.com/connectors" target="_blank" rel="noreferrer">
-                grok.com/connectors
-              </a>
-              .
-            </li>
-            <li>
-              Click <b>New Connector</b>, then <b>Custom</b>.
-            </li>
-            <li>Paste the URL, name it "JackTrade" and save.</li>
-            <li>
-              In a new chat, try: <i>"What does today's news mean for BTC? If you agree, bet $20 long at 50x."</i>
-            </li>
-          </ol>
-          <p className="jt-small jt-muted">
-            It's a standard MCP server, so the same URL also works in Claude, ChatGPT or any other MCP client. Bets
-            placed by an agent show up in the <Link to="/bets">agent bets feed</Link>.
-          </p>
-        </Step>
-
-        <section className="jt-panel pm-panel jt-tools">
-          <div className="pm-panel-heading jt-panel-bar">
-            <h2>What Grok can do</h2>
-          </div>
-          <div className="pm-panel-body">
-            <ul className="jt-tool-list">
-              {TOOLS.map(([name, desc]) => (
-                <li key={name}>
-                  <code>{name}</code>
-                  <span>{desc}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {account && (
-          <section className="jt-panel pm-panel jt-revoke">
-            <div className="pm-panel-heading jt-panel-bar">
-              <h2>Revoke Grok's key</h2>
-            </div>
-            <div className="pm-panel-body">
-              <p className="jt-muted">
-                Sends <span className="jt-mono">revokeSessionKey</span> from your wallet (needs a little ETH for gas).
-                Grok stops being able to trade immediately.
-              </p>
-              <div className="jt-copy">
-                <input className="jt-input jt-mono" placeholder="Grok's key address 0x…" value={revokeKey} onChange={(e) => setRevokeKey(e.target.value.trim())} />
-                <button className="luna-btn" type="button" onClick={revoke} disabled={revokeBusy}>
-                  {revokeBusy ? "Revoking…" : "Revoke"}
-                </button>
-              </div>
-              {revokeTx && (
-                <p className="jt-small">
-                  Tx: <TxHash hash={revokeTx} />
+              ) : (
+                <p>
+                  Connected as <span className="jt-mono">{short(account, 6)}</span> on Robinhood Chain.
                 </p>
               )}
-              {revokeMsg && <p className="jt-ok">{revokeMsg}</p>}
-              <ErrorBox error={revokeErr} />
+            </Step>
+
+            <Step n={2} title="Check your balance" hint="Trades need at least $10 of margin." state={s2}>
+              {balance === null && !balanceErr && <p className="jt-muted">Loading balance…</p>}
+              {balance !== null && (
+                <div className="jt-row">
+                  <span className="jt-figure">{fmtUsd(balance)}</span>
+                  <button className="jt-btn-ghost" type="button" onClick={loadBalance}>
+                    Refresh
+                  </button>
+                  {lowBalance && (
+                    <button className="jt-btn-ghost" type="button" onClick={wallet.deposit}>
+                      Deposit
+                    </button>
+                  )}
+                </div>
+              )}
+              {lowBalance && (
+                <Note>
+                  {balance === 0 ? "Your balance is empty." : `Trades need at least $${MIN_BALANCE} of margin.`} Deposit
+                  USDG, then hit Refresh. You can still connect Grok now.
+                </Note>
+              )}
+              <ErrorBox error={balanceErr} />
+            </Step>
+
+            <Step n={3} title="Approve Grok's trading key" hint="One signature, no gas. The key can never withdraw." state={s3}>
+              <p>
+                We create a key just for Grok. You sign once, with no gas, to register it. It can open and close trades
+                for you. It can't withdraw.
+              </p>
+              {pending?.agentAddress && (
+                <p className="jt-small jt-muted">
+                  Key <span className="jt-mono">{short(pending.agentAddress, 6)}</span>
+                  {pending.expiry && <> · expires {new Date(Number(pending.expiry) * 1000).toLocaleDateString()}</>}
+                </p>
+              )}
+              {!registered && (
+                <button className="jt-btn" type="button" onClick={registerKey} disabled={regBusy || s1 !== "done"}>
+                  {regBusy ? "Working…" : regErr ? "Try again" : "Approve key"}
+                </button>
+              )}
+              {regStatus && <p className={registered ? "jt-ok" : "jt-muted"}>{regStatus}</p>}
+              {regTx && (
+                <p className="jt-small jt-muted">
+                  Relayer tx <TxHash hash={regTx} />
+                </p>
+              )}
+              <ErrorBox error={regErr} />
+            </Step>
+
+            <Step n={4} title="Set Grok's limits" hint="Max per trade, max leverage and a daily loss limit." state={s4}>
+              <p className="jt-muted">Checked before every trade Grok places.</p>
+              <form className="jt-limits" onSubmit={finish}>
+                <label>
+                  <span>Max per trade</span>
+                  <span className="jt-affix">
+                    <i>$</i>
+                    <input type="number" min="10" step="1" value={caps.maxMarginUsd} onChange={(e) => setCaps({ ...caps, maxMarginUsd: e.target.value })} disabled={Boolean(mcpUrl)} />
+                  </span>
+                </label>
+                <label>
+                  <span>Max leverage</span>
+                  <span className="jt-affix">
+                    <input type="number" min="1" step="1" value={caps.maxLeverage} onChange={(e) => setCaps({ ...caps, maxLeverage: e.target.value })} disabled={Boolean(mcpUrl)} />
+                    <i>×</i>
+                  </span>
+                </label>
+                <label>
+                  <span>Daily loss limit</span>
+                  <span className="jt-affix">
+                    <i>$</i>
+                    <input type="number" min="1" step="1" value={caps.dailyLossUsd} onChange={(e) => setCaps({ ...caps, dailyLossUsd: e.target.value })} disabled={Boolean(mcpUrl)} />
+                  </span>
+                </label>
+                {!mcpUrl && (
+                  <button className="jt-btn" type="submit" disabled={finishBusy || !registered}>
+                    {finishBusy ? "Saving…" : "Save and get my link"}
+                  </button>
+                )}
+              </form>
+              <ErrorBox error={finishErr} />
+            </Step>
+
+            <Step n={5} title="Add JackTrade to Grok" hint="Paste your private link into Grok's connectors." state={s5}>
+              <p>Your private link. Treat it like a password: anyone with it can trade with Grok's key.</p>
+              <div className="jt-copy">
+                <code className="jt-mono jt-selectable">{mcpUrl}</code>
+                <CopyButton text={mcpUrl} label="Copy" className="jt-btn" />
+              </div>
+              <ol className="jt-howto">
+                <li>
+                  Open{" "}
+                  <a href="https://grok.com/connectors" target="_blank" rel="noreferrer">
+                    grok.com/connectors
+                  </a>
+                  .
+                </li>
+                <li>
+                  Click <b>New Connector</b>, then <b>Custom</b>.
+                </li>
+                <li>Paste the link, name it "JackTrade" and save.</li>
+                <li>
+                  In a new chat, try: <i>"What does today's news mean for BTC? If you agree, go long $20 at 50x."</i>
+                </li>
+              </ol>
+            </Step>
+          </ol>
+
+          <aside className="jt-aside">
+            <div className="jt-card-plain">
+              <div className="jt-aside-title">
+                <img src="/brand/jack-256.webp" alt="" width="28" height="28" />
+                <h3>What Grok can do</h3>
+              </div>
+              <ul className="jt-tool-list">
+                {TOOLS.map(([name, desc]) => (
+                  <li key={name}>
+                    <code>{name}</code>
+                    <span>{desc}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </section>
-        )}
+            <div className="jt-card-plain">
+              <h3>Safe by design</h3>
+              <p>Grok's key can open and close trades. It can never withdraw, and you can revoke it whenever you want.</p>
+              <p>
+                Works with any MCP client: Claude, ChatGPT and others use the same link. Trades placed by agents show up
+                in <Link to="/bets">Agent bets</Link>.
+              </p>
+            </div>
+
+            {account && (
+              <div className="jt-card-plain">
+                <h3>Revoke Grok's key</h3>
+                <p className="jt-muted">Needs a little ETH for gas. Grok stops trading immediately.</p>
+                <div className="jt-copy">
+                  <input className="jt-input jt-mono" placeholder="Key address 0x…" value={revokeKey} onChange={(e) => setRevokeKey(e.target.value.trim())} />
+                  <button className="jt-btn-ghost is-danger" type="button" onClick={revoke} disabled={revokeBusy}>
+                    {revokeBusy ? "Revoking…" : "Revoke"}
+                  </button>
+                </div>
+                {revokeTx && (
+                  <p className="jt-small jt-muted">
+                    Tx <TxHash hash={revokeTx} />
+                  </p>
+                )}
+                {revokeMsg && <p className="jt-ok">{revokeMsg}</p>}
+                <ErrorBox error={revokeErr} />
+              </div>
+            )}
+          </aside>
+        </div>
       </div>
     </Shell>
   );

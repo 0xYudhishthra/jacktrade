@@ -66,16 +66,30 @@ export function Note({ children, tone = "warn" }) {
   return <div className={`jt-alert jt-alert-${tone}`}>{children}</div>;
 }
 
-export function Step({ n, title, state, children }) {
+export function Step({ n, title, hint, state, children }) {
   // state: "todo" | "active" | "done" | "error"
   return (
-    <section className={`jt-panel pm-panel jt-step jt-step-${state}`}>
-      <div className="pm-panel-heading jt-panel-bar jt-step-head">
-        <span className="jt-step-n">{state === "done" ? "✓" : n}</span>
+    <li className={`jt-step is-${state}`}>
+      <span className="jt-step-n" aria-hidden="true">{state === "done" ? "✓" : n}</span>
+      <div className="jt-step-main">
         <h2>{title}</h2>
+        {state === "todo" && hint && <p className="jt-step-hint">{hint}</p>}
+        {state !== "todo" && <div className="jt-step-body">{children}</div>}
       </div>
-      {state !== "todo" && <div className="pm-panel-body jt-step-body">{children}</div>}
-    </section>
+    </li>
+  );
+}
+
+/** Page intro for the agent pages: title and one line, aligned with the content below. */
+export function PageHead({ title, children, aside }) {
+  return (
+    <header className="jt-page-head">
+      <div>
+        <h1>{title}</h1>
+        {children && <p>{children}</p>}
+      </div>
+      {aside}
+    </header>
   );
 }
 
