@@ -238,45 +238,10 @@ export default function Profile() {
       >
         {isPublic ? `${shortAddress(publicUser)} · onchain account on Robinhood Chain` : me ? "Your balances, positions and performance." : "Connect your wallet to see your balances, positions and performance."}
       </PageHead>
-      <div className="ds-overview">
-        <aside className="ds-summary-grid">
-          <div className="ds-summary-column">
-            <div className="pm-profile-hero">
-              <div>
-                {!isPublic && <p className="pm-profile-name">{ownUsername ? `@${ownUsername}` : me ? shortAddress(me) : "Not connected"}</p>}
-                <span className="pm-eyebrow">Net PnL + rewards</span>
-                <strong className={result >= 0 ? "pm-up" : "pm-down"}>
-                  {result >= 0 ? "+" : "−"}${money(Math.abs(result))}
-                </strong>
-                <dl className="pm-data-rows">
-                  <div><dt>Trading PnL</dt><dd className={view.realized + view.openPnl >= 0 ? "pm-up" : "pm-down"}>${money(view.realized + view.openPnl)}</dd></div>
-                  <div><dt>USDG rewards</dt><dd>{rewardUsd(view.rewards)}</dd></div>
-                </dl>
-              </div>
-              {!isPublic && ownUsername && (
-                <Link className="pm-muted" to="/u/$username" params={{ username: ownUsername }}>
-                  View profile ↗
-                </Link>
-              )}
-              <details className="pm-badge-details">
-                <summary>Badges</summary>
-                <div className="pm-badges">
-                  {view.badges.length ? view.badges.map((badge) => <span key={badge}>{badge}</span>) : <span>No badges yet</span>}
-                </div>
-              </details>
-            </div>
-            <Panel title="HOUSE balances">
-              <StatRows rows={view.balances} />
-              {!isPublic && <Link className="ds-inline-link" to="/token">Manage staking ↗</Link>}
-            </Panel>
-          </div>
-          <Panel title="Account stats" className="ds-stats-panel">
-            <StatRows rows={[...view.stats, ["Leaderboard badges", String(view.badges.length)]]} />
-          </Panel>
-        </aside>
+      <div className="jt-row">
         <Panel
           title="Performance"
-          className="pm-chart-panel"
+          className="ds-plot-panel"
           aside={
             <div className="pm-panel-actions">
               <FilterSelect label="Portfolio chart metric" value={chartMetric} onChange={setChartMetric} items={[["equity", "Equity"], ["trading", "Realized PnL"]]} />
@@ -287,12 +252,45 @@ export default function Profile() {
           <SnapshotChart
             paused={paused}
             series={[{ name: chartMetric === "equity" ? "Equity" : "Realized PnL", data: series, fill: true }]}
-            height={340}
+            height={250}
             empty={chartEmpty}
             label={`${isPublic ? name : "Your"} ${chartMetric === "equity" ? "equity (net deposits + realized PnL)" : "realized PnL"} over time`}
           />
         </Panel>
+        <div className="jt-stack">
+          <div className="pm-profile-hero">
+            <div>
+              <span className="pm-eyebrow">Net PnL + rewards</span>
+              <strong className={result >= 0 ? "pm-up" : "pm-down"}>
+                {result >= 0 ? "+" : "−"}${money(Math.abs(result))}
+              </strong>
+              <dl className="pm-data-rows">
+                <div><dt>Trading PnL</dt><dd className={view.realized + view.openPnl >= 0 ? "pm-up" : "pm-down"}>${money(view.realized + view.openPnl)}</dd></div>
+                <div><dt>USDG rewards</dt><dd>{rewardUsd(view.rewards)}</dd></div>
+              </dl>
+            </div>
+            <div className="jt-hero-foot">
+              <details className="pm-badge-details">
+                <summary>Badges ({view.badges.length})</summary>
+                <div className="pm-badges">
+                  {view.badges.length ? view.badges.map((badge) => <span key={badge}>{badge}</span>) : <span>No badges yet</span>}
+                </div>
+              </details>
+              {!isPublic && ownUsername && (
+                <Link className="ds-inline-link" to="/u/$username" params={{ username: ownUsername }}>
+                  Public profile ↗
+                </Link>
+              )}
+            </div>
+          </div>
+          <Panel title="HOUSE balances" aside={!isPublic && <Link className="ds-inline-link" to="/token">Staking ↗</Link>}>
+            <StatRows rows={view.balances} />
+          </Panel>
+        </div>
       </div>
+      <Panel title="Account stats" className="jt-stats-panel">
+        <StatRows rows={[...view.stats, ["Leaderboard badges", String(view.badges.length)]]} />
+      </Panel>
       {isPublic ? (
         <Panel title="Best trades">
           <div className="pm-table-scroll">
