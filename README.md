@@ -4,10 +4,10 @@
 
 > **Markets, on command.** Go long or short on US stock tokens and crypto with up to 1000× leverage on Robinhood Chain. Place the trade yourself, or tell your AI agent to: add JackTrade to Grok once and it can check the house, quote, trade, set price alerts that trade for you, and cash out, right in the chat.
 
-- **Live app**: [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app)
+- **Live app**: [jacktrade.up.railway.app](https://jacktrade.up.railway.app)
 - **Spec**: [`docs/spec.md`](docs/spec.md) · **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
 - **What existed before the hackathon**: [`PRE-EXISTING.md`](PRE-EXISTING.md) · **AI usage**: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
-- **Code**: [`web`](web) (trading app) · [`connector`](connector) (Grok / MCP connector) · [`contracts`](contracts) (JackTrade Points)
+- **Code**: [`web`](web) (trading app) · [`connector`](connector) (Grok / MCP connector) · [`contracts`](contracts) (JackTrade Points) · [`backend`](backend) (prices, relayer, Ponder indexer, keepers, liquidator)
 
 ---
 
@@ -146,18 +146,25 @@ Points come from the exchange's onchain trade history (via the indexer), so anyo
 | Agent bets feed | **Built** | [`web/src/routes/bets.jsx`](web/src/routes/bets.jsx) |
 | Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
 | JackTrade Points (connector + leaderboard) | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
-| JackTradePoints contract | **Built** · 19 Foundry tests; deploy script ready | [`contracts`](contracts) |
+| JackTradePoints contract | **Live on Robinhood Chain** · 19 Foundry tests | [`contracts`](contracts) |
+| Points sync | **Live** · credited 215 JTP onchain for a test wallet's $2,150 of notional | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
+| Fresh exchange deployment | **Live** · deployed and configured from block 107978288, losses mint nothing, points instead | see Deployments |
+| JackTrade backend (prices, relayer, Ponder indexer, keepers, liquidator) | **Live** on Railway | [`backend`](backend) |
+| End-to-end on mainnet | **Verified** · gasless deposit, Connect Grok, ETH and TSLA bets placed and cashed out through the MCP tools | [`connector/test/e2e.live.ts`](connector/test/e2e.live.ts) |
 | Single-image deploy (connector + web) | **Built** · one Docker image serves both | [`Dockerfile`](Dockerfile) |
 
 ## Deployments
 
-**JackTrade exchange — Robinhood Chain mainnet (chain id 4663)**:
+**Robinhood Chain mainnet (chain id 4663)**, deployed during the hackathon:
 
 | Contract | Address |
 |----------|---------|
-| Exchange | `0x698cf1a9220f89ccf6ee75269086288a623ede54` |
-| SessionKeyManager | `0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29` |
-| BatchExecutor | `0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4` |
+| Exchange | `0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c` |
+| BatchExecutor | `0x9221254c99f4b15886b204116f979acebdcddec2` |
+| SessionKeyManager | `0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af` |
+| PriceOracle (Pyth) | `0x35367e32bf94d9abe8af29a38323536b876ae51f` |
+| NoMintTokenomics (losses mint nothing) | `0x506b4124d2f63b83c147b026ebc7fa004683ddea` |
+| JackTradePoints (JTP) | `0xdc4d5b817C3Df2fB19cE5856b3967FbFA1199Ed7` |
 | Collateral: USDG | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
 
 **Tokens used by Make it real (Robinhood Chain):** TSLA `0x322F0929c4625eD5bAd873c95208D54E1c003b2d` · NVDA `0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC` · WETH `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
@@ -168,6 +175,7 @@ Points come from the exchange's onchain trade history (via the indexer), so anyo
 jacktrade/
 ├── web/          # trading app: terminal, portfolio, house, points, leaderboard, agent pages (React 19 + Vite 8)
 ├── connector/    # remote MCP server for Grok + REST API + trigger watcher + Flash proxy; serves the built web app
+├── backend/      # prices, relayer, Ponder indexer, keepers, liquidator (imported, redeployed for JackTrade)
 ├── contracts/    # JackTradePoints (Foundry): non-transferable onchain points ledger, tests, deploy script
 ├── docs/         # spec, demo runbook, submission copy, prompts
 ├── Dockerfile    # one image: connector + built web app
