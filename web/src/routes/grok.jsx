@@ -44,7 +44,10 @@ const TOOLS = [
   ["set_trigger", "Trades for you when the price crosses a level"],
   ["list_triggers", "Your armed and fired conditional trades"],
   ["cancel_trigger", "Disarms a conditional trade"],
-  ["make_it_real", "Link to buy the real token"],
+  ["make_it_real", "Buys the real stock token with Definitive Flash, TP/SL attached"],
+  ["agent_wallet", "Grok's own wallet for Flash orders"],
+  ["my_flash_orders", "Flash orders Grok placed, with TP/SL status"],
+  ["send_to_my_wallet", "Sends funds back to you, and only you"],
   ["my_points", "Your JackTrade Points"],
 ];
 
@@ -403,7 +406,7 @@ export default function GrokPage() {
                 </li>
                 <li>Paste the link, name it "JackTrade" and save.</li>
                 <li>
-                  In a new chat, try: <i>"What does today's news mean for BTC? If you agree, go long $20 at 50x."</i>
+                  In a new chat, try: <i>"What does today's news mean for ETH? If you agree, go long $2 at 50x."</i>
                 </li>
               </ol>
             </Step>
