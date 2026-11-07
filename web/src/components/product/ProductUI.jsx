@@ -16,6 +16,13 @@ import {
   Loader2,
   Wallet,
   Check,
+  BookOpen,
+  KeyRound,
+  LifeBuoy,
+  ArrowDownToLine,
+  PauseCircle,
+  LogOut,
+  AtSign,
 } from "lucide-react";
 import { useTradingSession } from "@/hooks/useTradingSession";
 import { JacktradeWordmark, JacktradeSparkle } from "@/components/jacktrade/JacktradeLogo";
@@ -238,10 +245,10 @@ export function Header() {
           Withdraw
         </button>
         {walletConnected ? (
-          <span className="pd-header-connected">
+          <button type="button" className="pd-header-connected" title={username ? "Edit your username" : "Set your username"} onClick={() => setModal({ type: "username" })}>
             <i />
-            {username || (walletAddress ? `${walletAddress.slice(0,6)}…${walletAddress.slice(-4)}` : "Connected")}
-          </span>
+            {username ? `@${username}` : walletAddress ? `${walletAddress.slice(0,6)}…${walletAddress.slice(-4)}` : "Connected"}
+          </button>
         ) : (
           <button onClick={() => setModal({ type: "wallet" })}>Connect</button>
         )}
@@ -619,13 +626,59 @@ function BridgeSheet({ close, back, notify, onSent }) {
     </dialog>
   );
 }
+// The share card as a 1200×630 PNG (the size X and Telegram previews use), drawn like the card on screen.
+async function drawShareCard({ title, value, detail, tone }) {
+  const W = 1200, H = 630;
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  await document.fonts?.ready;
+  const jack = await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Jack's image did not load."));
+    img.src = "/brand/jack-512.webp";
+  });
+  ctx.fillStyle = "#0b0b0a";
+  ctx.fillRect(0, 0, W, H);
+  const glow = ctx.createRadialGradient(W * 0.85, H * 0.15, 0, W * 0.85, H * 0.15, W * 0.6);
+  glow.addColorStop(0, "rgba(236,232,223,0.08)");
+  glow.addColorStop(1, "rgba(236,232,223,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(W - 210, H - 150);
+  ctx.rotate(-0.14);
+  ctx.drawImage(jack, -230, -230, 460, 460);
+  ctx.restore();
+  ctx.drawImage(jack, 80, 72, 58, 58);
+  ctx.fillStyle = "#ece8df";
+  ctx.font = "600 40px 'Playfair Display', Georgia, serif";
+  ctx.textBaseline = "middle";
+  ctx.fillText("JackTrade", 156, 102);
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#8d887e";
+  ctx.font = "500 32px Inter, system-ui, sans-serif";
+  ctx.fillText(String(title), 80, 270);
+  ctx.fillStyle = tone === "down" ? "#ec3d55" : tone === "up" ? "#3fd68a" : "#ece8df";
+  ctx.font = "600 128px Inter, system-ui, sans-serif";
+  ctx.fillText(String(value), 74, 400);
+  ctx.fillStyle = "#8d887e";
+  ctx.font = "500 26px Inter, system-ui, sans-serif";
+  ctx.fillText(String(detail), 80, 456);
+  ctx.fillStyle = "#5f5b54";
+  ctx.font = "500 24px Inter, system-ui, sans-serif";
+  ctx.fillText("Onchain · Robinhood Chain", 80, 560);
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Canvas export failed."))), "image/png"));
+}
 // Amount input for deposits and withdrawals: one box with the USDG chip and a Max shortcut, balance underneath.
 function AmountField({ value, onChange, balance, balanceLabel }) {
   return (
     <div className="pm-amount">
       <div className="pm-amount-box">
         <span className="pm-amount-chip"><CollateralIcon size={16} /> USDG</span>
-        <input autoFocus type="number" inputMode="decimal" min="0" step="0.01" placeholder="0.00" aria-label="Amount in USDG" value={value} onChange={(e) => onChange(e.target.value)} />
+        <input data-autofocus type="number" inputMode="decimal" min="0" step="0.01" placeholder="0.00" aria-label="Amount in USDG" value={value} onChange={(e) => onChange(e.target.value)} />
       </div>
       <div className="pm-amount-meta">
         <span>{money(balance)} USDG {balanceLabel}</span>
@@ -719,8 +772,14 @@ function Modal({ value, close }) {
     }
   }
   useEffect(() => {
-    ref.current.showModal();
+    const dialog = ref.current;
+    dialog.showModal();
+    (dialog.querySelector("[data-autofocus]") ?? dialog).focus();
   }, []);
+  // Deposit: moving to the amount step puts the cursor in the amount.
+  useEffect(() => {
+    if (depositOpen) ref.current?.querySelector("[data-autofocus]")?.focus();
+  }, [depositOpen]);
   useEffect(() => {
     if (value.type !== "wallet") return;
     const found = new Map();
@@ -793,11 +852,10 @@ function Modal({ value, close }) {
     funds: "Withdraw",
     close: "Close position",
     session: "Session & limits",
-    username: "Claim your identity",
-    share: "Your JackTrade card",
+    username: "Your username",
+    share: "Share your card",
   }[value.type];
   const share = value.data || {};
-  const shareColor = share.tone === "up" ? "#2d9562" : share.tone === "down" ? "#c85c67" : "#c9b6df";
   // Built only from the real numbers the caller passes (or the connected account's realized PnL).
   const shareTitle = share.title || ownUsername || (walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : "jacktrade");
   const shareValue = share.value || "$" + money(account.history.reduce((s, p) => s + p.pnl, 0));
@@ -811,24 +869,24 @@ function Modal({ value, close }) {
       setError("Clipboard unavailable. Select and copy the card text.");
     }
   }
-  function download() {
-    const escape = (s) =>
-      String(s).replace(
-        /[<>&"']/g,
-        (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[c],
-      );
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#100d16"/><rect x="30" y="30" width="1140" height="570" fill="none" stroke="#7d6296"/><g fill="#c9b6df" font-family="monospace"><text x="80" y="110" font-size="32">jacktrade</text><text x="80" y="230" font-size="28">${escape(shareTitle)}</text><text x="80" y="355" font-size="82" fill="${shareColor}">${escape(shareValue)}</text><text x="80" y="445" font-size="24">${escape(shareDetail)}</text><text x="80" y="550" font-size="20">ON-CHAIN DATA / ROBINHOOD CHAIN</text></g></svg>`;
-    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "jacktrade-card.svg";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  async function download() {
+    try {
+      const blob = await drawShareCard({ title: shareTitle, value: shareValue, detail: shareDetail, tone: share.tone });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "jacktrade-card.png";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (reason) {
+      setError(`The image could not be created. ${reason.message}`);
+    }
   }
   return (
     <dialog
       ref={ref}
-      className={`pm-modal pm-modal-${value.type}${["wallet", "deposit-trade", "funds", "close"].includes(value.type) ? " pm-sheet" : ""}`}
+      className={`pm-modal pm-modal-${value.type} pm-sheet`}
+      tabIndex={-1}
       onCancel={(e) => {
         e.preventDefault();
         close();
@@ -846,24 +904,31 @@ function Modal({ value, close }) {
       <div className="pm-modal-body">
         {value.type === "support" && (
           <>
-            <p>Find answers about trading, balances and your session.</p>
-            <div className="pm-settings-options">
-              <Link className="luna-btn" to="/docs" hash="faq" onClick={close}>
-                FAQ <ArrowUpRight size={12} />
+            <p className="pm-sheet-lead">Answers about trading, balances and your session.</p>
+            <div className="pm-rows">
+              <Link className="pm-row" to="/docs" hash="faq" onClick={close}>
+                <span className="pm-row-icon"><HelpCircle size={17} /></span>
+                <span><strong>FAQ</strong><small>Quick answers to common questions</small></span>
+                <ChevronRight size={16} className="pm-row-go" />
               </Link>
-              <Link className="luna-btn" to="/docs" onClick={close}>
-                Documentation <ArrowUpRight size={12} />
+              <Link className="pm-row" to="/docs" onClick={close}>
+                <span className="pm-row-icon"><BookOpen size={17} /></span>
+                <span><strong>Documentation</strong><small>How JackTrade works, end to end</small></span>
+                <ChevronRight size={16} className="pm-row-go" />
               </Link>
-              <button className="luna-btn" onClick={() => setModal({ type: "session" })}>
-                Session & limits <ArrowUpRight size={12} />
+              <button type="button" className="pm-row" onClick={() => setModal({ type: "session" })}>
+                <span className="pm-row-icon"><KeyRound size={17} /></span>
+                <span><strong>Session & limits</strong><small>Your browser trading key</small></span>
+                <ChevronRight size={16} className="pm-row-go" />
               </button>
             </div>
           </>
         )}
         {value.type === "settings" && (
           <>
-            <div className="pm-field">
-              Navigation language
+            <div className="pm-row pm-row-static">
+              <span className="pm-row-icon"><Globe size={17} /></span>
+              <span><strong>Language</strong><small>Menus and navigation</small></span>
               <FilterSelect
                 label="Navigation language"
                 value={language}
@@ -872,33 +937,40 @@ function Modal({ value, close }) {
               />
             </div>
             {walletConnected ? (
-              <div className="pm-settings-options">
-                <button className="luna-btn pm-settings-withdraw" onClick={() => setModal({ type: "funds", withdraw: true })}>
-                  <span>
-                    Withdraw <ArrowUpRight size={12} />
-                  </span>
-                  <small>Move USDG from your trading account back to your wallet.</small>
+              <div className="pm-rows">
+                <button type="button" className="pm-row" onClick={() => setModal({ type: "username" })}>
+                  <span className="pm-row-icon"><AtSign size={17} /></span>
+                  <span><strong>{ownUsername ? `@${ownUsername}` : "Set your username"}</strong><small>Shown on the leaderboard and your profile</small></span>
+                  <ChevronRight size={16} className="pm-row-go" />
                 </button>
-                <button className="luna-btn" onClick={() => setModal({ type: "session" })}>
-                  <span>
-                    Session & limits <ArrowUpRight size={12} />
-                  </span>
-                  <small>Manage the browser session key and local preferences.</small>
+                <button type="button" className="pm-row" onClick={() => setModal({ type: "funds", withdraw: true })}>
+                  <span className="pm-row-icon"><ArrowDownToLine size={17} /></span>
+                  <span><strong>Withdraw</strong><small>Move USDG back to your wallet</small></span>
+                  <ChevronRight size={16} className="pm-row-go" />
+                </button>
+                <button type="button" className="pm-row" onClick={() => setModal({ type: "session" })}>
+                  <span className="pm-row-icon"><KeyRound size={17} /></span>
+                  <span><strong>Session & limits</strong><small>Your browser trading key</small></span>
+                  <ChevronRight size={16} className="pm-row-go" />
+                </button>
+                <button type="button" className="pm-row" onClick={() => setModal({ type: "support" })}>
+                  <span className="pm-row-icon"><LifeBuoy size={17} /></span>
+                  <span><strong>Help</strong><small>FAQ and documentation</small></span>
+                  <ChevronRight size={16} className="pm-row-go" />
                 </button>
               </div>
             ) : (
-              <button
-                className="luna-btn luna-btn-active pm-wide"
-                onClick={() => setModal({ type: "wallet" })}
-              >
+              <button type="button" className="pm-sheet-primary" onClick={() => setModal({ type: "wallet" })}>
                 Connect wallet
               </button>
             )}
           </>
         )}
-        {value.type === "settings" && walletConnected && <div className="dream-reset">
-          <button className="luna-btn" onClick={()=>{setWalletConnected(false);notify("Wallet disconnected from this interface.");close();}}>Disconnect wallet</button>
-        </div>}
+        {value.type === "settings" && walletConnected && (
+          <button type="button" className="pm-sheet-quiet is-danger" onClick={() => { setWalletConnected(false); notify("Wallet disconnected from this interface."); close(); }}>
+            <LogOut size={14} /> Disconnect wallet
+          </button>
+        )}
         {value.type === "wallet" && (
           <div className="pm-wallet-list">
             {wallets.length ? <>
@@ -915,7 +987,7 @@ function Modal({ value, close }) {
                 );
               })}
               <p className="pm-wallet-note">JackTrade never sees your keys. Trades are signed in your wallet, on Robinhood Chain.</p>
-            </> : walletsScanned ? <div className="pm-wallet-empty"><Wallet size={25}/><strong>No browser wallet found</strong><small>Install an EVM wallet such as Rabby or MetaMask, then reload this page.</small></div> : null}
+            </> : walletsScanned ? <div className="pm-wallet-empty"><img src="/brand/jack-256.webp" alt="" width="56" height="56" /><strong>No wallet in this browser</strong><small>Install one, then reload this page.</small><span className="pm-wallet-get"><a href="https://rabby.io" target="_blank" rel="noreferrer">Get Rabby</a><a href="https://metamask.io/download/" target="_blank" rel="noreferrer">Get MetaMask</a></span></div> : null}
           </div>
         )}
         {value.type === "deposit-trade" && (
@@ -964,51 +1036,56 @@ function Modal({ value, close }) {
         )}
         {value.type === "session" && (
           <>
-            <div className="pm-callout">
+            <div className={`pm-status ${account.sessionUntil > Date.now() ? "is-on" : ""}`}>
+              <span className="pm-status-dot" />
               {account.sessionUntil > Date.now()
-                ? `Trading session ends ${new Date(account.sessionUntil).toLocaleDateString()}`
+                ? `Session active until ${new Date(account.sessionUntil).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`
                 : "No active session"}
             </div>
-            <p>A session key lets this browser sign orders without reopening your wallet. It cannot withdraw your funds.</p>
-            <button className="luna-btn" onClick={async()=>{setError("");setBusy(true);try{await account.enableSession();notify("Trading session enabled for this device.");}catch(reason){setError(reason.message);}finally{setBusy(false);}}} disabled={busy}>
-              Enable / renew trading session
+            <p className="pm-sheet-lead">A session key lets this browser place and close trades without a wallet prompt each time. It can never withdraw your funds.</p>
+            <button type="button" className="pm-sheet-primary" onClick={async()=>{setError("");setBusy(true);try{await account.enableSession();notify("Trading session enabled for this device.");}catch(reason){setError(reason.message);}finally{setBusy(false);}}} disabled={busy}>
+              {busy ? "Confirm in your wallet…" : account.sessionUntil > Date.now() ? "Renew session" : "Enable session"}
             </button>
-            <div className="pm-modal-actions">
+            <div className="pm-rows">
               <button
-                className="luna-btn"
+                type="button"
+                className="pm-row"
                 onClick={() => {
                   account.update((s) => ({ ...s, pauseUntil: Date.now() + 86400000 }));
                   notify("Trading paused for 24 hours on this device. Existing positions remain open.");
                   close();
                 }}
               >
-                Pause trading for 24h on this device
+                <span className="pm-row-icon"><PauseCircle size={17} /></span>
+                <span><strong>Take a 24h break</strong><small>Pause new trades on this device</small></span>
+                <ChevronRight size={16} className="pm-row-go" />
               </button>
-              <button
-                className="luna-btn"
+              {account.sessionUntil > Date.now() && <button
+                type="button"
+                className="pm-row is-danger"
                 onClick={async () => {
                   const result = await account.revokeSession();
                   if (!result.ok) setError(result.error);
                   else { notify("Trading session revoked on-chain."); close(); }
                 }}
               >
-                Revoke session
-              </button>
+                <span className="pm-row-icon"><X size={17} /></span>
+                <span><strong>Revoke session</strong><small>Remove this browser's key onchain</small></span>
+                <ChevronRight size={16} className="pm-row-go" />
+              </button>}
             </div>
-            <small className="pm-muted">
-              Interface preferences stay on this device. Protocol permissions remain verifiable on-chain.
-            </small>
           </>
         )}
         {value.type === "username" && (
           walletConnected && walletAddress ? (
             <>
-              <p>
-                {profile?.username ? "Your public profile" : "Your public profile will be"}: /u/{username || "your.name"}
-              </p>
-              <label className="pm-field">
-                Username
+              <p className="pm-sheet-lead">Shown on the leaderboard and on your public profile.</p>
+              <label className="pm-handle">
+                <span aria-hidden="true">@</span>
                 <input
+                  aria-label="Username"
+                  data-autofocus
+                  placeholder="your.name"
                   value={username}
                   maxLength="24"
                   aria-invalid={nameStatus?.tone === "bad" || !!error}
@@ -1023,17 +1100,15 @@ function Modal({ value, close }) {
               <p id="pm-username-status" className={`pm-field-status ${error ? "is-bad" : nameStatus ? `is-${nameStatus.tone}` : ""}`} role="status">
                 {error || nameStatus?.text || "\u00a0"}
               </p>
-              <button className="luna-btn luna-btn-active pm-wide" onClick={saveUsername} disabled={busy || !profile || nameStatus?.tone === "bad"}>
+              <button type="button" className="pm-sheet-primary" onClick={saveUsername} disabled={busy || !profile || nameStatus?.tone === "bad"}>
                 {busy ? "Waiting for wallet signature…" : !profile ? "Loading profile…" : profile.username ? "Change username" : "Claim username"}
               </button>
-              <small className="pm-muted">
-                Usernames are unique and public. Your wallet signs a one-time message (no transaction, no gas). After the first one, you can change it once every 24 hours.
-              </small>
+              <p className="pm-sheet-note">One signature, no gas. You can change it once every 24 hours.</p>
             </>
           ) : (
             <>
-              <p>Connect your wallet to claim a username. It is linked to your wallet and shown on the leaderboard.</p>
-              <button className="luna-btn luna-btn-active pm-wide" onClick={() => setModal({ type: "wallet" })}>
+              <p className="pm-sheet-lead">Connect your wallet to claim a username. It's linked to your wallet and shown on the leaderboard.</p>
+              <button type="button" className="pm-sheet-primary" onClick={() => setModal({ type: "wallet" })}>
                 Connect wallet
               </button>
             </>
@@ -1041,19 +1116,23 @@ function Modal({ value, close }) {
         )}
         {value.type === "share" && (
           <>
-            <div className="pm-share-card">
-              <span>jacktrade</span>
-              <p>{shareTitle}</p>
-              <strong className={share.tone ? `pm-${share.tone}` : undefined}>{shareValue}</strong>
-              <small>{shareDetail}</small>
-              <em>ON-CHAIN DATA / ROBINHOOD CHAIN</em>
-            </div>
-            <div className="pm-modal-actions">
-              <button className="luna-btn" onClick={copy}>
-                <Copy size={13} /> Copy text
+            <figure className="jt-card">
+              <div className="jt-card-brand">
+                <img src="/brand/jack-256.webp" alt="" width="22" height="22" />
+                JackTrade
+              </div>
+              <p className="jt-card-title">{shareTitle}</p>
+              <strong className={`jt-card-value ${share.tone ? `is-${share.tone}` : ""}`}>{shareValue}</strong>
+              <small className="jt-card-detail">{shareDetail}</small>
+              <span className="jt-card-foot">Onchain · Robinhood Chain</span>
+              <img className="jt-card-jack" src="/brand/jack-512.webp" alt="" />
+            </figure>
+            <div className="pm-sheet-actions">
+              <button type="button" className="pm-sheet-secondary" onClick={copy}>
+                <Copy size={15} /> Copy text
               </button>
-              <button className="luna-btn luna-btn-active" onClick={download}>
-                <Download size={13} /> Download card
+              <button type="button" className="pm-sheet-primary" onClick={download}>
+                <Download size={15} /> Save image
               </button>
             </div>
           </>

@@ -205,9 +205,9 @@ export default function Profile() {
 
   const profileActions = (
     <div className="pm-row-actions">
-      {!isPublic && me && (
+      {!isPublic && (
         <button className="luna-btn" onClick={() => setModal({ type: "username", onSaved: (saved) => setOwnUsername(saved.username) })}>
-          {ownUsername ? "Edit username" : "Claim username"}
+          {ownUsername ? "Edit username" : "Set your username"}
         </button>
       )}
       <button
