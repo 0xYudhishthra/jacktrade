@@ -144,7 +144,7 @@ Points come from the exchange's onchain trade history (via the indexer), so anyo
 | Conditional trades (`set_trigger`) | **Built** | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
 | Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
 | Agent bets feed | **Built** | [`web/src/routes/bets.jsx`](web/src/routes/bets.jsx) |
-| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
+| Make it real (Definitive Flash market + bracket, limit) | **Verified live on mainnet** · 0.5 USDG bought 0.00132 TSLA stock token via Uniswap V4, take-profit / stop-loss bracket active | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) · [`connector/test/flash.live.ts`](connector/test/flash.live.ts) |
 | JackTrade Points (connector + leaderboard) | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
 | JackTradePoints contract | **Live on Robinhood Chain** · 19 Foundry tests | [`contracts`](contracts) |
 | Points sync | **Live** · credited 215 JTP onchain for a test wallet's $2,150 of notional | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
