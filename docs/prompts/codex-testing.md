@@ -39,7 +39,7 @@ Goal: add automated tests that prove the product works, without touching real mo
    `list_markets`, `house_status`, `quote_bet` against the real APIs. It must NOT call
    `place_bet` or `cash_out` and must not submit any Flash order.
 3. **Web**: make sure `bun run build` passes in `web/`; add a small unit test for any pure
-   helpers (e.g. bracket take-profit/stop-loss math in `src/pages/Real.jsx` if extractable).
+   helpers (e.g. bracket take-profit/stop-loss math in `src/routes/real.jsx` if extractable).
 
 Rules:
 - Never place real bets or Flash orders. Never print or commit secrets (`.env` files).

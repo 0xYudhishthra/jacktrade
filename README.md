@@ -1,88 +1,107 @@
+<p align="center"><img src="web/public/brand/jack-256.webp" alt="Jack, the JackTrade mascot" width="96" /></p>
+
 # JackTrade
 
-> **Let Grok trade the news.** Ask Grok what the headlines mean for a stock, say "bet $20 long TSLA at 50x", and JackTrade places a leveraged bet against the house onchain, from inside the chat. Grok can also watch a level and fire the bet when the price crosses. Followers can make it real with one Definitive Flash order.
+> **Markets, on command.** Go long or short on US stock tokens and crypto with up to 1000× leverage on Robinhood Chain. Place the trade yourself, or tell your AI agent to: add JackTrade to Grok once and it can check the house, quote, trade, set price alerts that trade for you, and cash out, right in the chat.
 
-- **Live app**: [jacktrade.up.railway.app](https://jacktrade.up.railway.app) (Connect Grok · Grok bets · Points · Make it real)
-- **Spec** (source of truth): [`docs/spec.md`](docs/spec.md)
-- **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
+- **Live app**: [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app)
+- **Spec**: [`docs/spec.md`](docs/spec.md) · **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
 - **What existed before the hackathon**: [`PRE-EXISTING.md`](PRE-EXISTING.md) · **AI usage**: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
-- **Grok connector**: [`connector`](connector) · **Web app**: [`web`](web) · **Points contract**: [`contracts`](contracts) · **Backend**: [`backend`](backend)
+- **Code**: [`web`](web) (trading app) · [`connector`](connector) (Grok / MCP connector) · [`contracts`](contracts) (JackTrade Points)
 
 ---
 
 ## The problem
 
-Millions of people already use Grok to make sense of the news. They ask what tariffs mean for Tesla, Grok reads X and the headlines, and they form a view. Then they leave Grok to trade: open a brokerage app, find the ticker, size the position. By the time they get there, the moment is gone, and outside the US most of them can't get leverage on US stocks at all.
+People already use Grok to make sense of the news. They ask what tariffs mean for Tesla, Grok reads X and the headlines, and they form a view. Then they leave to trade: open another app, find the ticker, size the position. By the time they get there the moment is gone, and outside the US most of them can't get leverage on US stocks at all.
 
-The research happens in one place and the trade happens somewhere else.
+## What JackTrade is
 
-## The solution
+A bet-against-the-house exchange on Robinhood Chain that people and AI agents use the same way.
 
-JackTrade puts the trade where the research already happens. It's a **Grok connector**: add it once at grok.com → Connectors, and Grok can check the house, quote a leveraged bet, place it onchain, track it and cash out, all in the same conversation.
+- **For traders**: a trading terminal. Pick a market, long or short, margin and leverage (10× to 1000×). No order book: the house takes the other side at the Pyth oracle price.
+- **For agents**: a remote MCP server. Add it to Grok (or Claude, ChatGPT, any MCP client) and the agent gets tools to check the house, quote, trade, arm conditional trades and cash out. Its key can trade but **never withdraw**, inside limits you set.
+- **For followers**: every agent trade lands in a public feed, and anyone can **make it real**, copying the call into the actual stock token with one Definitive Flash order, take-profit and stop-loss attached.
+- **For everyone**: **JackTrade Points**, 10 per $100 traded, win or lose.
 
-Picture a retail trader in Kuala Lumpur. US stock tokens trade onchain on Robinhood Chain, but there's no simple way to put leverage on them. They ask Grok what this week's headlines mean for Tesla, and Grok answers with the posts and news behind its view. They say "bet $20 long TSLA at 50x". Grok checks that the house is good for it, quotes the liquidation price, and places the bet on JackTrade in seconds.
+Picture a trader in Kuala Lumpur who follows Tesla on X. They can hold US stock tokens onchain but can't put leverage on them. They ask Grok what this week's headlines mean for Tesla, decide, and say "go long $20 at 50×". Grok checks the house, quotes the liquidation price, and places the trade in seconds. Or: "if TSLA drops below $350, short it at 20× with $20", and JackTrade fires it the moment the price crosses, even while they sleep.
 
-- **The trader** bets against the house with leverage, from the chat. Grok's key can open and close bets but can **never withdraw**, and the trader sets its limits.
-- **Followers** see every Grok bet in a public feed and can **make it real**: copy the call into the real stock token with one Definitive Flash order, take-profit and stop-loss attached.
-- **Grok can act while you're away**: arm a conditional bet ("short TSLA 20x with $20 if it drops below $350") and JackTrade fires it the moment the price crosses.
-- **The house** is the counterparty. Grok checks its live bankroll and payout queue before every bet.
-- **Everyone earns JackTrade Points**: 10 points per $100 of notional, win or lose.
-
-## How a bet works
-
-JackTrade's exchange is a bet-against-the-house venue: no order book, no counterparty matching. You post margin, pick leverage, and the house takes the other side at the oracle price (Pyth).
+## How a trade works
 
 ```
-notional          = margin × leverage                       (min $10 margin, up to 1000x)
-liquidation move  ≈ 1 / leverage − 0.05%                    (50x → ~1.95% against you)
-points earned     = notional × 10 / 100                     (win or lose)
+position size     = margin × leverage                         (min $10 margin, up to 1000×)
+liquidation move  ≈ 1 / leverage − 0.05%                      (50× → ~1.95% against you)
+points earned     = position size × 10 / 100                  (win or lose)
 ```
 
 - **You lose** → your margin (or the part the move ate) goes to the house bankroll.
 - **You win** → you're paid from the house bankroll. If a win is bigger than the bankroll, the rest waits in a first-in-first-out payout queue that refills as the house earns. Nothing is lost; it's paid in order.
-- **The house is solvent by construction**: it only ever pays out what it holds or has queued, and `house_status` shows both before you bet.
+- **The house is solvent by construction**: it only pays out what it holds or has queued. Anyone can watch the bankroll, queue and open interest on the House page, and agents read them with `house_status` before trading.
 
 ## Safety model
 
 | Risk | How JackTrade handles it |
 |------|--------------------------|
-| An AI agent holding trading keys | Grok gets a **session key** on the exchange's SessionKeyManager: it can open and close bets but can **never withdraw**. The user revokes it from their wallet any time. |
-| Session keys have no onchain size limits | The connector enforces the user's caps **before signing**: max bet, max leverage, and a 24-hour risk budget. |
+| An AI agent holding trading keys | The agent gets a **session key** on the exchange's SessionKeyManager: it can open and close trades but can **never withdraw**. You revoke it from your wallet any time. |
+| Session keys have no onchain size limits | The connector enforces your caps **before signing**: max per trade, max leverage and a 24-hour loss budget. Conditional trades go through the same checks when they fire. |
 | Key storage | Agent keys are generated server-side and stored **AES-256-GCM encrypted**; connector URL tokens are stored hashed. |
-| Grok betting without being asked | The connector instructs Grok to quote first and get explicit confirmation before `place_bet`. |
-| Can the house pay? | `house_status` returns the live bankroll, payout queue and open interest before every bet. |
-| A trigger firing twice | Each armed trigger is claimed atomically before it fires, and it goes through the same caps as a manual bet. |
+| An agent trading without being asked | The tools tell the agent to quote first and get explicit confirmation before `place_bet` or `set_trigger`. |
+| Can the house pay? | `house_status` returns the live bankroll, payout queue and open interest. |
+| The web app in someone else's frame | The app refuses to run inside an iframe (a session key can trade without a wallet prompt). |
 
-## Integrations
+## The agent tools
 
-| Component | What it does | Where |
-|-----------|--------------|-------|
-| **Grok (xAI) connectors** | Grok calls JackTrade's tools over MCP: `list_markets`, `house_status`, `quote_bet`, `place_bet`, `my_bets`, `cash_out`, `set_trigger`, `list_triggers`, `cancel_trigger`, `my_points`, `make_it_real` | [`connector/src/tools.ts`](connector/src/tools.ts) |
-| **Definitive Flash** | "Make it real": a long bet becomes a `market` order with an `attachedBracket` (take-profit / stop-loss); a short becomes a `limit` buy, on the real Robinhood Chain token | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) · proxy in [`connector/src/server.ts`](connector/src/server.ts) |
-| **Conditional bets** | A watcher checks Pyth prices every 3 seconds and fires armed bets through the same signing and caps path | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
-| **JackTradePoints** | Non-transferable onchain points (JTP), synced every minute from each trader's notional | [`contracts/src/JackTradePoints.sol`](contracts/src/JackTradePoints.sol) · [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
-| **JackTrade exchange** | Bet-against-the-house contracts (pre-existing code, freshly deployed with the new points logic) plus relayer, prices and Ponder indexer | [`backend`](backend) · [`PRE-EXISTING.md`](PRE-EXISTING.md) |
+| Tool | What it does |
+|------|--------------|
+| `list_markets` | Markets with live prices and max leverage |
+| `house_status` | Bankroll, payout queue and open interest |
+| `quote_bet` | Entry, position size, liquidation price and limit check, without trading |
+| `place_bet` | Opens the trade, after the user confirms |
+| `my_bets` | Open trades with live PnL and liquidation prices |
+| `cash_out` | Closes a trade at the current price |
+| `set_trigger` | Arms a trade that fires when the price crosses a level |
+| `list_triggers` / `cancel_trigger` | Armed and fired conditional trades; disarm one |
+| `make_it_real` | Link to copy a trade into the real token with Definitive Flash |
+| `my_points` | Your JackTrade Points and the top of the leaderboard |
+
+Source: [`connector/src/tools.ts`](connector/src/tools.ts). The trigger watcher checks Pyth prices every 3 seconds and fires an armed trade through the same path as a manual one: [`connector/src/triggers.ts`](connector/src/triggers.ts).
+
+## The web app
+
+| Route | Page |
+|-------|------|
+| `/` | Landing |
+| `/trade` | Trading terminal: chart, order ticket, positions |
+| `/grok` | Connect Grok: approve its key (one gasless signature), set limits, copy the private MCP link, revoke |
+| `/bets` | Agent bets: live feed of trades placed through the connector |
+| `/real/:id` | Make it real: copy an agent's trade with a Definitive Flash order |
+| `/portfolio`, `/u/:username` | Your portfolio, and public profiles |
+| `/house` | The house: bankroll, payout queue, exposure, liquidation heatmap |
+| `/points`, `/leaderboard` | JackTrade Points and the trader leaderboard |
+| `/docs` | Help and FAQ |
+
+React 19, TanStack Router, Vite 8, viem and wagmi / Reown AppKit. Dark only, with Jack, the mascot, as the logo. Details in [`web/README.md`](web/README.md).
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-    USER["Trader in Grok"] -->|"what does the news mean for TSLA?<br/>bet $20 long at 50x"| GROK["Grok"]
-    GROK -->|"MCP tools over HTTPS"| CONN["JackTrade connector<br/>(remote MCP server)"]
-    CONN -->|"signed Open / Close intent<br/>(agent session key)"| RELAYER["JackTrade relayer"]
+    TRADER["Trader"] -->|"web app"| WEB["JackTrade web app"]
+    TRADER -->|"what does the news mean for TSLA?<br/>go long $20 at 50×"| GROK["Grok (or any MCP client)"]
+    GROK -->|"MCP tools over HTTPS"| CONN["JackTrade connector<br/>MCP + REST + Flash proxy"]
+    WEB -->|"orders signed with the browser's session key"| RELAYER["JackTrade relayer"]
+    CONN -->|"orders signed with the agent's session key"| RELAYER
+    CONN -->|"trigger watcher: Pyth prices every 3 s"| PRICES["Prices service (Pyth)"]
     RELAYER --> EXCHANGE["JackTrade Exchange<br/>Robinhood Chain mainnet"]
     EXCHANGE --> INDEXER["Indexer: positions, history, volume"]
+    INDEXER --> WEB
     INDEXER --> CONN
-    PRICES["Prices (Pyth)"] --> RELAYER
-    PRICES --> WATCH["Trigger watcher"]
-    WATCH -->|"price crossed → place bet"| CONN
-    CONN -->|"sync notional"| POINTS["JackTradePoints<br/>Robinhood Chain"]
-    FOLLOWER["Follower (web app)"] -->|"Make it real"| CONN
-    CONN -->|"Flash proxy: quote / order"| FLASH["Definitive Flash"]
+    WEB -->|"Make it real"| CONN
+    CONN -->|"quote / order"| FLASH["Definitive Flash"]
     FLASH -->|"market + TP/SL bracket, or limit"| TOKEN["Real token on Robinhood Chain<br/>TSLA · NVDA · WETH"]
 ```
 
-## The bet loop
+### An agent trade
 
 ```mermaid
 sequenceDiagram
@@ -91,89 +110,54 @@ sequenceDiagram
     participant C as JackTrade connector
     participant R as Relayer
     participant X as Exchange (Robinhood Chain)
-    T->>G: "Bet $20 long TSLA at 50x"
+    T->>G: "Go long $20 on TSLA at 50×"
     G->>C: house_status
     C-->>G: bankroll, payout queue, open interest
     G->>C: quote_bet(TSLA, long, 20, 50)
-    C-->>G: entry, liquidation price, points earned, cap check
+    C-->>G: entry, liquidation price, points earned, limit check
     G->>T: quote, "confirm?"
     T->>G: "yes"
     G->>C: place_bet(...)
-    C->>C: enforce caps, sign Open intent with the agent session key
+    C->>C: check limits, sign Open with the agent session key
     C->>R: POST /intent
     R->>X: batch + Pyth price update
     X-->>R: position opened
     C-->>G: position id + transaction
 ```
 
-## Conditional bets
+### Make it real (Definitive Flash)
 
-```mermaid
-sequenceDiagram
-    actor T as Trader
-    participant G as Grok
-    participant C as JackTrade connector
-    participant W as Trigger watcher
-    participant P as Prices (Pyth)
-    T->>G: "If TSLA drops below $350, short 20x with $20"
-    G->>C: set_trigger(TSLA, below, 350, short, 20, 20)
-    C->>C: validate market, minimums and caps, store as armed
-    C-->>G: trigger id, expiry
-    loop every 3 seconds
-        W->>P: latest prices
-        W->>W: price crossed? claim the trigger atomically
-    end
-    W->>C: place_bet through the same signing and caps path
-    C-->>T: bet shows in the Grok bets feed with its transaction
-```
-
-## Make it real (Definitive Flash)
-
-```mermaid
-flowchart LR
-    BET["Grok bet in the public feed"] --> SIDE{"long or short?"}
-    SIDE -->|long| MKT["Flash market buy<br/>+ attachedBracket TP / SL<br/>from the bet's liquidation distance"]
-    SIDE -->|short| LIM["Flash limit buy<br/>at the short's target"]
-    MKT --> SIGN["approve / Permit2 → sign order (+ bracket) in the follower's wallet"]
-    LIM --> SIGN
-    SIGN --> EXEC["Flash executes onchain<br/>real TSLA · NVDA · WETH on Robinhood Chain"]
-```
-
-The Flash API key never reaches the browser: the connector proxies `/v1/quote`, `/v1/order` and `/v1/orders`. If Flash doesn't return a bracket payload, the app refuses to place an unprotected order.
+A long trade becomes a Flash **market** buy with an **attached bracket** (take-profit and stop-loss, set from the trade's distance to liquidation). A short becomes a **limit** buy below the market. The follower approves and signs in their own wallet; Flash executes onchain and the real TSLA, NVDA or WETH lands in their wallet. The Flash API key stays on the connector, which proxies `/v1/quote`, `/v1/order` and `/v1/orders`. If Flash doesn't return a bracket, the app refuses to place an unprotected order.
 
 ## JackTrade Points
 
-Every bet earns points, **win or lose**: **10 points per $100 of notional** (margin × leverage). A $20 bet at 50x is $1,000 of notional and earns 100 points.
+Every trade earns points, **win or lose**: **10 points per $100 of position size** (margin × leverage). A $20 trade at 50× is $1,000 and earns 100 points.
 
-Points are computed from the exchange's onchain trade history (via the indexer), so anyone can recompute them. Grok reports them with `my_points`, every quote shows the points a bet will earn, and the web app has a leaderboard at `/points`. They're designed to carry into a future token event.
+Points come from the exchange's onchain trade history (via the indexer), so anyone can recompute them. Agents report them with `my_points`, quotes show the points a trade will earn, and the web app ranks them at `/points`. [`contracts/`](contracts) holds `JackTradePoints`, a non-transferable onchain ledger for them (see its [README](contracts/README.md)).
 
 ## Status
 
 | Component | Status | Where |
 |-----------|--------|-------|
-| Grok connector (MCP: 11 tools, caps, encrypted agent keys) | **Built** · read tools and quotes tested against live mainnet data | [`connector`](connector) |
-| Conditional bets (`set_trigger`) | **Built** · arming, validation and the fire path tested | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
+| Trading web app (terminal, portfolio, house, leaderboard) | **Built** · pre-existing app, rebranded and redesigned | [`web`](web) |
+| Grok connector (MCP: 11 tools, limits, encrypted agent keys) | **Built** · read tools and quotes tested against the live mainnet APIs | [`connector`](connector) |
+| Conditional trades (`set_trigger`) | **Built** | [`connector/src/triggers.ts`](connector/src/triggers.ts) |
 | Connect Grok (gasless session-key registration) | **Built** | [`web/src/routes/grok.jsx`](web/src/routes/grok.jsx) |
-| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified through the hosted proxy | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
-| JackTradePoints contract | **Live on Robinhood Chain** · 19 tests including a fuzz test | [`contracts`](contracts) |
-| Points sync job | **Live** · credited 215 JTP onchain for a test wallet's $2,150 of notional | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
-| Trading UI with Grok pages | **Built** · build, 22 unit tests and the Docker image pass | [`web`](web) |
-| Fresh exchange deployment on Robinhood Chain | **Live** · 92 contract tests pass, deployed and configured (BTC, ETH, SPY, TSLA) from block 107978288 | see Deployments |
-| New backend (prices, relayer, Ponder indexer) | In progress | [`backend`](backend) |
-| Hosted app | **Live** | [jacktrade.up.railway.app](https://jacktrade.up.railway.app) |
+| Agent bets feed | **Built** | [`web/src/routes/bets.jsx`](web/src/routes/bets.jsx) |
+| Make it real (Definitive Flash market + bracket, limit) | **Built** · live Flash quotes with an attached bracket verified | [`web/src/routes/real.jsx`](web/src/routes/real.jsx) |
+| JackTrade Points (connector + leaderboard) | **Built** · verified against live mainnet volume | [`connector/src/points.ts`](connector/src/points.ts) |
+| JackTradePoints contract | **Built** · 19 Foundry tests; deploy script ready | [`contracts`](contracts) |
+| Single-image deploy (connector + web) | **Built** · one Docker image serves both | [`Dockerfile`](Dockerfile) |
 
 ## Deployments
 
-**Robinhood Chain mainnet (chain id 4663)**, deployed during the hackathon:
+**JackTrade exchange — Robinhood Chain mainnet (chain id 4663)**:
 
 | Contract | Address |
 |----------|---------|
-| Exchange | `0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c` |
-| SessionKeyManager | `0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af` |
-| BatchExecutor | `0x9221254c99f4b15886b204116f979acebdcddec2` |
-| PriceOracle (Pyth) | `0x35367e32bf94d9abe8af29a38323536b876ae51f` |
-| NoMintTokenomics (losses mint nothing) | `0x506b4124d2f63b83c147b026ebc7fa004683ddea` |
-| JackTradePoints (JTP) | `0xdc4d5b817C3Df2fB19cE5856b3967FbFA1199Ed7` (deploy tx `0xe189f8a5b2baec3f66b357ee45f88b0427e07fc7ec01865c8e329a4f581fa852`) |
+| Exchange | `0x698cf1a9220f89ccf6ee75269086288a623ede54` |
+| SessionKeyManager | `0xe82bb6f411a9a53170f9c4fff53207eb80b7bb29` |
+| BatchExecutor | `0xf612485f65e0ea7109a3eb09ea7e0abfabd167a4` |
 | Collateral: USDG | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
 
 **Tokens used by Make it real (Robinhood Chain):** TSLA `0x322F0929c4625eD5bAd873c95208D54E1c003b2d` · NVDA `0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC` · WETH `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
@@ -182,18 +166,17 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 
 ```
 jacktrade/
-├── connector/            # Grok connector (remote MCP) + REST API + Flash proxy + trigger watcher + points sync; serves the web app
-├── web/                  # JackTrade trading UI (imported) + Connect Grok, Grok bets, Points, Make it real
-├── backend/              # JackTrade backend services (imported): prices, relayer, Ponder indexer, keepers, liquidator
-├── contracts/            # JackTradePoints (Foundry) + tests + deploy script
-├── docs/                 # spec, demo runbook, submission copy, prompts
-├── Dockerfile            # one image: connector + built web app
-└── PRE-EXISTING.md       # what was reused and what was built
+├── web/          # trading app: terminal, portfolio, house, points, leaderboard, agent pages (React 19 + Vite 8)
+├── connector/    # remote MCP server for Grok + REST API + trigger watcher + Flash proxy; serves the built web app
+├── contracts/    # JackTradePoints (Foundry): non-transferable onchain points ledger, tests, deploy script
+├── docs/         # spec, demo runbook, submission copy, prompts
+├── Dockerfile    # one image: connector + built web app
+└── PRE-EXISTING.md
 ```
 
 ## Quickstart
 
-One service runs the connector and the web app:
+One service runs everything:
 
 ```bash
 docker build -t jacktrade .
@@ -202,15 +185,29 @@ docker run -p 8787:8787 -v jacktrade:/data \
   -e PUBLIC_URL=http://localhost:8787 \
   -e FLASH_API_KEY=<your Flash key> \
   jacktrade
-# open http://localhost:8787/grok → connect → paste the connector URL into grok.com/connectors
 ```
 
-Development:
+Open http://localhost:8787, go to **Grok**, and follow the steps to paste your private link into grok.com → Connectors.
+
+### Development
+
+Two processes: the connector on :8787 and the web app on :8018.
 
 ```bash
-cd connector && npm install && npm run dev        # env: connector/.env.example
-cd web && bun install && bun run dev              # env: web/.env.example
-cd contracts && forge test                        # JackTradePoints: 19 tests
+cd connector && npm install && cp .env.example .env    # set SERVER_SECRET (openssl rand -hex 32)
+node --env-file=.env --watch src/server.ts              # http://localhost:8787
+```
+
+```bash
+cd web && bun install --frozen-lockfile && bun run dev  # http://127.0.0.1:8018
+```
+
+The web app uses the production exchange services by default and the local connector in development. Checks:
+
+```bash
+cd web && bun run check            # lint, tests, production build
+cd connector && npm run typecheck # connector: TypeScript check
+cd contracts && forge test -vv     # JackTradePoints: 19 tests
 ```
 
 ## Tech stack
@@ -219,13 +216,12 @@ cd contracts && forge test                        # JackTradePoints: 19 tests
 |-------|--------|
 | Agent interface | MCP (Streamable HTTP, stateless) via `@modelcontextprotocol/sdk`, added to Grok as a custom connector |
 | Connector | Node 24 + TypeScript (native type stripping), Express 5, viem, `node:sqlite` |
-| Web app | JackTrade trading UI: React 19, TanStack Router, wagmi + Reown AppKit, Tailwind, Vite |
+| Web app | React 19, TanStack Router, Vite 8, Tailwind CSS 3, viem + wagmi, Reown AppKit |
 | Advanced orders | Definitive Flash API (market + attached bracket, limit) on Robinhood Chain |
-| Points | JackTradePoints (Solidity, Foundry), non-transferable, synced from onchain notional |
-| Backend | Node + TypeScript services, Ponder indexer on Postgres, Pyth prices |
+| Points contract | Solidity 0.8, Foundry, no external dependencies |
 | Exchange | JackTrade bet-against-the-house contracts on Robinhood Chain mainnet, USDG collateral, Pyth prices |
 | Deploy | Single Docker image on Railway |
 
 ## Continuity Track
 
-This is a Continuity Track project. JackTrade's exchange contract code, backend services and trading UI existed before the hackathon; the contract source stays private, and the backend and UI were imported in clearly labelled commits. Everything else (the Grok connector, conditional bets, Make it real with Flash, the points contract and sync, the fresh deployment with new points logic) was built during the hackathon. See [`PRE-EXISTING.md`](PRE-EXISTING.md) and [`docs/AI_USAGE.md`](docs/AI_USAGE.md).
+This is a Continuity Track project. JackTrade's exchange and its trading app existed before the hackathon; see [`PRE-EXISTING.md`](PRE-EXISTING.md) for exactly what was reused and what was built during the event, and [`docs/AI_USAGE.md`](docs/AI_USAGE.md) for how AI tools were used.
