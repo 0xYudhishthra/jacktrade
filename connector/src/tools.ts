@@ -32,7 +32,7 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
         "then ask them to confirm. Never place a bet the user did not explicitly ask for. " +
         "Grok's key can open and close bets but can never withdraw funds. " +
         "Every bet earns JackTrade Points: 10 points per $100 of notional, win or lose. " +
-        "To own the real asset, use make_it_real: Grok buys the real stock token (TSLA, NVDA) or WETH with a " +
+        "To own the real asset, use own_it: Grok buys the real stock token (TSLA, NVDA) or WETH with a " +
         "Definitive Flash order from its own trading wallet (see agent_wallet), with take-profit and stop-loss " +
         "attached for longs. Confirm the amount with the user before calling it.",
     },
@@ -163,7 +163,7 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
           entryPrice: r.bet.entryPrice,
           liquidationPrice: r.bet.liquidationPrice,
           transaction: r.txUrl,
-          makeItReal: `${config.webUrl}/real/${r.bet.id}`,
+          ownIt: `${config.webUrl}/real/${r.bet.id}`,
         });
       } catch (e) {
         return fail(e);
@@ -337,9 +337,9 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
   );
 
   server.registerTool(
-    "make_it_real",
+    "own_it",
     {
-      title: "Make it real with Definitive Flash",
+      title: "Own it: buy the real stock token with Definitive Flash",
       description:
         "Buy the real token behind a bet (TSLA, NVDA stock tokens, or WETH for ETH bets) with a Definitive Flash " +
         "order, placed by Grok from its own trading wallet. A long becomes a market buy with take-profit and " +

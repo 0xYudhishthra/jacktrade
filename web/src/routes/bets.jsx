@@ -49,7 +49,7 @@ function BetCard({ bet, prices }) {
         </span>
         {bet.txHash && <TxHash hash={bet.txHash} />}
         <Link className="jt-btn-ghost" to="/real/$id" params={{ id: String(bet.id) }}>
-          Make it real
+          Own it
         </Link>
       </div>
     </article>

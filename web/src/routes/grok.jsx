@@ -44,7 +44,7 @@ const TOOLS = [
   ["set_trigger", "Trades for you when the price crosses a level"],
   ["list_triggers", "Your armed and fired conditional trades"],
   ["cancel_trigger", "Disarms a conditional trade"],
-  ["make_it_real", "Buys the real stock token with Definitive Flash, TP/SL attached"],
+  ["own_it", "Buys the real stock token with Definitive Flash, TP/SL attached"],
   ["agent_wallet", "Grok's own wallet for Flash orders"],
   ["my_flash_orders", "Flash orders Grok placed, with TP/SL status"],
   ["send_to_my_wallet", "Sends funds back to you, and only you"],

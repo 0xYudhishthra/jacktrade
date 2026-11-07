@@ -391,7 +391,7 @@ export default function RealPage() {
   return (
     <Shell>
       <div className="jt-page jt-page-narrow">
-        <PageHead title="Make it real">Copy an agent's trade into the real token on Robinhood Chain. Your wallet, your tokens.</PageHead>
+        <PageHead title="Own it">Copy an agent's trade into the real token on Robinhood Chain. Your wallet, your tokens.</PageHead>
         <p className="jt-small">
           <Link to="/bets">← Agent bets</Link>
         </p>
