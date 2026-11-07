@@ -150,7 +150,7 @@ Points come from the exchange's onchain trade history (via the indexer), so anyo
 | Points sync | **Live** · credited 215 JTP onchain for a test wallet's $2,150 of notional | [`connector/src/pointsSync.ts`](connector/src/pointsSync.ts) |
 | Fresh exchange deployment | **Live** · deployed and configured from block 107978288, losses mint nothing, points instead | see Deployments |
 | JackTrade backend (prices, relayer, Ponder indexer, keepers, liquidator) | **Live** on Railway | [`backend`](backend) |
-| End-to-end on mainnet | **Verified** · gasless deposit, Connect Grok, ETH and TSLA bets placed and cashed out through the MCP tools | [`connector/test/e2e.live.ts`](connector/test/e2e.live.ts) |
+| End-to-end on mainnet | **Verified** · gasless deposit, Connect Grok, ETH and TSLA bets placed and cashed out through the MCP tools, and a 1000x TSLA bet liquidated by our liquidator | [`connector/test/e2e.live.ts`](connector/test/e2e.live.ts) |
 | Single-image deploy (connector + web) | **Built** · one Docker image serves both | [`Dockerfile`](Dockerfile) |
 
 ## Deployments
