@@ -289,6 +289,28 @@ export async function cashOut(positionId: string, user: User, agentKey: `0x${str
 
 /** Marks open bets that the indexer no longer shows as open as closed or liquidated. */
 export async function syncBets(store: Store, bets: Bet[]): Promise<void> {
+  // Bets still "pending" after two minutes: ask the relayer what happened to their intent.
+  const cutoff = Math.floor(Date.now() / 1000) - 120;
+  await Promise.all(
+    bets
+      .filter((b) => b.status === "pending" && b.openedAt < cutoff)
+      .map(async (b) => {
+        const s = b.intentId ? await up.intentStatus(b.intentId).catch(() => null) : null;
+        if (s?.status === "executed") {
+          const entry = Number(s.price) / 1e18;
+          store.updateBet(b.id, {
+            status: "open",
+            positionId: s.positionId ?? null,
+            txHash: s.txHash,
+            entryPrice: entry,
+            liquidationPrice: liquidationPrice(entry, b.leverage, b.side),
+          });
+        } else if (!s || s.status === "failed") {
+          store.updateBet(b.id, { status: "failed", error: s && "message" in s ? s.message : "intent expired or not found" });
+        }
+      }),
+  );
+  bets = bets.map((b) => store.bet(b.id) ?? b);
   const wallets = [...new Set(bets.filter((b) => b.status === "open" && b.positionId).map((b) => b.wallet))];
   await Promise.all(
     wallets.map(async (wallet) => {
