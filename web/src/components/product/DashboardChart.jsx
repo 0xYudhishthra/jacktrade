@@ -52,14 +52,14 @@ export default function DashboardChart({ series = [], height = 280, format = usd
       <g clipPath={`url(#${id})`}>
         {watermark&&<text x={pw/2} y={top+ph*.5} textAnchor="middle" style={{fontSize:Math.min(100,pw/7),fill:'#8995a6',opacity:.045}}>jacktrade</text>}
         {vlines.map((line,i)=><line key={`v-${i}`} x1={sx(line.t)} x2={sx(line.t)} y1={top} y2={top+ph} stroke={line.color||'#687080'} strokeDasharray="3 4"/>)}
-        {bands.map((b,i)=><rect key={i} x="0" width={pw} y={sy(b.high)} height={Math.max(0,sy(b.low)-sy(b.high))} fill={b.color||'#9dc5ff'} opacity={b.opacity ?? .12}/>)}
+        {bands.map((b,i)=><rect key={i} x="0" width={pw} y={sy(b.high)} height={Math.max(0,sy(b.low)-sy(b.high))} fill={b.color||'var(--theme-accent)'} opacity={b.opacity ?? .12}/>)}
         {zero && y0<0 && y1>0 && <line x1="0" x2={pw} y1={sy(0)} y2={sy(0)} stroke="#858b98"/>}
         {series.map((s,i)=>{const data=s.data.length===1?[s.data[0],{...s.data[0],t:x1}]:s.data;
           const visibleData=s.data.length===1?[{...s.data[0],t:x0},s.data[0]]:data;
           const path=visibleData.map((p,j)=>`${j?'L':'M'}${sx(p.t)},${sy(p.p)}`).join(' ');
           return <g key={i}>
-            {s.candles ? data.map((c,j)=>{const bw=Math.max(1,pw/data.length*.6);return <g key={j} stroke="var(--theme-secondary)" strokeWidth=".8"><line x1={sx(c.t)} x2={sx(c.t)} y1={sy(c.h)} y2={sy(c.l)}/><rect x={sx(c.t)-bw/2} width={bw} y={sy(Math.max(c.o,c.c))} height={Math.max(1,Math.abs(sy(c.o)-sy(c.c)))} fill={c.c>=c.o?'var(--theme-surface)':'var(--theme-secondary)'}/></g>;}) : s.bars ? data.map((p,j)=><rect key={j} x={sx(p.t)-pw/data.length*.32} width={Math.max(2,pw/data.length*.64)} y={Math.min(sy(0),sy(p.p))} height={Math.abs(sy(0)-sy(p.p))} fill={s.color||'#254a87'} opacity=".85"/>) : <>
-              {s.fill && <path d={`${path} L${sx(visibleData.at(-1).t)},${top+ph} L${sx(visibleData[0].t)},${top+ph} Z`} fill={s.color||'#254a87'} opacity=".09"/>}
+            {s.candles ? data.map((c,j)=>{const bw=Math.max(1,pw/data.length*.6);return <g key={j} stroke="var(--theme-secondary)" strokeWidth=".8"><line x1={sx(c.t)} x2={sx(c.t)} y1={sy(c.h)} y2={sy(c.l)}/><rect x={sx(c.t)-bw/2} width={bw} y={sy(Math.max(c.o,c.c))} height={Math.max(1,Math.abs(sy(c.o)-sy(c.c)))} fill={c.c>=c.o?'var(--theme-surface)':'var(--theme-secondary)'}/></g>;}) : s.bars ? data.map((p,j)=><rect key={j} x={sx(p.t)-pw/data.length*.32} width={Math.max(2,pw/data.length*.64)} y={Math.min(sy(0),sy(p.p))} height={Math.abs(sy(0)-sy(p.p))} fill={s.color||'var(--theme-secondary)'} opacity=".85"/>) : <>
+              {s.fill && <path d={`${path} L${sx(visibleData.at(-1).t)},${top+ph} L${sx(visibleData[0].t)},${top+ph} Z`} fill={s.color||'var(--theme-secondary)'} opacity=".07"/>}
               <path d={path} fill="none" stroke={s.color||'var(--theme-secondary)' } strokeWidth="1.7" vectorEffect="non-scaling-stroke"/>
               <circle cx={sx(visibleData.at(-1).t)} cy={sy(data.at(-1).p)} r="3" fill={s.color||'var(--theme-secondary)' }/>
             </>}
@@ -67,7 +67,7 @@ export default function DashboardChart({ series = [], height = 280, format = usd
         })}
         {cursor!=null && <line x1={cursor} x2={cursor} y1="0" y2={top+ph} stroke="#858b98" strokeDasharray="3 4"/>}
       </g>
-      {markers.filter(m=>m.value>=y0&&m.value<=y1).map((m,i)=><g key={i}><line x1="0" x2={pw} y1={sy(m.value)} y2={sy(m.value)} stroke={m.color||'#687080'} strokeDasharray="2 3"/><rect x={pw+2} y={sy(m.value)-8} width={right-5} height="16" fill={m.color||'#254a87'}/><text x={pw+6} y={sy(m.value)+4} style={{fill:'#ffffff',fontSize:10}}>{m.label||format(m.value)}</text></g>)}
+      {markers.filter(m=>m.value>=y0&&m.value<=y1).map((m,i)=><g key={i}><line x1="0" x2={pw} y1={sy(m.value)} y2={sy(m.value)} stroke={m.color||'#687080'} strokeDasharray="2 3"/><rect x={pw+2} y={sy(m.value)-8} width={right-5} height="16" fill={m.color||'var(--theme-text)'}/><text x={pw+6} y={sy(m.value)+4} style={{fill:'var(--theme-canvas)',fontSize:10}}>{m.label||format(m.value)}</text></g>)}
     </svg>
     {cursor!=null && <div className="ds-chart-tooltip">{xFormat(hoverT)} {series.map((s,i)=><span key={i} style={{color:s.color}}>{s.name}: {format(selected[i]?.p||0)}</span>)}</div>}
     <div className="ds-chart-legend">{series.map((s,i)=><span key={i}><i style={{background:s.color||'var(--theme-secondary)' }}/>{s.name} <b>{format(s.data.at(-1)?.p||0)}</b></span>)}</div>

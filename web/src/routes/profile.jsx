@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "@tanstack/react-router";
+import { PageHead } from "@/components/grok/GrokUI";
 import { useTradingSession } from "@/hooks/useTradingSession";
 import { Shell, Panel, FilterSelect, useProductUI } from "@/components/product/ProductUI";
 import { StatRows } from "@/components/product/DashboardChart";
@@ -229,15 +230,21 @@ export default function Profile() {
       title={isPublic ? name : "Portfolio"}
       kicker={`资产 / ${isPublic ? "PUBLIC PROFILE" : "PORTFOLIO"}`}
       subtitle={isPublic ? `${shortAddress(publicUser)} · On-chain account on Robinhood Chain` : "Your balances, positions and share of the house."}
-      action={isPublic ? profileActions : undefined}
     >
+      <div className="jt-page jt-page-wide jt-dash">
+      <PageHead
+        title={isPublic ? name : ownUsername ? `@${ownUsername}` : "Portfolio"}
+        aside={profileActions}
+      >
+        {isPublic ? `${shortAddress(publicUser)} · onchain account on Robinhood Chain` : me ? "Your balances, positions and performance." : "Connect your wallet to see your balances, positions and performance."}
+      </PageHead>
       <div className="ds-overview">
         <aside className="ds-summary-grid">
           <div className="ds-summary-column">
             <div className="pm-profile-hero">
               <div>
                 {!isPublic && <p className="pm-profile-name">{ownUsername ? `@${ownUsername}` : me ? shortAddress(me) : "Not connected"}</p>}
-                <span className="pm-eyebrow">NET PNL + USDG REWARDS</span>
+                <span className="pm-eyebrow">Net PnL + rewards</span>
                 <strong className={result >= 0 ? "pm-up" : "pm-down"}>
                   {result >= 0 ? "+" : "−"}${money(Math.abs(result))}
                 </strong>
@@ -251,7 +258,6 @@ export default function Profile() {
                   View profile ↗
                 </Link>
               )}
-              {!isPublic && <div className="pm-profile-actions">{profileActions}</div>}
               <details className="pm-badge-details">
                 <summary>Badges</summary>
                 <div className="pm-badges">
@@ -323,6 +329,7 @@ export default function Profile() {
           {!view.summary.best.length && <div className="pm-empty">No closed trades yet.</div>}
         </Panel>
       ) : <PortfolioDetails />}
+      </div>
     </Shell>
   );
 }

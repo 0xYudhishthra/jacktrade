@@ -12,6 +12,7 @@ import { liquidationBands, pointSeries, shockSeries } from '@/lib/dashboardNetwo
 import { usdShort } from '@/lib/dashboardData';
 import MarketIcon from '@/components/product/MarketIcon';
 import { getMarkets, marketBySymbol } from '@/lib/mockMarkets';
+import { PageHead } from '@/components/grok/GrokUI';
 const RANGES=[['24h','24H'],['7d','7D'],['30d','30D']];
 const asset=name=>String(name||'').split('/')[0];
 const dateLabel=t=>new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'});
@@ -57,7 +58,15 @@ export default function House() {
   const pnlInfo=byName(pnlMarket);
   const placement=account.queue[0];
   const marketControl=<FilterSelect label="House analysis market" value={market} onChange={setMarket} items={marketItems}/>;
-  return <Shell dashboard="house" title="House">
+  const openInterest=totals[0]+totals[1];
+  return <Shell dashboard="house" title="House"><div className="jt-page jt-page-wide jt-dash">
+    <PageHead title="The House">The house takes the other side of every trade. Here's how it's doing, live.</PageHead>
+    <div className="jt-stats jt-stats-4">
+      <div className="jt-stat is-lead"><span>Free house funds</span><strong>{stats||house?'$'+money(free):'…'}</strong></div>
+      <div className="jt-stat"><span>House PnL</span><strong className={housePnL>=0?'is-up':'is-down'}>{stats||house?`${housePnL>=0?'+':'−'}$${money(Math.abs(housePnL))}`:'…'}</strong></div>
+      <div className="jt-stat"><span>Waiting in the payout queue</span><strong>{stats||house?'$'+money(debt):'…'}</strong></div>
+      <div className="jt-stat"><span>Open interest</span><strong>{'$'+compact(openInterest)}</strong></div>
+    </div>
     <div className="ds-overview">
       <aside className="ds-summary-grid">
         <div className="ds-summary-column">
@@ -119,5 +128,5 @@ export default function House() {
       <Panel title="House activity">{unavailable(activityFeed,'activity')||(activityFeed.data?.rows.length?activityFeed.data.rows.map(e=><div className="pm-event" key={e.id}><time>{new Date(e.time).toLocaleTimeString()}</time><span>{describeActivity(e)}</span></div>):<div className="pm-empty">{activityFeed.loading?'Loading…':'No settlements yet.'}</div>)}</Panel>
       <Panel collapsible title="The circuit"><div className="pm-flow"><span>Trader losses</span><b>→</b><span>House pool</span><b>→</b><span>Winning profits</span></div><div className="pm-flow"><span>Losses mint HOUSE</span><b>→</b><span>Stake</span><b>→</b><span>USDG rewards</span></div><p className="pm-muted">No direct LP deposits.</p></Panel>
     </div>
-  </Shell>;
+  </div></Shell>;
 }
