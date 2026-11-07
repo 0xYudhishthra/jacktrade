@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Shell } from "@/components/product/ProductUI";
 import { GrokBadge, Note, PageHead, TxHash, fmtPrice, fmtUsd, short, timeAgo } from "@/components/grok/GrokUI";
-import { getBets } from "@/lib/grok/api";
+import { getBets, getTriggers } from "@/lib/grok/api";
 import { useLivePrices } from "@/hooks/useLivePrices";
 import { isLong, marketSymbol } from "@/lib/grok/bets";
 
@@ -56,9 +56,37 @@ function BetCard({ bet, prices }) {
   );
 }
 
+const TRIGGER_STATE = {
+  armed: { label: "watching", cls: "pm-up" },
+  firing: { label: "firing…", cls: "pm-up" },
+  fired: { label: "fired ✓", cls: "pm-up" },
+  expired: { label: "expired", cls: "jt-muted" },
+  cancelled: { label: "cancelled", cls: "jt-muted" },
+  failed: { label: "failed", cls: "pm-down" },
+};
+
+function TriggerRow({ t, prices }) {
+  const sym = marketSymbol(t.market) || t.market;
+  const px = prices[`${sym}-PERP`];
+  const state = TRIGGER_STATE[t.status] || { label: t.status, cls: "jt-muted" };
+  const long = isLong(t.side);
+  return (
+    <div className="jt-trigger">
+      <GrokBadge />
+      <span className="jt-trigger-rule">
+        <b>{sym}</b> {t.condition} {fmtPrice(t.price)} → <span className={long ? "pm-up" : "pm-down"}>{long ? "long" : "short"}</span>{" "}
+        {fmtUsd(t.marginUsd)} at {t.leverage}×
+      </span>
+      <span className="jt-muted jt-small">{px ? `now ${fmtPrice(px)}` : ""}</span>
+      <span className={`jt-trigger-state ${state.cls}`} title={t.error || ""}>{state.label}</span>
+    </div>
+  );
+}
+
 export default function BetsPage() {
   const { prices } = useLivePrices();
   const [bets, setBets] = useState(null);
+  const [triggers, setTriggers] = useState([]);
   const [error, setError] = useState("");
   const timer = useRef(null);
 
@@ -66,10 +94,11 @@ export default function BetsPage() {
     let alive = true;
     const tick = async () => {
       try {
-        const list = await getBets(50);
+        const [list, trig] = await Promise.all([getBets(50), getTriggers(30).catch(() => [])]);
         if (!alive) return;
         const at = (b) => Date.parse(b.openedAt) || Number(b.openedAt) || 0;
         setBets([...list].sort((a, b) => at(b) - at(a)));
+        setTriggers(trig);
         setError("");
       } catch (err) {
         if (!alive) return;
@@ -90,6 +119,18 @@ export default function BetsPage() {
       <div className="jt-page">
         <PageHead title="Agent bets">Live trades placed by Grok and other AI agents. Updates every few seconds.</PageHead>
         {error && <Note>Feed unavailable ({error}). Retrying every 5 s.</Note>}
+        {triggers.length > 0 && (
+          <section className="jt-panel jt-triggers">
+            <h3>Armed by Grok</h3>
+            <p className="jt-muted jt-small">
+              Conditional bets Grok set up. JackTrade watches the price every few seconds and places the bet the moment a level
+              crosses, within your limits.
+            </p>
+            {triggers.slice(0, 12).map((t) => (
+              <TriggerRow key={t.id} t={t} prices={prices} />
+            ))}
+          </section>
+        )}
         {bets === null ? (
           <div className="jt-card-plain jt-empty">Loading…</div>
         ) : bets.length === 0 ? (

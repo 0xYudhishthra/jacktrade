@@ -254,3 +254,36 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Armed-by-Grok conditional bets on the agent bets page */
+.jt-triggers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.jt-triggers h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.jt-trigger {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--jt-line, #1f1e1c);
+}
+.jt-trigger-rule {
+  font-variant-numeric: tabular-nums;
+}
+.jt-trigger-state {
+  font-weight: 600;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .jt-trigger {
+    grid-template-columns: auto 1fr;
+  }
+}

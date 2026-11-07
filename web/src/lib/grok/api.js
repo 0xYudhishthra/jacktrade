@@ -82,6 +82,12 @@ export async function getPointsLeaderboard() {
   return [];
 }
 
+/** Conditional bets Grok armed through the connector (armed, fired, expired, cancelled, failed). */
+export async function getTriggers(limit = 30) {
+  const data = await request(`${CONNECTOR_URL}/api/triggers?limit=${limit}`);
+  return Array.isArray(data) ? data : [];
+}
+
 export async function getBets(limit = 50) {
   const data = await request(`${CONNECTOR_URL}/api/bets?limit=${limit}`);
   if (Array.isArray(data)) return data;
