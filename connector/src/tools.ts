@@ -5,6 +5,7 @@ import type { Store, User } from "./db.ts";
 import { pointsLeaderboard, pointsOf } from "./points.ts";
 import * as trading from "./trading.ts";
 import { armTrigger, cancelTrigger } from "./triggers.ts";
+import { distanceFromBet, listRealOrders, placeRealOrder, sendToOwner, targetFor, walletBalances } from "./flash.ts";
 import * as up from "./upstream.ts";
 
 function ok(data: unknown) {
@@ -30,7 +31,10 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
         "Before placing a bet, call quote_bet and show the user the entry, liquidation price and house bankroll, " +
         "then ask them to confirm. Never place a bet the user did not explicitly ask for. " +
         "Grok's key can open and close bets but can never withdraw funds. " +
-        "Every bet earns JackTrade Points: 10 points per $100 of notional, win or lose.",
+        "Every bet earns JackTrade Points: 10 points per $100 of notional, win or lose. " +
+        "To own the real asset, use make_it_real: Grok buys the real stock token (TSLA, NVDA) or WETH with a " +
+        "Definitive Flash order from its own trading wallet (see agent_wallet), with take-profit and stop-loss " +
+        "attached for longs. Confirm the amount with the user before calling it.",
     },
   );
 
@@ -308,18 +312,105 @@ export function buildServer(user: User, agentKey: () => `0x${string}`, store: St
   );
 
   server.registerTool(
+    "agent_wallet",
+    {
+      title: "Grok's trading wallet",
+      description:
+        "Address and balances of Grok's own trading wallet on Robinhood Chain. Grok uses it to buy real " +
+        "stock tokens with Definitive Flash. The user funds it with USDG plus a little ETH for gas.",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        const address = user.agentAddress;
+        return ok({
+          address,
+          chain: "Robinhood Chain (4663)",
+          balances: await walletBalances(address),
+          howToFund: "Send USDG (what Grok spends) and about 0.0001 ETH (gas) to this address on Robinhood Chain.",
+          safety: "Each order is capped by your max bet. Funds can only be sent back to your own wallet.",
+        });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
     "make_it_real",
     {
-      title: "Make it real",
+      title: "Make it real with Definitive Flash",
       description:
-        "Get a link where the user (or anyone following this bet) can buy the real stock token with a " +
-        "Definitive Flash order, with take-profit and stop-loss set from the bet.",
-      inputSchema: { bet_id: z.string().describe("betId returned by place_bet") },
+        "Buy the real token behind a bet (TSLA, NVDA stock tokens, or WETH for ETH bets) with a Definitive Flash " +
+        "order, placed by Grok from its own trading wallet. A long becomes a market buy with take-profit and " +
+        "stop-loss attached; a short becomes a limit buy below the market. Give either a bet_id or a token. " +
+        "Confirm the amount with the user first. If Grok's wallet isn't funded, returns a link the user can sign instead.",
+      inputSchema: {
+        bet_id: z.string().optional().describe("betId from place_bet; the order mirrors that bet"),
+        token: z.enum(["TSLA", "NVDA", "WETH"]).optional().describe("Token to buy when there's no bet_id"),
+        side: z.enum(["long", "short"]).optional().describe("long = buy now with TP/SL, short = limit buy lower (default long)"),
+        amount_usd: z.number().positive().describe("How many USDG to spend"),
+      },
+      annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: true },
     },
     async (a) => {
-      const bet = store.bet(a.bet_id);
-      if (!bet) return fail(new trading.BetError("Unknown bet id."));
-      return ok({ link: `${config.webUrl}/real/${bet.id}`, note: "Opens JackTrade to sign a Flash order in your wallet." });
+      try {
+        const bet = a.bet_id ? store.bet(a.bet_id) : null;
+        if (a.bet_id && !bet) throw new trading.BetError("Unknown bet id.");
+        const target = bet ? targetFor(bet.market) : (a.token ?? "TSLA");
+        const side = bet ? bet.side : (a.side ?? "long");
+        const distance = bet ? distanceFromBet(bet) : 0.02;
+        try {
+          const r = await placeRealOrder({ target, amountUsd: a.amount_usd, side, distance }, user, agentKey());
+          return ok({ message: "Flash order placed by Grok.", ...r });
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (/trading wallet/.test(msg) && bet) {
+            return ok({
+              message: msg,
+              alternative: `Or sign it yourself: ${config.webUrl}/real/${bet.id}`,
+            });
+          }
+          throw e;
+        }
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "my_flash_orders",
+    {
+      title: "My Flash orders",
+      description: "Recent Definitive Flash orders Grok placed from its trading wallet, with take-profit / stop-loss status.",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        return ok(await listRealOrders(agentKey()));
+      } catch (e) {
+        return fail(e);
+      }
+    },
+  );
+
+  server.registerTool(
+    "send_to_my_wallet",
+    {
+      title: "Send to my wallet",
+      description: "Move funds from Grok's trading wallet back to the user's own wallet (the only possible recipient).",
+      inputSchema: {
+        asset: z.enum(["USDG", "TSLA", "NVDA", "WETH", "ETH"]),
+        amount: z.number().positive(),
+      },
+    },
+    async (a) => {
+      try {
+        return ok(await sendToOwner(a.asset, a.amount, user, agentKey()));
+      } catch (e) {
+        return fail(e);
+      }
     },
   );
 
