@@ -58,7 +58,7 @@ function parseCaps(raw: any): Caps | null {
     dailyLossUsd: Number(raw?.dailyLossUsd),
   };
   const valid =
-    caps.maxMarginUsd >= 10 && caps.maxMarginUsd <= 10_000 &&
+    caps.maxMarginUsd >= 1 && caps.maxMarginUsd <= 10_000 &&
     Number.isInteger(caps.maxLeverage) && caps.maxLeverage >= 2 && caps.maxLeverage <= 1000 &&
     caps.dailyLossUsd >= caps.maxMarginUsd && caps.dailyLossUsd <= 100_000;
   return valid ? caps : null;
@@ -70,7 +70,7 @@ app.post("/api/connect/finish", async (req, res) => {
   const caps = parseCaps(req.body?.caps);
   if (!caps) {
     return void res.status(400).json({
-      message: "Caps: max bet $10–$10,000, leverage 2–1000, daily limit at least the max bet.",
+      message: "Caps: max bet $1–$10,000, leverage 2–1000, daily limit at least the max bet.",
     });
   }
   // Ownership proof: only the wallet itself can register this key on JackTrade's SessionKeyManager.
