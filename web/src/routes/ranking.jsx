@@ -4,7 +4,7 @@ import { Shell, FilterSelect, useProductUI } from '@/components/product/ProductU
 import { PageHead } from '@/components/grok/GrokUI';
 import MarketIcon from '@/components/product/MarketIcon';
 import { marketBySymbol } from '@/lib/mockMarkets';
-import { StatRows } from '@/components/product/DashboardChart';
+import { ChevronDown } from 'lucide-react';
 import { useTradingSession } from '@/hooks/useTradingSession';
 import { money, compact } from '@/lib/protocolModel';
 import { fetchLeaderboardAccounts, fetchLeaderboardPositions } from '@/lib/jacktradeApi';
@@ -36,6 +36,23 @@ function accountRow(a) {
 }
 function positionRow(p) {
   return { ...p, name: p.username || shortAddress(p.user), symbol: symbolOf(p.market), pnl: num(p.pnl), margin: num(p.margin), notional: num(p.notional), entry: num(p.entryPrice), exit: num(p.exitPrice), duration: Math.max(0, p.closedAt - p.openedAt) };
+}
+
+const when = (sec) => (sec ? new Date(sec * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '–');
+const tone = (v) => (v == null ? undefined : v >= 0 ? 'up' : 'down');
+function detailGroups(t, trades) {
+  if (trades) return [
+    ['Trade', [['Market', t.market], ['Direction', t.side.toUpperCase(), t.side === 'long' ? 'up' : 'down'], ['Leverage', t.leverage + '×'], ['Outcome', t.liquidated ? 'Liquidated' : 'Closed', t.liquidated ? 'down' : undefined]]],
+    ['Prices', [['Entry', '$' + money(t.entry)], ['Exit', '$' + money(t.exit)], ['Size', '$' + money(t.notional)], ['Margin', '$' + money(t.margin)]]],
+    ['Result', [['PnL', signed(t.pnl), tone(t.pnl)], ['Return on margin', pct(t.roi), tone(t.roi)], ['Held for', duration(t.duration)]]],
+    ['Time', [['Opened', when(t.openedAt)], ['Closed', when(t.closedAt)]]],
+  ];
+  return [
+    ['Performance', [['Realized PnL', signed(t.realizedPnl), tone(t.realizedPnl)], ['Unrealized PnL', signed(t.unrealizedPnl), tone(t.unrealizedPnl)], ['Rank by PnL', t.rank ?? '–'], ['Closed trades', t.trades], ['Wins', t.wins], ['Liquidations', t.liquidations, t.liquidations > 0 ? 'down' : undefined]]],
+    ['Exposure', [['Open size', '$' + money(t.openNotional)], ['Closed margin', '$' + money(t.margin)], ['Waiting in queue', '$' + money(t.queued)]]],
+    ['House', [['HOUSE staked', compact(t.staked)], ['Staking rewards', '$' + money(t.stakingRewards)], ['HOUSE earned', compact(t.minted)]]],
+    ['Account', [['Address', shortAddress(t.user)], ['Last active', when(t.lastActive)]]],
+  ];
 }
 
 const plural = (n, word, more = false) => `${n}${more ? '+' : ''} ${word}${Number(n) === 1 && !more ? '' : 's'}`;
@@ -116,12 +133,15 @@ export default function Ranking() {
           <td className={toneOf(t.pnl)}><strong>{signed(t.pnl)}</strong>{t.liquidated&&<small className="pm-down">LIQUIDATED</small>}</td><td className={toneOf(t.roi)}>{pct(t.roi)}</td><td>${money(t.margin)}</td><td>{duration(t.duration)}</td><td>{ago(t.closedAt)}</td></>
         :type==='stakers'?<><td><strong>{compact(t.staked)}</strong></td><td>${money(t.stakingRewards)}</td><td>{compact(t.minted)}</td><td>{t.trades}</td><td>{ago(t.lastActive)}</td></>
         :<><td>${compact(t.volume)}</td><td className={toneOf(t.pnl)}><strong>{signed(t.pnl)}</strong></td><td className={toneOf(t.roi)}>{pct(t.roi)}</td><td>{t.trades}</td><td>{t.winRate==null?'–':t.winRate.toFixed(0)+'%'}</td><td>{type==='liquidated'?t.liquidations:'$'+money(t.margin)}</td></>}
-        <td><button type="button" className="jt-expand" aria-label={`Details for ${t.name}${trades?' '+t.symbol+' '+t.leverage+'x':''}`} aria-expanded={expanded===t.id} onClick={()=>setExpanded(expanded===t.id?null:t.id)}>{expanded===t.id?'−':'+'}</button></td>
+        <td><button type="button" className="jt-expand" aria-label={`Details for ${t.name}${trades?' '+t.symbol+' '+t.leverage+'x':''}`} aria-expanded={expanded===t.id} onClick={()=>setExpanded(expanded===t.id?null:t.id)}><ChevronDown size={16}/></button></td>
       </tr>
-      {expanded===t.id&&<tr className="ds-expanded-row"><td colSpan={columns}><div className="ds-rank-detail"><StatRows rows={trades
-        ?[["Market",t.market],["Direction",t.side.toUpperCase()],["Leverage",t.leverage+'×'],["Margin",'$'+money(t.margin)],["Entry",'$'+money(t.entry)],["Exit",'$'+money(t.exit)],["Notional",'$'+money(t.notional)],["PnL",signed(t.pnl),t.pnl>=0?'up':'down'],["Return on margin",pct(t.roi),t.roi>=0?'up':'down'],["Duration",duration(t.duration)],["Opened",new Date(t.openedAt*1000).toLocaleString()],["Closed",new Date(t.closedAt*1000).toLocaleString()],["Outcome",t.liquidated?'Liquidated':'Closed']]
-        :[["Account",shortAddress(t.user)],["Rank by PnL",t.rank??'–'],["Closed trades",t.trades],["Wins",t.wins],["Liquidations",t.liquidations],["Closed margin",'$'+money(t.margin)],["Realized PnL (all time)",signed(t.realizedPnl),t.realizedPnl>=0?'up':'down'],["Unrealized PnL (est.)",signed(t.unrealizedPnl),t.unrealizedPnl==null?undefined:t.unrealizedPnl>=0?'up':'down'],["Open notional",'$'+money(t.openNotional)],["Queued",'$'+money(t.queued)],["HOUSE staked",compact(t.staked)],["Staking rewards",'$'+money(t.stakingRewards)],["HOUSE earned",compact(t.minted)],["Last active",t.lastActive?new Date(t.lastActive*1000).toLocaleString():'–']]}/>
-        <div className="jt-detail-actions"><Link className="jt-btn-ghost" to={link.to} params={link.params}>View portfolio</Link><button type="button" className="jt-btn-ghost" onClick={()=>share(t)}>Share</button></div></div></td></tr>}
+      {expanded===t.id&&<tr className="ds-expanded-row"><td colSpan={columns}><div className="jt-detail">
+        <div className="jt-detail-top">
+          <div><strong>{t.username?`@${t.username}`:t.name}</strong><span>{trades?`${t.symbol} · ${t.leverage}× ${t.side}`:shortAddress(t.user)}</span></div>
+          <div className="jt-detail-actions"><Link className="jt-btn-ghost" to={link.to} params={link.params}>View portfolio</Link><button type="button" className="jt-btn" onClick={()=>share(t)}>Share</button></div>
+        </div>
+        <div className="jt-detail-groups">{detailGroups(t,trades).map(([title,items])=><section key={title}><h4>{title}</h4><dl>{items.map(([label,value,tn])=><div key={label}><dt>{label}</dt><dd className={tn?`is-${tn}`:undefined}>{value}</dd></div>)}</dl></section>)}</div>
+      </div></td></tr>}
     </Fragment>;})}</tbody></table>{(status!=='ready'||!rows.length)&&<div className="jt-empty">{status==='ready'&&<img src="/brand/jack-256.webp" alt=""/>}<span>{emptyText}</span></div>}</div>
     <div className="jt-table-foot">
       <span>{trades?`${rows.length} positions · top 15 by PnL`:summary?`${plural(type==='winners'?data.count:accounts.length+page*PAGE_SIZE,'account',more&&type!=='winners')} · ${plural(summary.trades,'closed trade')} · $${compact(Number(summary.volume))} volume`:'–'}</span>
