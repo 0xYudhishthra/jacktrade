@@ -8,13 +8,15 @@ Todo el backend está hecho contra **`main` de contracts (`d287db6`)**, lo despl
 
 | Contrato | Dirección |
 | --- | --- |
-| Exchange | `0xc8d93fed32729578c4a65f95bb32a353baa93f56` |
-| BatchExecutor | `0xe24cadad16f9a38f53e4bc652714e10cbfd747ae` |
-| SessionKeyManager | `0xdb4b767bfa81c4c02d50b3eac5f6869241bc57bc` |
-| JackTradeStaking | `0x1b261e27978c385ed879ea1c2a0d20da1a0338a6` |
-| PriceOracle | `0xc4b562cab2ed45fc168824b6af9e2bbd6eff8b29` |
+| Exchange | `0x70760d6e91fb6ec71c5999c196ecef4471f6ac4c` |
+| BatchExecutor | `0x9221254c99f4b15886b204116f979acebdcddec2` |
+| SessionKeyManager | `0x4918923b2927bf250ffac5fdcbee3f3eedb2c0af` |
+| JackTradeStaking | `0xdb5d2bbce982f7975fbd5229e25bc1a91facfd7f` |
+| JackTradeToken | `0x6a809d8bbaafd130086d56b8871742a26aef802c` |
+| JackTradeTokenomics (no mint) | `0x506b4124d2f63b83c147b026ebc7fa004683ddea` |
+| PriceOracle | `0x35367e32bf94d9abe8af29a38323536b876ae51f` |
 | Pyth | `0x8250f4aF4B972684F7b336503E2D6dFeDeB1487a` |
-| PnLMath (librería) | `0x448033aa4bdef5df3156e17b445845b8dde82857` (`settle` = `0x422443f3`) |
+| PnLMath (librería) | `0xa75d2fb385071719a3cebd3b24958fa4d04b9681` (`settle` = `0x422443f3`) |
 | USDG (colateral) | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
 
 **Wallets del backend:**

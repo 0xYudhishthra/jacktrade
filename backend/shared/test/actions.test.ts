@@ -4,6 +4,7 @@ import { test } from "node:test";
 import { privateKeyToAccount } from "viem/accounts";
 
 import { actionFromJson, actionId, actionToJson, actionTypedData, recoverActionSigner, type Action } from "../src/actions.js";
+import { deployment } from "../src/network.js";
 
 const wallet = privateKeyToAccount("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d");
 const withdraw: Action = { kind: "withdraw", action: { user: wallet.address, to: wallet.address, amount: 10_000_000n, nonce: 7n, deadline: 2_000_000_000n } };
@@ -40,5 +41,5 @@ test("el permit de USDG es para el Exchange, con el dominio de Global Dollar", (
   const td = actionTypedData({ kind: "depositPermit", action: { user: wallet.address, amount: 5n, nonce: 0n, deadline: 9n } });
   assert.equal(td.primaryType, "Permit");
   assert.equal((td.domain as { name: string; version: string }).name, "Global Dollar");
-  assert.equal((td.message as { spender: string }).spender.toLowerCase(), "0x698cf1a9220f89ccf6ee75269086288a623ede54");
+  assert.equal((td.message as { spender: string }).spender.toLowerCase(), deployment.contracts.Exchange.address.toLowerCase());
 });

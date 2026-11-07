@@ -1,56 +1,48 @@
 /**
- * Genera direcciones, ABIs y tipos EIP-712 desde `main` de jacktrade/contracts (lo desplegado)
- * y los escribe en shared/src/generated como módulos TS con `as const`, para que viem tipe las llamadas.
+ * Writes shared/src/generated/jacktrade.<chainId>.ts from a local contracts export (addresses, ABIs, EIP-712, markets),
+ * as a TS module with `as const` so viem types the calls. Nothing is cloned or compiled.
  *
- *   pnpm sync:exports
+ *   CONTRACTS_EXPORT=/path/to/jacktrade.4663.json DEPLOY_BLOCK=<n> PNLMATH_ADDRESS=0x... pnpm sync:exports
  *
- * Clona `main` en una carpeta temporal: no lee ni toca tu copia local de contracts, esté en la rama que esté.
- * Otra rama solo con CONTRACTS_REF=<rama> (por defecto main). CONTRACTS_COMMIT=<sha> exige ese commit exacto.
+ * The backend also needs `deployBlock` (first block to index) and `libraries.PnLMath`. If the export does not carry
+ * them, DEPLOY_BLOCK and PNLMATH_ADDRESS are required.
  */
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const repo = process.env.CONTRACTS_REPO;
-if (!repo) throw new Error("Set CONTRACTS_REPO=<owner>/<repo> (the contracts repo that has scripts/export.ts)");
-const ref = process.env.CONTRACTS_REF ?? "main";
-const outDir = path.resolve("shared/src/generated");
-const dir = mkdtempSync(path.join(tmpdir(), "hm-contracts-"));
-// Entorno mínimo para npm y hardhat: el .env del backend (claves, RPC) no tiene por qué llegar a código de otro repo.
-const baseEnv = { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "", TMPDIR: process.env.TMPDIR ?? "" };
+const file = process.env.CONTRACTS_EXPORT;
+if (!file) throw new Error("Set CONTRACTS_EXPORT=<path to jacktrade.<chainId>.json>");
 
-// La salida (avisos del compilador, npm) solo se muestra si el comando falla.
-function run(cmd: string, args: string[], env: Record<string, string> = {}) {
-  try {
-    execFileSync(cmd, args, { cwd: dir, stdio: "pipe", env: { ...baseEnv, ...env } });
-  } catch (error) {
-    const { stdout, stderr } = error as { stdout?: Buffer; stderr?: Buffer };
-    console.error(`${stdout ?? ""}${stderr ?? ""}`);
-    throw new Error(`Falló: ${cmd} ${args.join(" ")}`);
+// Parsed and re-serialized: what is written as TypeScript is only data, never code.
+const data = JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown> & {
+  chainId: number;
+  deployBlock?: number;
+  libraries?: { PnLMath?: string };
+};
+
+const deployBlock = data.deployBlock ?? (process.env.DEPLOY_BLOCK ? Number(process.env.DEPLOY_BLOCK) : undefined);
+if (!deployBlock || !Number.isSafeInteger(deployBlock)) throw new Error("The export has no deployBlock: set DEPLOY_BLOCK");
+const pnlMath = data.libraries?.PnLMath ?? process.env.PNLMATH_ADDRESS;
+if (!pnlMath || !/^0x[0-9a-fA-F]{40}$/.test(pnlMath)) throw new Error("The export has no libraries.PnLMath: set PNLMATH_ADDRESS");
+
+// deployBlock and libraries go right after `pyth`, the rest keeps the export's order.
+const out: Record<string, unknown> = {};
+for (const [key, value] of Object.entries(data)) {
+  if (key === "deployBlock" || key === "libraries") continue;
+  out[key] = value;
+  if (key === "pyth") {
+    out.deployBlock = deployBlock;
+    out.libraries = { ...data.libraries, PnLMath: pnlMath };
   }
 }
+if (!("deployBlock" in out)) Object.assign(out, { deployBlock, libraries: { ...data.libraries, PnLMath: pnlMath } });
 
-try {
-  console.log(`Clonando ${repo}@${ref}…`);
-  execFileSync("gh", ["repo", "clone", repo, dir, "--", "--depth", "1", "--branch", ref, "--quiet"], { stdio: "inherit" });
-  const commit = execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: dir }).toString().trim();
-  // CONTRACTS_COMMIT fija el commit esperado: si main cambió, no se genera nada sin revisarlo antes.
-  const expected = process.env.CONTRACTS_COMMIT;
-  if (expected && !commit.startsWith(expected.slice(0, 7))) throw new Error(`${ref} está en ${commit}, se esperaba ${expected}`);
-
-  console.log("Instalando dependencias y compilando…");
-  run("npm", ["ci", "--silent", "--no-audit", "--no-fund"]);
-  for (const chainId of ["4663"]) run("npx", ["hardhat", "run", "scripts/export.ts"], { CHAIN_ID: chainId });
-
-  const exportsDir = path.join(dir, "exports");
-  for (const file of readdirSync(exportsDir).filter((f) => /^(jacktrade)\.\d+\.json$/.test(f))) {
-    // Se parsea y se vuelve a serializar: lo que se escribe como TypeScript es solo datos, nunca código.
-    const json = JSON.stringify(JSON.parse(readFileSync(path.join(exportsDir, file), "utf8")), null, 2);
-    const out = path.join(outDir, `jacktrade.${file.split(".")[1]}.ts`);
-    writeFileSync(out, `// Generado por pnpm sync:exports desde ${repo}@${ref} (${commit}). No editar.\nexport default ${json.trim()} as const;\n`);
-    console.log(`Escrito ${path.relative(process.cwd(), out)} (${ref} @ ${commit})`);
-  }
-} finally {
-  rmSync(dir, { recursive: true, force: true });
-}
+const target = path.resolve("shared/src/generated", `jacktrade.${data.chainId}.ts`);
+const header = [
+  `// Generated by pnpm sync:exports from ${path.basename(file)}. Do not edit.`,
+  "// Single source of truth for the backend: addresses, ABIs, EIP-712 domains/types, markets, deployBlock (first block",
+  "// to index, at or before the Exchange deploy) and libraries.PnLMath. To point the backend at a new deployment,",
+  "// regenerate this file.",
+].join("\n");
+writeFileSync(target, `${header}\nexport default ${JSON.stringify(out, null, 2)} as const;\n`);
+console.log(`Wrote ${path.relative(process.cwd(), target)}`);
