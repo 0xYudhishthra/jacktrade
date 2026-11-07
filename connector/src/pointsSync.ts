@@ -33,16 +33,17 @@ function toRaw(volume: string): bigint {
 
 async function allAccounts(): Promise<Row[]> {
   const rows: Row[] = [];
-  for (let page = 1; page <= 40; page++) {
+  // The indexer's pages are 0-indexed.
+  for (let page = 0; page < 40; page++) {
     const res = await fetch(
       `${config.indexerUrl}/api/leaderboard/accounts?window=all&sortKey=volume&sortDir=desc&page=${page}`,
       { signal: AbortSignal.timeout(15_000) },
     );
     if (!res.ok) throw new Error(`indexer leaderboard → HTTP ${res.status}`);
-    const body = (await res.json()) as { accounts: Row[] };
+    const body = (await res.json()) as { accounts: Row[]; pageInfo?: { totalPages?: number } };
     if (!body.accounts?.length) break;
     rows.push(...body.accounts);
-    if (body.accounts.length < 25) break;
+    if (page + 1 >= (body.pageInfo?.totalPages ?? 1)) break;
   }
   return rows;
 }
