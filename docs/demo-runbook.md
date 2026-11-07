@@ -4,7 +4,7 @@ Target 3:30, hard limit 4:00. Record on a computer (not a phone), at least 720p.
 
 ## Before recording
 
-1. App is up: `GET https://jacktrade-production.up.railway.app/health` returns `ok: true`, and
+1. App is up: `GET https://jacktrade.up.railway.app/health` returns `ok: true`, and
    the relayer's `/health` returns `ok: true`.
 2. Demo wallet: a plain EOA with a few USDG deposited in JackTrade (minimum bet is $1) and a
    few dollars of USDG or ETH left in the wallet for the Flash order.

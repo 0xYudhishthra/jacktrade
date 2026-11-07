@@ -2,7 +2,7 @@
 
 > **Let Grok trade the news.** Ask Grok what the headlines mean for a stock, say "bet $20 long TSLA at 50x", and JackTrade places a leveraged bet against the house onchain, from inside the chat. Grok can also watch a level and fire the bet when the price crosses. Followers can make it real with one Definitive Flash order.
 
-- **Live app**: [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) (Connect Grok · Grok bets · Points · Make it real)
+- **Live app**: [jacktrade.up.railway.app](https://jacktrade.up.railway.app) (Connect Grok · Grok bets · Points · Make it real)
 - **Spec** (source of truth): [`docs/spec.md`](docs/spec.md)
 - **Demo runbook**: [`docs/demo-runbook.md`](docs/demo-runbook.md) · **Submission copy**: [`docs/submission.md`](docs/submission.md)
 - **What existed before the hackathon**: [`PRE-EXISTING.md`](PRE-EXISTING.md) · **AI usage**: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
@@ -160,7 +160,7 @@ Points are computed from the exchange's onchain trade history (via the indexer),
 | Trading UI with Grok pages | **Built** · build, 22 unit tests and the Docker image pass | [`web`](web) |
 | Fresh exchange deployment on Robinhood Chain | **Live** · 92 contract tests pass, deployed and configured (BTC, ETH, SPY, TSLA) from block 107978288 | see Deployments |
 | New backend (prices, relayer, Ponder indexer) | In progress | [`backend`](backend) |
-| Hosted app | **Live** | [jacktrade-production.up.railway.app](https://jacktrade-production.up.railway.app) |
+| Hosted app | **Live** | [jacktrade.up.railway.app](https://jacktrade.up.railway.app) |
 
 ## Deployments
 

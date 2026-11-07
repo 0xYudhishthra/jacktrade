@@ -12,7 +12,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createPublicClient, defineChain, http, parseAbi, parseUnits, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-const CONNECTOR = process.env.CONNECTOR_URL ?? "https://jacktrade-production.up.railway.app";
+const CONNECTOR = process.env.CONNECTOR_URL ?? "https://jacktrade.up.railway.app";
 const RELAYER = process.env.RELAYER_URL ?? "https://jt-relayer-production.up.railway.app";
 const INDEXER = process.env.INDEXER_URL ?? "https://jt-indexer-production.up.railway.app";
 const RPC = process.env.RPC_URL ?? "https://rpc.mainnet.chain.robinhood.com";
