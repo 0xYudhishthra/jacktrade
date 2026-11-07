@@ -3,10 +3,10 @@
 // Grok (agent key registration), then the MCP tools Grok calls. Real funds; small sizes.
 //
 //   set -a; . ../test-wallet.keys.env; set +a
-//   node test/e2e.live.ts deposit 30      # gasless permit deposit of 30 USDG
+//   node test/e2e.live.ts deposit 5       # gasless permit deposit of 5 USDG
 //   node test/e2e.live.ts connect         # register Grok's key, print the MCP URL (saved to tmp/)
 //   node test/e2e.live.ts bet             # house_status → quote → place_bet → my_bets → cash_out
-//   node test/e2e.live.ts liquidation     # $10 BTC at 1000x, wait for the liquidator
+//   node test/e2e.live.ts liquidation     # $1 BTC at 1000x, wait for the liquidator
 //   node test/e2e.live.ts tools <name> [json-args]
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createPublicClient, defineChain, http, parseAbi, parseUnits, type Hex } from "viem";
@@ -92,7 +92,7 @@ async function connect() {
   log("registerSessionKey", await relayAction("registerSessionKey", action, signature));
   const finish = await json(`${CONNECTOR}/api/connect/finish`, {
     method: "POST",
-    body: JSON.stringify({ pendingId: start.pendingId, caps: { maxMarginUsd: 15, maxLeverage: 1000, dailyLossUsd: 60 } }),
+    body: JSON.stringify({ pendingId: start.pendingId, caps: { maxMarginUsd: 5, maxLeverage: 1000, dailyLossUsd: 5 } }),
   });
   saveState({ ...loadState(), mcpUrl: finish.mcpUrl });
   log("connect/finish", { agentAddress: finish.agentAddress, caps: finish.caps, mcpUrl: "saved to tmp/e2e-state.json" });
@@ -114,8 +114,8 @@ async function tool(name: string, args: Record<string, unknown> = {}) {
 
 async function bet() {
   await tool("house_status");
-  await tool("quote_bet", { market: "ETH", side: "long", margin_usd: 10, leverage: 50 });
-  const placed = await tool("place_bet", { market: "ETH", side: "long", margin_usd: 10, leverage: 50 });
+  await tool("quote_bet", { market: "ETH", side: "long", margin_usd: 2, leverage: 50 });
+  const placed = await tool("place_bet", { market: "ETH", side: "long", margin_usd: 2, leverage: 50 });
   await tool("my_bets");
   if (placed?.positionId) {
     await sleep(3000);
@@ -125,7 +125,7 @@ async function bet() {
 }
 
 async function liquidation() {
-  const placed = await tool("place_bet", { market: "BTC", side: "long", margin_usd: 10, leverage: 1000 });
+  const placed = await tool("place_bet", { market: "BTC", side: "long", margin_usd: 1, leverage: 1000 });
   if (!placed?.positionId) return;
   const id = String(placed.positionId);
   for (let i = 0; i < 120; i++) {
@@ -139,7 +139,7 @@ async function liquidation() {
 
 const [cmd, a1, a2] = process.argv.slice(2);
 console.log(`wallet ${wallet.address}`);
-if (cmd === "deposit") await deposit(a1 ?? "30");
+if (cmd === "deposit") await deposit(a1 ?? "5");
 else if (cmd === "connect") await connect();
 else if (cmd === "bet") await bet();
 else if (cmd === "liquidation") await liquidation();
